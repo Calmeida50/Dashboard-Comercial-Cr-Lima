@@ -4,6 +4,69 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Comercial 2026 | São João</title>
+<style>
+  #login-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, #1a2340 0%, #0f172a 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  #login-box {
+    background: #ffffff; border-radius: 16px; padding: 48px 40px;
+    width: 360px; box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+    text-align: center;
+  }
+  #login-box .logo-login { font-size: 40px; margin-bottom: 8px; }
+  #login-box h1 { font-size: 20px; font-weight: 700; color: #1a2340; margin-bottom: 4px; font-family: 'Segoe UI', sans-serif; }
+  #login-box p { font-size: 13px; color: #64748b; margin-bottom: 28px; font-family: 'Segoe UI', sans-serif; }
+  #login-box input {
+    width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0;
+    border-radius: 8px; font-size: 15px; outline: none;
+    transition: border-color 0.2s; margin-bottom: 16px;
+    font-family: 'Segoe UI', sans-serif; letter-spacing: 1px;
+    text-align: center;
+  }
+  #login-box input:focus { border-color: #2563eb; }
+  #login-box button {
+    width: 100%; padding: 12px; background: #2563eb; color: white;
+    border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+    cursor: pointer; transition: background 0.2s; font-family: 'Segoe UI', sans-serif;
+  }
+  #login-box button:hover { background: #1d4ed8; }
+  #login-error {
+    color: #dc2626; font-size: 13px; margin-top: 12px;
+    font-family: 'Segoe UI', sans-serif; display: none;
+  }
+</style>
+<script>
+  (function() {
+    const SENHA = 'IAcrlima2026';
+    const KEY = 'dash_auth';
+    function mostrarLogin() {
+      document.addEventListener('DOMContentLoaded', function() {
+        var overlay = document.getElementById('login-overlay');
+        var input = document.getElementById('login-senha');
+        var btn = document.getElementById('login-btn');
+        var erro = document.getElementById('login-error');
+        function tentar() {
+          if (input.value === SENHA) {
+            sessionStorage.setItem(KEY, '1');
+            overlay.style.display = 'none';
+          } else {
+            erro.style.display = 'block';
+            input.value = '';
+            input.focus();
+          }
+        }
+        btn.addEventListener('click', tentar);
+        input.addEventListener('keydown', function(e) { if (e.key === 'Enter') tentar(); });
+      });
+    }
+    if (sessionStorage.getItem(KEY) !== '1') {
+      document.write('<div id="login-overlay"><div id="login-box"><div class="logo-login">📊</div><h1>Dashboard Comercial</h1><p>São João 2026 — Acesso Restrito</p><input id="login-senha" type="password" placeholder="Digite a senha" autofocus /><button id="login-btn">Entrar</button><div id="login-error">Senha incorreta. Tente novamente.</div></div></div>');
+      mostrarLogin();
+    }
+  })();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
