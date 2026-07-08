@@ -3381,9 +3381,9 @@ function renderAcompVendedores(mesIdx, mesKey) {
       const d = ((acomp[v.nome] || {})[mk] || {})[emp] || {};
       h += d.hist || 0;
       o += d.obj  || 0;
-      r += live ? 0 : (d.real || 0);
+      r += d.real || 0; // sempre soma o base estático
     });
-    if (live) r += LIVE_PEDIDOS.porEmpresaVarejo[emp]||0;
+    if (live) r += LIVE_PEDIDOS.porEmpresaVarejo[emp]||0; // soma pedidos live por cima
     return { emp, h, o, r };
   }).filter(e => e.r > 0 || e.o > 0).sort((a,b) => b.r - a.r);
 
