@@ -1296,9 +1296,7 @@ let charts = {};
 // ============================================================
 function fmt(v) {
   if (!v || isNaN(v)) return 'R$ 0';
-  if (Math.abs(v) >= 1e6) return 'R$ ' + (v/1e6).toFixed(2).replace('.',',') + ' mi';
-  if (Math.abs(v) >= 1e3) return 'R$ ' + (v/1e3).toFixed(1).replace('.',',') + ' mil';
-  return 'R$ ' + v.toFixed(0);
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
 }
 function fmtFull(v) {
   if (!v || isNaN(v)) return 'R$ 0';
@@ -3085,7 +3083,7 @@ function renderPedidosTempoReal(rows, targetMes, targetAno) {
     countMes++;
   });
 
-  const fmt = v => 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const fmt = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
 
   let html = '';
   Object.keys(empresas).sort().forEach(emp => {
