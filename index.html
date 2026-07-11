@@ -1931,6 +1931,22 @@ function renderGeralCharts() {
     tbodyEmp.appendChild(tr);
   });
 
+  // Linha de somatório
+  const _totHist = empList.reduce((s,v) => s + (v.hist||0), 0);
+  const _totObj  = empList.reduce((s,v) => s + (v.obj||0), 0);
+  const _totCresc = _totHist > 0 ? ((totalEmpReal/_totHist - 1)*100) : null;
+  const _totCob   = _totObj  > 0 ? (totalEmpReal/_totObj*100) : null;
+  const trTot = document.createElement('tr');
+  trTot.style.cssText = 'background:#eef2ff;font-weight:700;border-top:2px solid #c7d2fe';
+  trTot.innerHTML = `
+    <td class="rank" style="color:var(--muted)">—</td>
+    <td><strong>TOTAL</strong></td>
+    <td style="font-weight:800;color:var(--accent)">${fmt(totalEmpReal)}</td>
+    <td style="color:${_totCresc===null?'var(--muted)':_totCresc>=0?'#16a34a':'#dc2626'};font-weight:600">${_totCresc!==null?(_totCresc>=0?'▲ +':'▼ ')+Math.abs(_totCresc).toFixed(1)+'%':'—'}</td>
+    <td style="color:${_totCob===null?'var(--muted)':_totCob>=100?'#16a34a':_totCob>=80?'#d97706':'#dc2626'};font-weight:600">${_totCob!==null?_totCob.toFixed(1)+'%':'—'}</td>
+    <td style="font-weight:600;color:var(--muted)">100%</td>`;
+  tbodyEmp.appendChild(trTot);
+
   // ---- Ranking Vendedores ----
   const tbodyVend = document.getElementById('table-geral-vendedores');
   tbodyVend.innerHTML = '';
