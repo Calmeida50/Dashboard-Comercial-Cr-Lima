@@ -4280,34 +4280,44 @@ function normalizeNome(n) {
 
 function countClientesUnicos() {
   // Conta clientes únicos em todas as empresas, deduplicados por nome normalizado
-  const ce = DATA.clientes_empresa || {};
+  const cd = DATA.clientes_detalhado || {};
+  const currentM = new Date().getMonth();
+  const cols = Math.min(currentM + 1, 6);
   const nomes = new Set();
-  for (const lista of Object.values(ce)) {
-    for (const c of lista) {
-      const k = normalizeNome(c.nome);
-      if (k && (c.real || 0) > 0) nomes.add(k);
+  for (const vendedores of Object.values(cd)) {
+    for (const lista of Object.values(vendedores)) {
+      for (const c of lista) {
+        const ytd = (c.meses || []).slice(0, cols).reduce((a,b) => a+b, 0);
+        const k = normalizeNome(c.nome);
+        if (k && ytd > 0) nomes.add(k);
+      }
     }
   }
   return nomes.size;
 }
 
 function buildClientesRanking() {
-  // Aggregate all clients across all company sheets by normalized name
-  const ce = DATA.clientes_empresa || {};
-  const map = {}; // normalizedName → {nome, vendedor, real, hist, empresas:{emp:real}}
-  for (const [emp, lista] of Object.entries(ce)) {
-    for (const c of lista) {
-      const k = normalizeNome(c.nome);
-      if (!k) continue;
-      if (!map[k]) {
-        map[k] = { nome: c.nome, vendedor: c.vendedor || '—', real: 0, hist: 0, empresas: {} };
-      }
-      map[k].real += (c.real || 0);
-      map[k].hist += (c.hist || 0);
-      map[k].empresas[emp] = (map[k].empresas[emp] || 0) + (c.real || 0);
-      // Vendedor: prefer non-empty
-      if (c.vendedor && c.vendedor !== '—' && (!map[k].vendedor || map[k].vendedor === '—')) {
-        map[k].vendedor = c.vendedor;
+  // Usa clientes_detalhado (fonte mais completa, inclui todos os clientes mapeados por empresa/vendedor)
+  const cd = DATA.clientes_detalhado || {};
+  const currentM = new Date().getMonth();
+  const cols = Math.min(currentM + 1, 6);
+  const map = {}; // normalizedName → {nome, vendedor, real, empresas:{emp:real}}
+  for (const [emp, vendedores] of Object.entries(cd)) {
+    for (const [vend, lista] of Object.entries(vendedores)) {
+      for (const c of lista) {
+        const ytd = (c.meses || []).slice(0, cols).reduce((a,b) => a+b, 0);
+        if (ytd === 0) continue;
+        const k = normalizeNome(c.nome);
+        if (!k) continue;
+        if (!map[k]) {
+          map[k] = { nome: c.nome, vendedor: vend || '—', real: 0, empresas: {} };
+        }
+        map[k].real += ytd;
+        map[k].empresas[emp] = (map[k].empresas[emp] || 0) + ytd;
+        // Vendedor: prefer non-empty
+        if (vend && vend !== '—' && (!map[k].vendedor || map[k].vendedor === '—')) {
+          map[k].vendedor = vend;
+        }
       }
     }
   }
@@ -4347,9 +4357,10 @@ function renderRankingClientes() {
     lista = lista.filter(c => c.vendedor === _rankingFiltroAtual);
   }
   const totalReal = lista.reduce((s,c) => s + c.real, 0);
+  const currentMonthIdx = new Date().getMonth();
+  const cols = Math.min(currentMonthIdx + 1, 6);
 
   // Título com período
-  const currentMonthIdx = new Date().getMonth();
   const anoAtual = new Date().getFullYear();
   const MESES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const periodoStr = 'Jan–' + MESES_FULL[currentMonthIdx].substring(0,3) + ' ' + anoAtual;
@@ -4390,6 +4401,23 @@ function renderRankingClientes() {
       <td style="text-align:right;padding:9px 12px;font-size:12px;font-weight:600;color:var(--muted)">100%</td>
     `;
     tbody.appendChild(trTotal);
+
+    // Linha de faturamento não atribuído a cliente nominal
+    const geralReal6m = (((DATA.empresas||{})['GERAL']||{}).real||[]).slice(0,cols).reduce((a,b)=>a+b,0);
+    const semNome = geralReal6m - totalReal;
+    if (semNome > 5000) {
+      const trSemNome = document.createElement('tr');
+      trSemNome.style.cssText = 'background:#fffbeb;border-top:1px dashed #f59e0b';
+      trSemNome.innerHTML = `
+        <td colspan="3" style="padding:7px 12px;font-size:11px;color:#92400e">
+          ⚠️ Faturamento sem cliente identificado
+          <span style="font-size:10px;color:#b45309;margin-left:4px">(vendas sem nome de cliente na planilha)</span>
+        </td>
+        <td style="text-align:right;font-weight:600;font-size:12px;padding:7px 12px;color:#b45309">${fmt(semNome)}</td>
+        <td style="text-align:right;padding:7px 12px;font-size:11px;color:#b45309">${geralReal6m>0?(semNome/geralReal6m*100).toFixed(1)+'%':'—'}</td>
+      `;
+      tbody.appendChild(trSemNome);
+    }
   }
 }
 
