@@ -174,6 +174,19 @@
   .table-compact th { padding: 8px 8px; font-size: 10px; text-align: center; line-height: 1.3; vertical-align: bottom; white-space: normal; }
   .table-compact th:first-child, .table-compact th:nth-child(2) { text-align: left; }
   .table-compact td { padding: 7px 8px; font-size: 11px; }
+  /* VG Vendor Ranking Expandable */
+  .vg-vend-row { cursor: pointer; }
+  .vg-vend-row:hover td { background: #f0f7ff; }
+  .vg-vend-row td strong { text-decoration: underline dotted var(--accent); }
+  .vg-expand-tr td { padding: 0 !important; border-bottom: 2px solid var(--accent) !important; }
+  .vg-expand-inner { background: #f0f4ff; border-left: 3px solid var(--accent); }
+  .vg-emp-row { cursor: pointer; }
+  .vg-emp-row:hover td { background: #dbeafe !important; }
+  #vg-cli-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; }
+  #vg-cli-modal.open { display: flex; }
+  #vg-cli-modal-inner { background: #fff; width: 90%; max-width: 860px; max-height: 85vh; display: flex; flex-direction: column; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+  #vg-cli-modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
+  #vg-cli-modal-body { overflow-y: auto; flex: 1; padding: 12px 16px; }
   /* Comissoes compact */
   .table-comissoes th { padding: 5px 6px; font-size: 10px; white-space: nowrap; vertical-align: bottom; }
   .table-comissoes td { padding: 4px 6px; font-size: 11px; white-space: nowrap; }
@@ -328,10 +341,10 @@
     <a onclick="showPage('acompanhamento')" data-page="acompanhamento">
       <span class="icon">🎯</span><span>Mês Corrente</span>
     </a>
-    <a onclick="showPage('empresas')" data-page="empresas">
+    <a onclick="showPage('empresas')" data-page="empresas" style="display:none">
       <span class="icon">🏢</span><span>Por Empresa</span>
     </a>
-    <a onclick="showPage('vendedores')" data-page="vendedores">
+    <a onclick="showPage('vendedores')" data-page="vendedores" style="display:none">
       <span class="icon">👥</span><span>Vendedores</span>
     </a>
     <a onclick="showPage('clientes')" data-page="clientes">
@@ -1921,20 +1934,23 @@ function renderGeralCharts() {
   }
 
   const totalVendReal = vendList.reduce((s,v) => s + v.real, 0);
+  _vgExpandAtivo = null;
   vendList.forEach((v, idx) => {
     const cresc = v.hist > 0 ? ((v.real/v.hist - 1)*100) : null;
     const cob   = v.obj > 0 ? (v.real/v.obj*100) : null;
     const part  = totalVendReal > 0 ? (v.real/totalVendReal*100) : 0;
     const crescCor = cresc === null ? 'var(--muted)' : cresc >= 0 ? '#16a34a' : '#dc2626';
     const cobCor   = cob === null ? 'var(--muted)' : cob >= 100 ? '#16a34a' : cob >= 80 ? '#d97706' : '#dc2626';
-    tbodyVend.innerHTML += `<tr>
+    const safeId = 'vgv' + idx;
+    tbodyVend.innerHTML += `<tr class="vg-vend-row" onclick="toggleVendRanking('${v.nome}','${safeId}')">
       <td class="rank">${idx+1}</td>
-      <td><strong>${v.nome}</strong></td>
+      <td><strong style="color:var(--accent)">${v.nome}</strong> <span id="arr-${safeId}" style="font-size:10px;color:var(--muted);margin-left:4px">▶</span></td>
       <td style="font-weight:700">${fmt(v.real)}</td>
       <td style="color:${crescCor};font-weight:600">${cresc!==null?(cresc>=0?'▲':'▼')+' '+Math.abs(cresc).toFixed(1)+'%':'—'}</td>
       <td style="color:${cobCor};font-weight:600">${cob!==null?cob.toFixed(1)+'%':'—'}</td>
       <td style="font-weight:600;color:var(--muted)">${part.toFixed(1)}%</td>
-    </tr>`;
+    </tr>
+    <tr id="exp-${safeId}" class="vg-expand-tr" style="display:none"><td colspan="6" style="padding:0"><div class="vg-expand-inner" id="exp-inner-${safeId}"></div></td></tr>`;
   });
 }
 
@@ -5305,6 +5321,134 @@ function exportarSellOutLojasPanel() {
   xlsxDownload(wb, 'SellOut_' + emp.replace(/\s+/g,'_') + '_Lojas.xlsx');
 }
 
+// ============================================================
+//  VISÃO GERAL — EXPAND RANKING VENDEDORES
+// ============================================================
+let _vgExpandAtivo = null;
+
+function toggleVendRanking(nome, safeId) {
+  const row = document.getElementById('exp-' + safeId);
+  const arrow = document.getElementById('arr-' + safeId);
+  if (!row) return;
+  // Close previous
+  if (_vgExpandAtivo && _vgExpandAtivo !== safeId) {
+    const prev = document.getElementById('exp-' + _vgExpandAtivo);
+    const prevArr = document.getElementById('arr-' + _vgExpandAtivo);
+    if (prev) prev.style.display = 'none';
+    if (prevArr) prevArr.textContent = '▶';
+  }
+  if (row.style.display === 'none' || !row.style.display) {
+    row.style.display = 'table-row';
+    _vgExpandAtivo = safeId;
+    if (arrow) arrow.textContent = '▼';
+    renderVendRankingExpand(nome, document.getElementById('exp-inner-' + safeId));
+  } else {
+    row.style.display = 'none';
+    _vgExpandAtivo = null;
+    if (arrow) arrow.textContent = '▶';
+  }
+}
+
+function renderVendRankingExpand(nome, container) {
+  const modoMes = VG_MES_SELECIONADO !== null;
+  const vData = DATA.acomp_vendas[nome] || {};
+  const empData = {};
+  if (modoMes) {
+    const mesKey = MESES_KEYS_UP[VG_MES_SELECIONADO];
+    for (const [emp, d] of Object.entries(vData[mesKey] || {})) {
+      if (emp === 'TOTAL') continue;
+      empData[emp] = { hist: d.hist||0, obj: d.obj||0, real: d.real||0 };
+    }
+  } else {
+    for (const mesData of Object.values(vData)) {
+      for (const [emp, d] of Object.entries(mesData)) {
+        if (emp === 'TOTAL') continue;
+        if (!empData[emp]) empData[emp] = {hist:0,obj:0,real:0};
+        empData[emp].hist += d.hist||0;
+        empData[emp].obj  += d.obj ||0;
+        empData[emp].real += d.real||0;
+      }
+    }
+  }
+  const rows = Object.entries(empData).filter(([,d])=>d.real>0||d.obj>0).sort(([,a],[,b])=>b.real-a.real);
+  if (!rows.length) {
+    container.innerHTML = '<p style="padding:12px;color:var(--muted);font-size:12px">Sem dados para o período selecionado</p>';
+    return;
+  }
+  const label = modoMes ? MESES_KEYS_UP[VG_MES_SELECIONADO] : 'YTD 2026';
+  container.innerHTML = `<div style="padding:10px 16px 12px 24px">
+    <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.5px;margin-bottom:8px;text-transform:uppercase">${nome} — ${label} &nbsp;·&nbsp; <span style="font-weight:400;text-transform:none">clique na empresa para ver os clientes</span></div>
+    <table style="width:100%;font-size:12px;border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border)">
+        <th style="text-align:left;padding:4px 8px;color:var(--muted);font-size:11px">Empresa</th>
+        <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Histórico</th>
+        <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Objetivo</th>
+        <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Realizado</th>
+        <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Ating.</th>
+      </tr></thead>
+      <tbody>${rows.map(([emp,d])=>{
+        const cor=EMPRESA_CORES[emp]||'#4f6ef7';
+        const p=d.obj>0?d.real/d.obj*100:null;
+        const pc=p===null?'var(--muted)':p>=100?'#22c55e':p>=80?'#f59e0b':'#ef4444';
+        return `<tr class="vg-emp-row" onclick="abrirVgClientes('${emp.replace(/'/g,"\\'")}','${nome.replace(/'/g,"\\'")}')">
+          <td style="padding:5px 8px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${cor};margin-right:6px"></span><strong style="color:var(--accent)">${emp}</strong></td>
+          <td style="text-align:right;padding:5px 8px;color:var(--muted)">${fmt(d.hist)}</td>
+          <td style="text-align:right;padding:5px 8px;color:var(--muted)">${fmt(d.obj)}</td>
+          <td style="text-align:right;padding:5px 8px;font-weight:700">${fmt(d.real)}</td>
+          <td style="text-align:right;padding:5px 8px;color:${pc};font-weight:700">${p!==null?p.toFixed(0)+'%':'—'}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+}
+
+function abrirVgClientes(empresa, vendedor) {
+  document.getElementById('vg-cli-modal-titulo').textContent = vendedor + ' — ' + empresa;
+  document.getElementById('vg-cli-modal-sub').textContent = 'Relação de clientes · realizado mensal 2026';
+  const cliList = ((DATA.clientes_detalhado||{})[empresa]||{})[vendedor]||[];
+  const MS = ['Jan','Fev','Mar','Abr','Mai','Jun'];
+  const currentM = new Date().getMonth();
+  const cols = Math.min(currentM + 1, 6);
+  const sorted = [...cliList].map(c=>({...c,ytd:(c.meses||[]).slice(0,cols).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.ytd-a.ytd);
+  const ativos = sorted.filter(c=>c.ytd>0);
+  const inativos = sorted.filter(c=>c.ytd===0);
+  const thead = MS.slice(0,cols).map(m=>`<th style="text-align:right;padding:4px 6px;font-size:10px;color:var(--muted);white-space:nowrap">${m}</th>`).join('');
+  const rowHtml = c => {
+    const tds = Array.from({length:cols},(_,i)=>{const v=(c.meses||[])[i]||0;return `<td style="text-align:right;padding:4px 6px;font-size:11px;${v>0?'color:#22c55e;font-weight:600':'color:#cbd5e0'}">${v>0?fmt(v):'—'}</td>`;}).join('');
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:5px 8px;font-size:12px;max-width:220px">${c.nome}</td>${tds}
+      <td style="text-align:right;padding:5px 8px;font-size:12px;font-weight:700;${c.ytd>0?'color:var(--accent)':'color:var(--muted)'}">${c.ytd>0?fmt(c.ytd):'—'}</td>
+    </tr>`;
+  };
+  document.getElementById('vg-cli-modal-body').innerHTML = `<div style="overflow-x:auto">
+    ${ativos.length?`<div style="font-size:11px;font-weight:600;color:#22c55e;margin:6px 4px 4px">${ativos.length} ativo${ativos.length!==1?'s':''} em 2026</div>`:''}
+    <table style="width:100%;border-collapse:collapse;min-width:500px">
+      <thead><tr style="background:var(--bg);border-bottom:2px solid var(--border)">
+        <th style="text-align:left;padding:4px 8px;font-size:11px;color:var(--muted)">Cliente</th>${thead}
+        <th style="text-align:right;padding:4px 8px;font-size:11px;color:var(--muted)">Total YTD</th>
+      </tr></thead>
+      <tbody>${ativos.map(rowHtml).join('')}${inativos.length?`<tr><td colspan="${cols+2}" style="padding:8px;font-size:11px;color:var(--muted);background:var(--bg)">⏳ Sem compra em 2026 (${inativos.length} clientes)</td></tr>${inativos.map(rowHtml).join('')}`:''}</tbody>
+    </table></div>`;
+  document.getElementById('vg-cli-modal').classList.add('open');
+}
+
+function fecharVgModal() {
+  document.getElementById('vg-cli-modal').classList.remove('open');
+}
+
 </script>
+
+<!-- MODAL CLIENTES VG RANKING -->
+<div id="vg-cli-modal" onclick="if(event.target===this)fecharVgModal()">
+  <div id="vg-cli-modal-inner">
+    <div id="vg-cli-modal-header">
+      <div>
+        <h3 id="vg-cli-modal-titulo" style="font-size:15px;font-weight:700"></h3>
+        <p id="vg-cli-modal-sub" style="font-size:12px;color:var(--muted);margin-top:2px"></p>
+      </div>
+      <button onclick="fecharVgModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);padding:4px 10px;line-height:1">✕</button>
+    </div>
+    <div id="vg-cli-modal-body"></div>
+  </div>
+</div>
 </body>
 </html>
