@@ -1885,12 +1885,7 @@ function renderGeralCharts() {
       const h = idxAtivos.reduce((s,i) => s + ((d.hist||[])[i]||0), 0);
       const o = idxAtivos.reduce((s,i) => s + ((d.obj ||[])[i]||0), 0);
       let r   = idxAtivos.reduce((s,i) => s + ((d.real||[])[i]||0), 0);
-      // Adiciona meses estimados (sem real confirmado mas dentro do currentMonthIdx)
-      for (let i = 0; i <= currentMonthIdx; i++) {
-        if ((geral.real||[])[i] === 0 && LIVE_PEDIDOS_MULTI && LIVE_PEDIDOS_MULTI[i]) {
-          r += (LIVE_PEDIDOS_MULTI[i].porEmpresa || {})[d._emp] || 0;
-        }
-      }
+      // Julho estimado excluído do ranking — aparece apenas nos cards do topo
       return { hist: h, obj: o, real: r };
     }
   }
