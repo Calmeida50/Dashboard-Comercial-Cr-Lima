@@ -126,7 +126,7 @@
 
   /* PAGE HEADER */
   .page-header { margin-bottom: 24px; }
-  .page-header h1 { font-size: 22px; font-weight: 700; }
+  .page-header h1 { font-size: 17px; font-weight: 700; }
   .page-header p { color: var(--muted); font-size: 13px; margin-top: 4px; }
 
   /* KPI CARDS */
@@ -141,7 +141,7 @@
     background: linear-gradient(90deg, var(--accent), var(--accent2));
   }
   .kpi-card .label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .kpi-card .value { font-size: 22px; font-weight: 700; margin: 6px 0 3px; color: var(--text); }
+  .kpi-card .value { font-size: 17px; font-weight: 700; margin: 6px 0 3px; color: var(--text); }
   .kpi-card .delta { font-size: 11px; display: flex; align-items: center; gap: 4px; }
   .delta.up { color: var(--green); }
   .delta.down { color: var(--red); }
@@ -293,7 +293,7 @@
   .modal-header h2 { font-size: 16px; font-weight: 700; }
   .modal-header .modal-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .modal-close {
-    background: none; border: none; font-size: 22px; cursor: pointer;
+    background: none; border: none; font-size: 17px; cursor: pointer;
     color: var(--muted); line-height: 1; padding: 4px 8px; border-radius: 6px;
   }
   .modal-close:hover { background: var(--border); }
@@ -823,7 +823,7 @@
     <div id="vendedores-painel-detalhe" style="display:none">
       <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
         <div>
-          <h1 id="vend-ytd-titulo" style="font-size:22px"></h1>
+          <h1 id="vend-ytd-titulo" style="font-size:17px"></h1>
           <p style="color:var(--muted);font-size:13px">Performance acumulada YTD 2026</p>
         </div>
         <button class="btn-outline" onclick="voltarVendedoresLista()" style="margin-top:4px;padding:8px 18px;font-size:13px">← Voltar</button>
@@ -4222,13 +4222,13 @@ function abrirDetalheVendedor(nome, mesIdx) {
     <div class="kpi-card">
       <div class="kpi-icon">💰</div>
       <div class="label">Realizado em ${mesNome}</div>
-      <div class="value" style="font-size:22px">${fmt(totalReal)}</div>
+      <div class="value" style="font-size:17px">${fmt(totalReal)}</div>
       <div class="delta ${p>=100?'up':'down'}">${p!==null?((p>=100?'▲':'▼')+' '+p+'% do objetivo'):'Sem meta'}</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-icon">🎯</div>
       <div class="label">Objetivo ${mesNome}</div>
-      <div class="value" style="font-size:22px">${fmt(total.obj||0)}</div>
+      <div class="value" style="font-size:17px">${fmt(total.obj||0)}</div>
       <div class="delta" style="color:var(--muted)">Histórico: ${fmt(total.hist||0)}</div>
     </div>
     <div class="kpi-card">
@@ -4242,7 +4242,7 @@ function abrirDetalheVendedor(nome, mesIdx) {
           return `<div class="value" style="font-size:18px;color:var(--muted)">—</div>
           <div class="delta" style="color:#f59e0b">⏳ Dados de COMISSÕES não importados para ${mesNome}</div>`;
         }
-        return `<div class="value" style="font-size:22px">${cnt}</div>
+        return `<div class="value" style="font-size:17px">${cnt}</div>
         <div class="delta" style="color:var(--muted)">de ${port} no portfólio</div>`;
       })()}
     </div>`;
@@ -5982,7 +5982,7 @@ function renderOnePage() {
         <h3 id="vg-cli-modal-titulo" style="font-size:15px;font-weight:700"></h3>
         <p id="vg-cli-modal-sub" style="font-size:12px;color:var(--muted);margin-top:2px"></p>
       </div>
-      <button onclick="fecharVgModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);padding:4px 10px;line-height:1">✕</button>
+      <button onclick="fecharVgModal()" style="background:none;border:none;font-size:17px;cursor:pointer;color:var(--muted);padding:4px 10px;line-height:1">✕</button>
     </div>
     <div id="vg-cli-modal-body"></div>
   </div>
