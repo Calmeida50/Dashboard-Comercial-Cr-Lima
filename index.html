@@ -5418,7 +5418,11 @@ function renderVendRankingExpand(nome, container) {
       empData[emp] = { hist: d.hist||0, obj: d.obj||0, real: d.real||0 };
     }
   } else {
-    for (const mesData of Object.values(vData)) {
+    const currentM = new Date().getMonth(); // 0=Jan … 6=Jul
+    const colsLimit = currentM + 1;         // inclui mês corrente
+    for (let mi = 0; mi < colsLimit; mi++) {
+      const mesKey = MESES_KEYS_UP[mi];
+      const mesData = vData[mesKey] || {};
       for (const [emp, d] of Object.entries(mesData)) {
         if (emp === 'TOTAL') continue;
         if (!empData[emp]) empData[emp] = {hist:0,obj:0,real:0};
@@ -5433,14 +5437,17 @@ function renderVendRankingExpand(nome, container) {
     container.innerHTML = '<p style="padding:12px;color:var(--muted);font-size:12px">Sem dados para o período selecionado</p>';
     return;
   }
-  const label = modoMes ? MESES_KEYS_UP[VG_MES_SELECIONADO] : 'YTD 2026';
+  const MS_NOMES_EXP = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const currentMExp = new Date().getMonth();
+  const periodoExp = 'Jan–' + MS_NOMES_EXP[currentMExp];
+  const label = modoMes ? MESES_KEYS_UP[VG_MES_SELECIONADO] : `YTD 2026 (${periodoExp})`;
   container.innerHTML = `<div style="padding:10px 16px 12px 24px">
     <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.5px;margin-bottom:8px;text-transform:uppercase">${nome} — ${label} &nbsp;·&nbsp; <span style="font-weight:400;text-transform:none">clique na empresa para ver os clientes</span></div>
     <table style="width:100%;font-size:12px;border-collapse:collapse">
       <thead><tr style="border-bottom:1px solid var(--border)">
         <th style="text-align:left;padding:4px 8px;color:var(--muted);font-size:11px">Empresa</th>
-        <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Histórico</th>
-        <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Objetivo</th>
+        <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Histórico${modoMes?'':' ('+periodoExp+')'}</th>
+        <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Objetivo${modoMes?'':' ('+periodoExp+')'}</th>
         <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Realizado</th>
         <th style="text-align:right;padding:4px 8px;color:var(--muted);font-size:11px">Ating.</th>
       </tr></thead>
