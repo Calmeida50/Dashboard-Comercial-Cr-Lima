@@ -1969,6 +1969,23 @@ function renderGeralCharts() {
       })
       .filter(v => v.real > 0)
       .sort((a,b) => b.real - a.real);
+    // Complementa com vendedores em VENDEDORES_VALIDOS ausentes em DATA.vendedores (ex: AHMANDA)
+    const _inVend = new Set(vendList.map(v => v.nome));
+    Array.from(VENDEDORES_VALIDOS).forEach(nome => {
+      if (nome === 'VAREJO' || _inVend.has(nome)) return;
+      let _real = 0, _hist = 0, _obj = 0;
+      EMPRESAS_ACOMP.forEach(emp => {
+        ((DATA.clientes_detalhado[emp]||{})[nome]||[]).forEach(cli => {
+          for (let mi = 0; mi <= currentMonthIdx; mi++) _real += (cli.meses||[])[mi]||0;
+        });
+        for (let mi = 0; mi <= currentMonthIdx; mi++) {
+          const _d = ((DATA.acomp_vendas[nome]||{})[MESES_KEYS_UP[mi]]||{})[emp]||{};
+          _hist += _d.hist||0; _obj += _d.obj||0;
+        }
+      });
+      if (_real > 0) vendList.push({ nome, real: _real, hist: _hist, obj: _obj });
+    });
+    vendList.sort((a,b) => b.real - a.real);
   }
 
   const totalVendReal = vendList.reduce((s,v) => s + v.real, 0);
