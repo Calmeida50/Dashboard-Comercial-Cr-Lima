@@ -102,15 +102,26 @@ def detectar_empresa_mes(nome_arquivo):
 
 def ler_faturamento(filepath):
     """
-    Lê ficheiro xlsx de faturamento e devolve {nome_cliente_normalizado: total}.
-    Tenta coluna RECEITA primeiro; se ausente, usa BRUTO_COM_IMP.
-    Valores negativos = devoluções (já reduzem o total automaticamente pela soma).
+    Lê ficheiro xlsx de faturamento.
+    Devolve ({nome_normalizado: total}, {nome_normalizado: [nf1, nf2, ...]}).
+    Suporta cabeçalho na linha 1 ou linha 2 (auto-detecção).
+    Valores negativos = devoluções (reduzem o total automaticamente).
     """
     try:
         df = pd.read_excel(filepath)
     except Exception as e:
         print(f"  ❌ Erro ao ler o ficheiro: {e}")
-        return None
+        return None, None
+
+    # Auto-detectar cabeçalho deslocado (ex: GRANADO — linha 1 contém os nomes das colunas)
+    n_unnamed = sum(1 for c in df.columns if str(c).startswith('Unnamed:'))
+    if n_unnamed > len(df.columns) // 2:
+        try:
+            df = pd.read_excel(filepath, header=1)
+            print(f"  ℹ️  Cabeçalho deslocado detectado — relido com header=1")
+        except Exception as e:
+            print(f"  ❌ Erro ao reprocessar cabeçalho: {e}")
+            return None, None
 
     cols_upper = {re.sub(r'\s+','_', c.strip().upper()): c for c in df.columns}
 
@@ -123,7 +134,7 @@ def ler_faturamento(filepath):
     if not cliente_col:
         print(f"  ❌ Coluna de CLIENTE não encontrada.")
         print(f"     Colunas disponíveis: {list(df.columns)}")
-        return None
+        return None, None
 
     # Coluna de valor (RECEITA > BRUTO_COM_IMP > VALOR)
     valor_col = None
@@ -134,13 +145,26 @@ def ler_faturamento(filepath):
     if not valor_col:
         print(f"  ❌ Coluna de VALOR não encontrada.")
         print(f"     Colunas disponíveis: {list(df.columns)}")
-        return None
+        return None, None
 
-    print(f"  → Cliente: '{cliente_col}' | Valor: '{valor_col}'")
+    # Coluna de NF (opcional) — suporta vários nomes de coluna
+    nf_col = None
+    for cand in ['NF','NUMERO_SERIE','NÚMERO_SÉRIE','NUMERO_NF','NOTA_FISCAL','NUMERO_NOTA','NUM_NF','SERIE']:
+        if cand in cols_upper:
+            nf_col = cols_upper[cand]
+            break
+
+    nf_info = f" | NF: '{nf_col}'" if nf_col else " | NF: não encontrada"
+    print(f"  → Cliente: '{cliente_col}' | Valor: '{valor_col}'{nf_info}")
+
+    def limpar_nome(s):
+        """Remove sufixo de código numérico: 'EMPRESA SA-123456' → 'EMPRESA SA'"""
+        return re.sub(r'-\d{4,}$', '', str(s)).strip()
 
     totais = {}
+    nfs    = {}  # {nome_normalizado: [nf1, nf2, ...]}
     for _, row in df.iterrows():
-        nome = normalizar(row[cliente_col])
+        nome = normalizar(limpar_nome(row[cliente_col]))
         if not nome or nome in ('TOTAL','SUBTOTAL','NAN',''):
             continue
         try:
@@ -149,7 +173,12 @@ def ler_faturamento(filepath):
             continue
         totais[nome] = totais.get(nome, 0.0) + val
 
-    return totais
+        if nf_col and pd.notna(row.get(nf_col, None)):
+            nf_val = str(row[nf_col]).strip()
+            if nf_val and nf_val.upper() not in ('NAN', 'NONE', ''):
+                nfs.setdefault(nome, []).append(nf_val)
+
+    return totais, nfs
 
 def carregar_dados_html(html):
     """Extrai JSON de DADOS_EMBEDDED do HTML."""
@@ -280,7 +309,7 @@ def main():
             continue
 
         # Ler faturamento
-        fat = ler_faturamento(filepath)
+        fat, nfs_fat = ler_faturamento(filepath)
         if fat is None:
             resumo_erros.append(f"{filepath.name} — erro ao ler")
             continue
@@ -304,6 +333,23 @@ def main():
                 matches += 1
             else:
                 nao_encontrados.append((nome_fat, valor))
+
+        # Atualizar NF em comissoes_detalhe (quando o ficheiro tem coluna de NF)
+        if nfs_fat:
+            mes_key = MESES_NOME[mes_idx].upper()
+            com_det = dados.get('comissoes_detalhe', {})
+            nf_updates = 0
+            for vend_entries in com_det.values():
+                if mes_key not in vend_entries:
+                    continue
+                emp_entries = vend_entries[mes_key].get(chave_empresa, [])
+                for entry in emp_entries:
+                    nome_entry = normalizar(re.sub(r'-\d{4,}$', '', entry.get('nome', '')).strip())
+                    if nome_entry in nfs_fat and (not entry.get('nf') or entry['nf'] == '—'):
+                        entry['nf'] = '/'.join(nfs_fat[nome_entry])
+                        nf_updates += 1
+            if nf_updates:
+                print(f"  🔢 {nf_updates} NF(s) atualizada(s) em comissoes_detalhe")
 
         print(f"  ✅ {matches} cliente(s) atualizados")
 
