@@ -1062,7 +1062,7 @@
   <!-- RANKING DE CLIENTES -->
   <div id="page-ranking-clientes" class="page">
     <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div><h1>Ranking de Clientes</h1><p id="ranking-clientes-sub">Volume total comprado por cliente somando todas as empresas representadas — clique para ver o mix por empresa</p></div>
+      <div><h1>Ranking de Clientes</h1><p id="ranking-clientes-sub" style="color:var(--muted);font-size:13px">Volume total por cliente — <strong>Janeiro a Junho 2026</strong> (faturamento confirmado) — clique para ver o mix por empresa</p></div>
       <button class="btn-export" onclick="exportarRankingClientes()">⬇ Excel</button>
     </div>
     <!-- Filtro por Vendedor -->
@@ -2232,6 +2232,24 @@ function abrirDetalheEmpresaVisaoGeral(empresa, idxAtivos) {
         <td style="text-align:right">${growthStr}</td>
       </tr>`;
     });
+  }
+
+  
+  // Linha de somatório dos clientes
+  if (rows.length > 0) {
+    const _totReal = rows.reduce((s,r) => s + r.real, 0);
+    const _totHist = rows.reduce((s,r) => s + r.hist_ytd, 0);
+    const _totGrowth = _totHist > 0 ? ((_totReal/_totHist - 1)*100).toFixed(1) : null;
+    const _totGrowthStr = _totGrowth !== null
+      ? `<span style="color:${+_totGrowth>=0?'var(--green)':'var(--red)'};font-weight:600">${+_totGrowth>=0?'▲ +':'▼ '}${_totGrowth}%</span>`
+      : '<span style="color:var(--muted)">—</span>';
+    tbody.innerHTML += `<tr style="background:#eef2ff;border-top:2px solid #c7d2fe;font-weight:700">
+      <td class="rank" style="color:var(--muted)">—</td>
+      <td style="color:var(--muted);font-size:12px"></td>
+      <td><strong>TOTAL (${rows.length} clientes)</strong></td>
+      <td style="text-align:right;font-weight:800;color:var(--accent)">${fmt(_totReal)}</td>
+      <td style="text-align:right">${_totGrowthStr}</td>
+    </tr>`;
   }
 
   document.getElementById('visao-geral-painel-lista').style.display = 'none';
@@ -4487,7 +4505,7 @@ function renderRankingClientes() {
 
   // Subtitle com período completo
   const subEl = document.getElementById('ranking-clientes-sub');
-  if (subEl) subEl.innerHTML = 'Volume comprado por cliente (todas as empresas) — ' + buildPeriodoHTML('') + ' — clique para ver o mix por empresa';
+  if (subEl) subEl.innerHTML = 'Volume total por cliente — <strong>Janeiro a Junho 2026</strong> (faturamento confirmado) — clique para ver o mix por empresa';
 
   const tbody = document.getElementById('ranking-clientes-tbody');
   tbody.innerHTML = '';
