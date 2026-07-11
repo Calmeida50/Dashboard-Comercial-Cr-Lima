@@ -2180,16 +2180,20 @@ function abrirDetalheEmpresaVisaoGeral(empresa, idxAtivos) {
   const empHistYtd    = idx.reduce((s,i) => s + ((empData.hist||[])[i]||0), 0);
   const histFactor    = empHistAnnual > 0 ? empHistYtd / empHistAnnual : 1;
 
-  // Build client rows from clientes_empresa
+  // Build client rows — real recomputado de clientes_detalhado
   const clientes = (DATA.clientes_empresa || {})[empresa] || [];
-  const rows = clientes
+  const cliMap = {};
+  clientes.forEach(c => { cliMap[c.nome] = {vendedor: c.vendedor, nome: c.nome, real: 0, hist: c.hist || 0}; });
+  const detEmp = (DATA.clientes_detalhado || {})[empresa] || {};
+  Object.entries(detEmp).forEach(([vend, cliList]) => {
+    (cliList || []).forEach(cli => {
+      if (!cliMap[cli.nome]) cliMap[cli.nome] = {vendedor: vend, nome: cli.nome, real: 0, hist: 0};
+      idx.forEach(i => { cliMap[cli.nome].real += (cli.meses || [])[i] || 0; });
+    });
+  });
+  const rows = Object.values(cliMap)
     .filter(c => c.real > 0)
-    .map(c => ({
-      vendedor: c.vendedor,
-      nome: c.nome,
-      real: c.real,
-      hist_ytd: c.hist * histFactor
-    }))
+    .map(c => ({vendedor: c.vendedor, nome: c.nome, real: c.real, hist_ytd: c.hist * histFactor}))
     .sort((a,b) => b.real - a.real);
 
   document.getElementById('vg-emp-count').textContent = rows.length + ' clientes ativos';
