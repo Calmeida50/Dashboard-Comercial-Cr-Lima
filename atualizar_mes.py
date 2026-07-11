@@ -39,6 +39,37 @@ CLIENTES_ALIAS = {
     'COMERCIO DE MEDICAMENTOS BRAIR LTDA FARMACIAS SAO JOAO':       'FARMACIAS SAO JOAO',
     'COMERCIO DE MEDICAMENTOS BRAIR LTDA (FARMACIAS SAO JOAO)':     'FARMACIAS SAO JOAO',
     'FARMACIAS SAO JOAO COMERCIO DE MEDICAMENTOS BRAIR LTDA':       'FARMACIAS SAO JOAO',
+    # COMPANHIA ZAFFARI COM E IND — todas as variações do nome
+    # ATENÇÃO: são dois clientes distintos, nunca misturar!
+    'COMPANHIA ZAFFARI COMERCIO E INDUSTRIA':    'COMPANHIA ZAFFARI COM E IND',
+    'COMPANHIA ZAFFARI COMERCIO E INDUSTRIA.':   'COMPANHIA ZAFFARI COM E IND',
+    'CIA ZAFFARI COMERCIO E INDUSTRIA':          'COMPANHIA ZAFFARI COM E IND',
+    'CIA. ZAFFARI COMERCIO E INDUSTRIA':         'COMPANHIA ZAFFARI COM E IND',
+    'CIA ZAFFARI COM E IND':                     'COMPANHIA ZAFFARI COM E IND',
+    # COMERCIAL ZAFFARI LTDA — todas as variações do nome
+    'COMERCIAL ZAFFARI':                         'COMERCIAL ZAFFARI LTDA',
+    'COMERCIAL ZAFFARI LTDA.':                   'COMERCIAL ZAFFARI LTDA',
+    # KISABOR — IMEC (sigla de Importadora e Exportadora de Cereais S/A)
+    'IMEC RS':                                   'IMPORTADORA E EXPORTADORA DE CEREAIS S/A',
+    'IMEC':                                      'IMPORTADORA E EXPORTADORA DE CEREAIS S/A',
+    # FIAT LUX / KISABOR — Pronto Doce (variações de nome no faturamento)
+    'PRONTO DOCE SOLUCAO EM DISTRIBUICAO DE ALIMENTOS L':    'PRONTO DOCE SOLUCAO EM DISTRIB',
+    'PRONTO DOCE SOLUCAO EM DISTRIBUICAO DE ALIMENTOS LTDA': 'PRONTO DOCE SOLUCAO EM DISTRIB',
+    'PRONTO DOCE SOLUCAO EM DISTRIBUICAO DE ALIMENTOS LTDA.':'PRONTO DOCE SOLUCAO EM DISTRIB',
+    # GRANADO — Rede Polo / Beira Rio (faturado loja a loja, consolidado no ranking)
+    'BIER VALE':          'IMPORTADORA E DISTRIBUIDORA DE ALIMENTOS REDE POLO LTDA',
+    'BEIRA RIO LJ 389':   'IMPORTADORA E DISTRIBUIDORA DE ALIMENTOS REDE POLO LTDA',
+    'BEIRA RIO LJ 386':   'IMPORTADORA E DISTRIBUIDORA DE ALIMENTOS REDE POLO LTDA',
+    'REDE POLO VENANCIO':  'IMPORTADORA E DISTRIBUIDORA DE ALIMENTOS REDE POLO LTDA',
+}
+
+# Aliases por prefixo: qualquer nome que COMEÇA com a chave → nome no dashboard
+# Usado para clientes com múltiplas filiais onde o billing vem loja a loja
+# mas o clientes_detalhado consolida em um único registro.
+# ATENÇÃO: o total em clientes_detalhado será a SOMA de todas as filiais.
+# As entradas individuais em comissoes_detalhe ficam separadas (uma por NF/loja).
+PREFIX_ALIASES = {
+    'CRISAN': 'CRISAN',   # CRISAN INTERLAGOS, CRISAN ESPLANADA, etc. → CRISAN
 }
 
 # Limiar de matching fuzzy (0.0-1.0). 0.82 apanha abreviações.
@@ -353,10 +384,22 @@ def main():
         lookup = construir_lookup(cd[chave_empresa])
         # Normalizar aliases para comparação
         alias_norm = {normalizar(k): normalizar(v) for k, v in CLIENTES_ALIAS.items()}
+        # Mapa canônico: qualquer variação de nome → nome canônico do dashboard
+        # Garante que variações do mesmo cliente (Cia Zaffari, Comercial Zaffari, etc.) não se misturem
+        canonical_map = dict(alias_norm)  # billing_name_norm → dashboard_name_norm
+        for dash_name in set(alias_norm.values()):
+            canonical_map[dash_name] = dash_name  # canonical → canonical
         matches = 0
         nao_encontrados = []
+        # Mapa: nome dashboard → nome no arquivo de faturamento
+        # Necessário para o NF update encontrar clientes que foram matched via fuzzy/alias
+        nome_match_map = {}
+        # Controla quais clientes já foram resetados neste arquivo
+        # Permite acumulação para clientes com múltiplas filiais (ex: CRISAN)
+        matched_this_run = set()
+        prefix_aliases_norm = {normalizar(k): normalizar(v) for k, v in PREFIX_ALIASES.items()}
 
-        def _aplicar_match(nome_dash, valor, label=''):
+        def _aplicar_match(nome_dash, valor, nome_fat_billing=None, label=''):
             nonlocal matches
             if nome_dash not in lookup:
                 return False
@@ -364,7 +407,15 @@ def main():
             meses = cd[chave_empresa][vend][idx].setdefault('meses', [0]*12)
             while len(meses) < 12:
                 meses.append(0)
-            meses[mes_idx] = round(valor, 2)
+            # Primeira vez que este cliente é atingido neste arquivo: resetar o mês
+            # Depois acumular — necessário para clientes com múltiplas filiais
+            key = (vend, idx, mes_idx)
+            if key not in matched_this_run:
+                meses[mes_idx] = 0
+                matched_this_run.add(key)
+            meses[mes_idx] = round(meses[mes_idx] + valor, 2)
+            # Registrar mapeamento dashboard → billing para NF update
+            nome_match_map[nome_dash] = nome_fat_billing or nome_dash
             if label:
                 print(f"     ~ {label}")
             matches += 1
@@ -372,20 +423,32 @@ def main():
 
         for nome_fat, valor in fat.items():
             # 1. Match exato
-            if _aplicar_match(nome_fat, valor):
+            if _aplicar_match(nome_fat, valor, nome_fat_billing=nome_fat):
                 continue
             # 2. Alias configurado
             nome_alias = alias_norm.get(nome_fat)
-            if nome_alias and _aplicar_match(nome_alias, valor, f"Alias: '{nome_fat}' → '{nome_alias}'"):
+            if nome_alias and _aplicar_match(nome_alias, valor, nome_fat_billing=nome_fat,
+                                              label=f"Alias: '{nome_fat}' → '{nome_alias}'"):
                 continue
-            # 3. Match fuzzy
+            # 3. Prefix alias (ex: CRISAN INTERLAGOS → CRISAN)
+            matched_prefix = False
+            for prefix, nome_dash_prefix in prefix_aliases_norm.items():
+                if nome_fat == prefix or nome_fat.startswith(prefix + ' '):
+                    if _aplicar_match(nome_dash_prefix, valor, nome_fat_billing=nome_fat,
+                                      label=f"Prefixo '{prefix}': '{nome_fat}' → '{nome_dash_prefix}'"):
+                        matched_prefix = True
+                        break
+            if matched_prefix:
+                continue
+            # 4. Match fuzzy
             best, best_r = None, 0
             for chave in lookup:
                 r = SequenceMatcher(None, nome_fat, chave).ratio()
                 if r > best_r:
                     best_r, best = r, chave
             if best and best_r >= FUZZY_THRESHOLD:
-                _aplicar_match(best, valor, f"Fuzzy {best_r:.0%}: '{nome_fat}' → '{best}'")
+                _aplicar_match(best, valor, nome_fat_billing=nome_fat,
+                               label=f"Fuzzy {best_r:.0%}: '{nome_fat}' → '{best}'")
             else:
                 nao_encontrados.append((nome_fat, valor))
 
@@ -406,6 +469,45 @@ def main():
                     nf_atual   = entry.get('nf', '')
                     # Expandir entradas sem NF ou com NFs já concatenadas ("nf1/nf2")
                     nv = nfs_valores_fat.get(nome_entry, [])
+                    if not nv:
+                        # Fallback 1: via nome_match_map (billing matched clientes_detalhado via fuzzy/alias)
+                        billing_name = nome_match_map.get(nome_entry)
+                        if billing_name:
+                            nv = nfs_valores_fat.get(billing_name, [])
+                    if not nv:
+                        # Fallback 2: canonical map — agrupa todas as variações do mesmo cliente
+                        # Ex: "CIA. ZAFFARI COMERCIO E INDUSTRIA" e "COMPANHIA ZAFFARI COMERCIO E INDUSTRIA."
+                        #     são o mesmo cliente; canonical = "COMPANHIA ZAFFARI COM E IND"
+                        # NUNCA mistura Cia Zaffari com Comercial Zaffari pois têm canonicals diferentes
+                        canonical_entry = canonical_map.get(nome_entry, nome_entry)
+                        for billing_key, nfs_list in nfs_valores_fat.items():
+                            if canonical_map.get(billing_key, billing_key) == canonical_entry and nfs_list:
+                                nv = nfs_list
+                                print(f"     🔗 NF canonical: '{nome_entry}' → '{billing_key}'")
+                                break
+                    if not nv:
+                        # Fallback 3: fuzzy sobre todos os nomes do arquivo de faturamento
+                        best_nf, best_r_nf = None, 0
+                        for key in nfs_valores_fat:
+                            r = SequenceMatcher(None, nome_entry, key).ratio()
+                            if r > best_r_nf:
+                                best_r_nf, best_nf = r, key
+                        if best_nf and best_r_nf >= FUZZY_THRESHOLD:
+                            nv = nfs_valores_fat.get(best_nf, [])
+                            if nv:
+                                print(f"     🔗 NF fuzzy {best_r_nf:.0%}: '{nome_entry}' → '{best_nf}'")
+                    if not nv:
+                        # Fallback 4: nome parcial — remove palavras do fim uma a uma
+                        # Ex: "CRISAN INTERLAGOS CAXIAS DO SUL" → "CRISAN INTERLAGOS"
+                        partes = nome_entry.split()
+                        for i in range(len(partes) - 1, 0, -1):
+                            nome_parcial = ' '.join(partes[:i])
+                            if len(nome_parcial) < 8:
+                                break
+                            nv = nfs_valores_fat.get(nome_parcial, [])
+                            if nv:
+                                print(f"     🔗 NF parcial: '{nome_entry}' → '{nome_parcial}'")
+                                break
                     if nv and (not nf_atual or nf_atual == '—' or '/' in str(nf_atual)):
                         # Calcular taxa de comissão a partir da entrada existente
                         fat_entry = entry.get('fat') or sum(v for _, v in nv)
