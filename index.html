@@ -360,6 +360,9 @@
     <a onclick="showPage('ranking-clientes')" data-page="ranking-clientes">
       <span class="icon">🏆</span><span>Ranking Clientes</span>
     </a>
+    <a onclick="showPage('onepage')" data-page="onepage">
+      <span class="icon">📄</span><span>One Page</span>
+    </a>
     <a onclick="showPage('receita-liquida')" data-page="receita-liquida">
       <span class="icon">📈</span><span>Receita Líquida</span>
     </a>
@@ -1114,6 +1117,32 @@
     </div>
   </div>
 
+  <!-- ONE PAGE VENDEDOR -->
+  <div id="page-onepage" class="page">
+    <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div><h1 id="op-title">One Page Vendedor</h1><p id="op-subtitle" style="color:var(--muted);font-size:13px;margin-top:4px">Selecione um vendedor</p></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <select id="op-vend-select" onchange="renderOnePage()" style="padding:9px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:var(--font);cursor:pointer;color:var(--text);background:var(--card);font-weight:600;outline:none"></select>
+        <button onclick="window.print()" style="padding:9px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🖨️ Imprimir</button>
+      </div>
+    </div>
+    <div id="op-kpis" class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px"></div>
+    <div style="background:var(--card);border-radius:12px;border:1px solid var(--border);padding:20px;margin-bottom:20px;box-shadow:var(--shadow)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="font-size:16px">📊</span><span style="font-size:14px;font-weight:700">Desempenho Acumulado YTD por Empresa</span><span id="op-ytd-periodo" style="font-size:12px;color:var(--muted);margin-left:4px"></span></div>
+      <table id="op-ytd-table" style="width:100%;border-collapse:collapse;font-size:13px"></table>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div style="background:var(--card);border-radius:12px;border:1px solid var(--border);padding:20px;box-shadow:var(--shadow)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:16px">🏢</span><span style="font-size:14px;font-weight:700">Ranking Empresas</span><span id="op-mes-label" style="font-size:12px;color:var(--muted);margin-left:4px"></span></div>
+        <table id="op-mes-table" style="width:100%;border-collapse:collapse;font-size:12px"></table>
+      </div>
+      <div style="background:var(--card);border-radius:12px;border:1px solid var(--border);padding:20px;box-shadow:var(--shadow)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:16px">🏆</span><span style="font-size:14px;font-weight:700">Top 10 Clientes</span><span id="op-cli-mes-label" style="font-size:12px;color:var(--muted);margin-left:4px"></span></div>
+        <table id="op-cli-table" style="width:100%;border-collapse:collapse;font-size:12px"></table>
+      </div>
+    </div>
+  </div>
+
   <!-- RECEITA LÍQUIDA -->
   <div id="page-receita-liquida" class="page">
     <div class="page-header">
@@ -1484,6 +1513,7 @@ function showPage(name) {
   // Renderizar gráficos específicos da página
   if (name === 'empresas') renderEmpresasPage();
   if (name === 'ranking-clientes') renderRankingClientes();
+  if (name === 'onepage') renderOnePage();
   if (name === 'receita-liquida') renderReceitaLiquida();
   if (name === 'vendedores') renderVendedoresCharts();
   if (name === 'financeiro') renderFinanceiroCharts();
@@ -5718,6 +5748,150 @@ function exportarVgClientes(empresa, vendedor) {
   const ws = XLSX.utils.aoa_to_sheet(rows);
   XLSX.utils.book_append_sheet(wb, ws, (vendedor+'-'+empresa).substring(0,31));
   XLSX.writeFile(wb, 'clientes_' + vendedor + '_' + empresa + '.xlsx');
+}
+
+
+function initOnePageSelect() {
+  const sel = document.getElementById('op-vend-select');
+  if (!sel || sel.dataset.init) return;
+  sel.dataset.init = '1';
+  const vends = Object.keys(DATA.acomp_vendas || {}).filter(v => v !== 'VAREJO').sort();
+  sel.innerHTML = vends.map(v => `<option value="${v}">${v}</option>`).join('');
+  sel.onchange = renderOnePage;
+}
+function renderOnePage() {
+  initOnePageSelect();
+  const sel = document.getElementById('op-vend-select');
+  if (!sel) return;
+  const vend = sel.value; if (!vend) return;
+  const geralReal = (DATA.empresas['GERAL'] || {}).real || [];
+  let lastIdx = -1;
+  for (let i = 0; i < 12; i++) { if (geralReal[i] > 0) lastIdx = i; }
+  if (lastIdx < 0) return;
+  const mesAtual = MESES_KEYS_UP[lastIdx];
+  const mesNome = mesAtual.charAt(0) + mesAtual.slice(1).toLowerCase();
+  const el = id => document.getElementById(id);
+  if (el('op-title')) el('op-title').textContent = vend;
+  if (el('op-ytd-periodo')) el('op-ytd-periodo').textContent = 'Janeiro → ' + mesNome;
+  if (el('op-mes-label')) el('op-mes-label').textContent = mesNome;
+  if (el('op-cli-mes-label')) el('op-cli-mes-label').textContent = mesNome;
+  const empYTD = {}, empMes = {};
+  EMPRESAS_ACOMP.forEach(emp => { empYTD[emp]={real:0,hist:0,obj:0}; empMes[emp]={real:0,hist:0,obj:0}; });
+  const vendData = DATA.acomp_vendas[vend] || {};
+  MESES_KEYS_UP.forEach((mk, i) => {
+    if (i > lastIdx) return;
+    const mesData = vendData[mk] || {};
+    EMPRESAS_ACOMP.forEach(emp => {
+      const d = mesData[emp] || {};
+      empYTD[emp].real += d.real||0; empYTD[emp].hist += d.hist||0; empYTD[emp].obj += d.obj||0;
+      if (i === lastIdx) { empMes[emp].real=d.real||0; empMes[emp].hist=d.hist||0; empMes[emp].obj=d.obj||0; }
+    });
+  });
+  let ytdReal=0,ytdHist=0,ytdObj=0,mesReal=0,mesHist=0,mesObj=0;
+  EMPRESAS_ACOMP.forEach(emp => {
+    ytdReal+=empYTD[emp].real; ytdHist+=empYTD[emp].hist; ytdObj+=empYTD[emp].obj;
+    mesReal+=empMes[emp].real; mesHist+=empMes[emp].hist; mesObj+=empMes[emp].obj;
+  });
+  const clr = (a,b) => a >= b ? '#22c55e' : '#ef4444';
+  const cspan = (a,b,t) => `<span style="color:${clr(a,b)}">${t}</span>`;
+  const pct = (a,b) => b > 0 ? (a/b*100).toFixed(1)+'%' : '-';
+  const pctn = (a,b) => b > 0 ? cspan(a,b,(a/b*100).toFixed(1)+'%') : '-';
+  if (el('op-kpis')) {
+    el('op-kpis').innerHTML = [
+      {icon:'📊', lbl:'YTD Realizado',        val:fmt(ytdReal),  sub:'vs 2025: '+pctn(ytdReal,ytdHist)},
+      {icon:'🎯', lbl:'YTD Atingimento',      val:ytdObj>0?cspan(ytdReal,ytdObj,(ytdReal/ytdObj*100).toFixed(1)+'%'):'-', sub:'Obj: '+fmt(ytdObj)},
+      {icon:'📅', lbl:mesNome+' Realizado',   val:fmt(mesReal),  sub:'vs 2025: '+pctn(mesReal,mesHist)},
+      {icon:'🎯', lbl:mesNome+' Atingimento', val:mesObj>0?cspan(mesReal,mesObj,(mesReal/mesObj*100).toFixed(1)+'%'):'-', sub:'Obj: '+fmt(mesObj)},
+    ].map(k=>`<div class="kpi-card"><div style="font-size:24px;margin-bottom:4px">${k.icon}</div><div class="kpi-label">${k.lbl}</div><div class="kpi-value">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
+  }
+  const ytdSorted = [...EMPRESAS_ACOMP].filter(e=>empYTD[e].real>0||empYTD[e].hist>0||empYTD[e].obj>0).sort((a,b)=>empYTD[b].real-empYTD[a].real);
+  const maxYTD = ytdSorted.length ? empYTD[ytdSorted[0]].real : 1;
+  if (el('op-ytd-table')) {
+    el('op-ytd-table').innerHTML = `<thead><tr style="color:#94a3b8;font-size:12px">
+      <th style="text-align:left;padding:8px;font-weight:600">Empresa</th>
+      <th style="text-align:right;padding:8px;font-weight:600">Realizado</th>
+      <th style="text-align:right;padding:8px;font-weight:600">Part.%</th>
+      <th style="text-align:right;padding:8px;font-weight:600">vs 2025</th>
+      <th style="text-align:right;padding:8px;font-weight:600">vs Objetivo</th>
+      <th style="padding:8px;min-width:100px;font-weight:600"></th>
+    </tr></thead><tbody>${ytdSorted.map((emp,i)=>{
+      const d=empYTD[emp],cor=EMPRESA_CORES[emp]||'#6366f1';
+      const part=ytdReal>0?(d.real/ytdReal*100):0;
+      const bw=maxYTD>0?(d.real/maxYTD*100):0;
+      return `<tr style="background:${i%2===0?'rgba(255,255,255,0.03)':'transparent'};border-bottom:1px solid rgba(255,255,255,0.05)">
+        <td style="padding:8px;font-weight:600;color:${cor}">${emp}</td>
+        <td style="text-align:right;padding:8px">${fmt(d.real)}</td>
+        <td style="text-align:right;padding:8px">${part.toFixed(1)}%</td>
+        <td style="text-align:right;padding:8px">${d.hist>0?cspan(d.real,d.hist,(d.real/d.hist*100).toFixed(1)+'%'):'-'}</td>
+        <td style="text-align:right;padding:8px">${d.obj>0?cspan(d.real,d.obj,(d.real/d.obj*100).toFixed(1)+'%'):'-'}</td>
+        <td style="padding:8px"><div style="background:rgba(255,255,255,0.1);border-radius:3px;height:6px">
+          <div style="background:${cor};height:6px;border-radius:3px;width:${bw.toFixed(1)}%"></div></div></td>
+      </tr>`;
+    }).join('')}</tbody><tfoot><tr style="font-weight:700;border-top:2px solid rgba(255,255,255,0.2)">
+      <td style="padding:8px">TOTAL</td>
+      <td style="text-align:right;padding:8px">${fmt(ytdReal)}</td>
+      <td style="text-align:right;padding:8px">100%</td>
+      <td style="text-align:right;padding:8px">${ytdHist>0?cspan(ytdReal,ytdHist,(ytdReal/ytdHist*100).toFixed(1)+'%'):'-'}</td>
+      <td style="text-align:right;padding:8px">${ytdObj>0?cspan(ytdReal,ytdObj,(ytdReal/ytdObj*100).toFixed(1)+'%'):'-'}</td>
+      <td></td>
+    </tr></tfoot>`;
+  }
+  const mesSorted = [...EMPRESAS_ACOMP].filter(e=>empMes[e].real>0||empMes[e].hist>0||empMes[e].obj>0).sort((a,b)=>empMes[b].real-empMes[a].real);
+  if (el('op-mes-table')) {
+    el('op-mes-table').innerHTML = `<thead><tr style="color:#94a3b8;font-size:12px">
+      <th style="padding:6px 8px;font-weight:600">#</th>
+      <th style="text-align:left;padding:6px 8px;font-weight:600">Empresa</th>
+      <th style="text-align:right;padding:6px 8px;font-weight:600">Real.</th>
+      <th style="text-align:right;padding:6px 8px;font-weight:600">Part.%</th>
+      <th style="text-align:right;padding:6px 8px;font-weight:600">vs 25</th>
+      <th style="text-align:right;padding:6px 8px;font-weight:600">vs Obj</th>
+    </tr></thead><tbody>${mesSorted.map((emp,i)=>{
+      const d=empMes[emp],cor=EMPRESA_CORES[emp]||'#6366f1';
+      const part=mesReal>0?(d.real/mesReal*100):0;
+      return `<tr style="background:${i%2===0?'rgba(255,255,255,0.03)':'transparent'};border-bottom:1px solid rgba(255,255,255,0.05)">
+        <td style="padding:6px 8px;color:#64748b">${i+1}</td>
+        <td style="padding:6px 8px;font-weight:600;color:${cor}">${emp}</td>
+        <td style="text-align:right;padding:6px 8px">${fmt(d.real)}</td>
+        <td style="text-align:right;padding:6px 8px">${part.toFixed(1)}%</td>
+        <td style="text-align:right;padding:6px 8px">${d.hist>0?cspan(d.real,d.hist,(d.real/d.hist*100).toFixed(1)+'%'):'-'}</td>
+        <td style="text-align:right;padding:6px 8px">${d.obj>0?cspan(d.real,d.obj,(d.real/d.obj*100).toFixed(1)+'%'):'-'}</td>
+      </tr>`;
+    }).join('')}<tr style="font-weight:700;border-top:2px solid rgba(255,255,255,0.2)">
+      <td style="padding:6px 8px"></td>
+      <td style="padding:6px 8px">TOTAL</td>
+      <td style="text-align:right;padding:6px 8px">${fmt(mesReal)}</td>
+      <td style="text-align:right;padding:6px 8px">100%</td>
+      <td style="text-align:right;padding:6px 8px">${mesHist>0?cspan(mesReal,mesHist,(mesReal/mesHist*100).toFixed(1)+'%'):'-'}</td>
+      <td style="text-align:right;padding:6px 8px">${mesObj>0?cspan(mesReal,mesObj,(mesReal/mesObj*100).toFixed(1)+'%'):'-'}</td>
+    </tr></tbody>`;
+  }
+  const cliMap = {};
+  EMPRESAS_ACOMP.forEach(emp => {
+    ((DATA.clientes_detalhado[emp]||{})[vend]||[]).forEach(cli => {
+      const val=(cli.meses||[])[lastIdx]||0;
+      if (val>0) { const k=cli.cod||cli.nome; if(!cliMap[k]) cliMap[k]={nome:cli.nome,real:0,emp}; cliMap[k].real+=val; }
+    });
+  });
+  const cliArr = Object.values(cliMap).sort((a,b)=>b.real-a.real).slice(0,10);
+  const cliTot = cliArr.reduce((s,c)=>s+c.real,0);
+  if (el('op-cli-table')) {
+    el('op-cli-table').innerHTML = `<thead><tr style="color:#94a3b8;font-size:12px">
+      <th style="padding:6px 8px;font-weight:600">#</th>
+      <th style="text-align:left;padding:6px 8px;font-weight:600">Cliente</th>
+      <th style="text-align:right;padding:6px 8px;font-weight:600">Real.</th>
+      <th style="text-align:right;padding:6px 8px;font-weight:600">Part.%</th>
+    </tr></thead><tbody>${cliArr.map((cli,i)=>{
+      const part=cliTot>0?(cli.real/cliTot*100):0;
+      const cor=EMPRESA_CORES[cli.emp]||'#6366f1';
+      const nome=cli.nome.length>26?cli.nome.slice(0,26)+'…':cli.nome;
+      return `<tr style="background:${i%2===0?'rgba(255,255,255,0.03)':'transparent'};border-bottom:1px solid rgba(255,255,255,0.05)">
+        <td style="padding:6px 8px;color:#64748b">${i+1}</td>
+        <td style="padding:6px 8px" title="${cli.nome}">${nome}<br><span style="font-size:10px;color:${cor}">${cli.emp}</span></td>
+        <td style="text-align:right;padding:6px 8px">${fmt(cli.real)}</td>
+        <td style="text-align:right;padding:6px 8px">${part.toFixed(1)}%</td>
+      </tr>`;
+    }).join('')}</tbody>`;
+  }
 }
 
 </script>
