@@ -332,6 +332,19 @@
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media print {
+  body.op-print-mode * { visibility: hidden !important; }
+  body.op-print-mode #page-one-page,
+  body.op-print-mode #page-one-page * { visibility: visible !important; }
+  body.op-print-mode #page-one-page {
+    position: fixed !important; left:0 !important; top:0 !important;
+    width:100vw !important; padding:20px !important;
+    background:white !important; display:block !important;
+  }
+  body.op-print-mode .op-export-btns { display:none !important; }
+  @page { size: A4 landscape; margin: 1cm; }
+}
 </style>
 </head>
 <body>
@@ -1123,6 +1136,7 @@
       <div><h1 id="op-title">One Page Vendedor</h1><p id="op-subtitle" style="color:var(--muted);font-size:13px;margin-top:4px">Selecione um vendedor</p></div>
       <div style="display:flex;gap:10px;align-items:center">
         <select id="op-vend-select" onchange="renderOnePage()" style="padding:9px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:var(--font);cursor:pointer;color:var(--text);background:var(--card);font-weight:600;outline:none"></select>
+    <span class="op-export-btns" style="margin-left:14px;vertical-align:middle"><button onclick="exportOnePagePDF()" style="padding:6px 14px;background:#4f6ef7;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-right:8px"> PDF este vendedor</button><button id="btn-export-ppt" onclick="exportTodosPPT()" style="padding:6px 14px;background:#7c3aed;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600"> PPT todos os vendedores</button></span>
         <button onclick="window.print()" style="padding:9px 16px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🖨️ Imprimir</button>
       </div>
     </div>
@@ -5956,6 +5970,192 @@ function renderOnePage() {
       </tr>`;
     }).join('')}</tbody>`;
   }
+}
+
+
+// ── Exportar One Page como PDF ──
+function exportOnePagePDF() {
+  var sel = document.getElementById('op-vend-select');
+  var vend = sel ? sel.value : 'Vendedor';
+  var prev = document.title;
+  document.title = 'One Page ' + vend + ' 2026';
+  document.body.classList.add('op-print-mode');
+  window.print();
+  setTimeout(function() {
+    document.body.classList.remove('op-print-mode');
+    document.title = prev;
+  }, 800);
+}
+
+// ── Exportar todos os vendedores como PPT ──
+async function exportTodosPPT() {
+  var btn = document.getElementById('btn-export-ppt');
+  if (btn) { btn.textContent = ' Gerando PPT...'; btn.disabled = true; }
+  try {
+    if (typeof PptxGenJS === 'undefined') {
+      await new Promise(function(ok, err) {
+        var s = document.createElement('script');
+        s.src = 'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js';
+        s.onload = ok; s.onerror = err;
+        document.head.appendChild(s);
+      });
+    }
+    var pptx = new PptxGenJS();
+    pptx.layout = 'LAYOUT_16x9';
+    pptx.title = 'Dashboard Comercial 2026';
+
+    var geral = (DATA.empresas || {})['GERAL'] || {};
+    var lastIdx = -1;
+    (geral.real || []).forEach(function(v, i) { if (v > 0) lastIdx = i; });
+    if (lastIdx < 0) lastIdx = 5;
+    var MESES_PT = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    var periodo = 'Jan a ' + MESES_PT[lastIdx] + ' 2026';
+
+    var ACC = '4F6EF7', GRN = '16A34A', RED = 'DC2626', ORG = 'D97706', GRY = '64748B', PRP = '7C3AED', WHT = 'FFFFFF';
+
+    function fmtM(v) {
+      var m = v / 1000000;
+      return 'R$ ' + m.toFixed(2).replace('.', ',') + 'M';
+    }
+    function fmtK(v) {
+      var s = String(Math.round(v));
+      var result = '';
+      var count = 0;
+      for (var i = s.length - 1; i >= 0; i--) {
+        if (count > 0 && count % 3 === 0) result = '.' + result;
+        result = s[i] + result;
+        count++;
+      }
+      return 'R$ ' + result;
+    }
+
+    var vends = Object.keys(DATA.acomp_vendas || {}).filter(function(v) { return v !== 'VAREJO'; }).sort();
+
+    for (var vi = 0; vi < vends.length; vi++) {
+      var vend = vends[vi];
+      var empYTD = {};
+      EMPRESAS_ACOMP.forEach(function(emp) { empYTD[emp] = { real:0, hist:0, obj:0 }; });
+
+      EMPRESAS_ACOMP.forEach(function(emp) {
+        ((DATA.clientes_detalhado[emp]||{})[vend]||[]).forEach(function(cli) {
+          for (var i = 0; i <= lastIdx; i++) empYTD[emp].real += (cli.meses||[])[i]||0;
+        });
+      });
+      var vendData = DATA.acomp_vendas[vend] || {};
+      MESES_KEYS_UP.forEach(function(mk, i) {
+        if (i > lastIdx) return;
+        var md = vendData[mk]||{};
+        EMPRESAS_ACOMP.forEach(function(emp) {
+          var d = md[emp]||{};
+          empYTD[emp].hist += d.hist||0;
+          empYTD[emp].obj  += d.obj ||0;
+        });
+      });
+
+      var tot = { real:0, hist:0, obj:0 };
+      EMPRESAS_ACOMP.forEach(function(emp) { tot.real+=empYTD[emp].real; tot.hist+=empYTD[emp].hist; tot.obj+=empYTD[emp].obj; });
+      if (tot.real === 0 && tot.hist === 0) continue;
+
+      var cob   = tot.obj  > 0 ? tot.real/tot.obj*100   : 0;
+      var cresc = tot.hist > 0 ? (tot.real/tot.hist-1)*100 : 0;
+      var cobColor   = cob>=100 ? GRN : cob>=80 ? ORG : RED;
+      var crescColor = cresc>=0 ? GRN : RED;
+
+      var empRank = EMPRESAS_ACOMP.map(function(emp) {
+        return { emp:emp, real:empYTD[emp].real, hist:empYTD[emp].hist, obj:empYTD[emp].obj };
+      }).filter(function(e) { return e.real>0; }).sort(function(a,b) { return b.real-a.real; });
+
+      var cliMap = {};
+      EMPRESAS_ACOMP.forEach(function(emp) {
+        ((DATA.clientes_detalhado[emp]||{})[vend]||[]).forEach(function(cli) {
+          if (!cliMap[cli.nome]) cliMap[cli.nome] = 0;
+          for (var i=0; i<=lastIdx; i++) cliMap[cli.nome] += (cli.meses||[])[i]||0;
+        });
+      });
+      var topCli = Object.keys(cliMap).map(function(n) { return {nome:n, real:cliMap[n]}; })
+        .filter(function(c) { return c.real>0; })
+        .sort(function(a,b) { return b.real-a.real; })
+        .slice(0,10);
+
+      // ── Slide ──
+      var slide = pptx.addSlide();
+      slide.background = { color: 'F8FAFF' };
+
+      // Header
+      slide.addText(vend, { x:0, y:0, w:10, h:0.9, fontSize:28, bold:true, color:WHT, fill:{color:ACC}, valign:'middle', margin:[0,0,0,20] });
+      slide.addText('Dashboard Comercial Cr Lima 2026  |  ' + periodo, { x:0.3, y:0.62, w:9.5, h:0.28, fontSize:9, color:'C7D2FE' });
+
+      // 5 KPIs
+      var kpis = [
+        { label:'REALIZADO YTD',  val:fmtM(tot.real),  color:ACC },
+        { label:'HISTORICO 2025', val:fmtM(tot.hist),  color:GRY },
+        { label:'OBJETIVO 2026',  val:fmtM(tot.obj),   color:PRP },
+        { label:'COBERTURA',      val:cob.toFixed(1)+'%', color:cobColor },
+        { label:'CRESC VS 2025',  val:(cresc>=0?'+':'')+cresc.toFixed(1)+'%', color:crescColor },
+      ];
+      for (var ki=0; ki<kpis.length; ki++) {
+        var k = kpis[ki];
+        var kx = 0.1 + ki*1.96;
+        slide.addShape('rect', { x:kx, y:1.0, w:1.85, h:0.92, fill:{color:WHT}, line:{color:'E2E8F0', pt:1} });
+        slide.addText(k.label, { x:kx, y:1.03, w:1.85, h:0.28, fontSize:7,  color:GRY, align:'center', bold:true });
+        slide.addText(k.val,   { x:kx, y:1.3,  w:1.85, h:0.55, fontSize:16, bold:true, color:k.color, align:'center', valign:'middle' });
+      }
+
+      // Empresas
+      slide.addText('RANKING POR EMPRESA', { x:0.1, y:2.05, w:4.8, h:0.28, fontSize:9, bold:true, color:ACC });
+      var eRows = [[
+        {text:'#',        options:{bold:true,fontSize:8,color:GRY,align:'center'}},
+        {text:'EMPRESA',  options:{bold:true,fontSize:8,color:GRY}},
+        {text:'REALIZADO',options:{bold:true,fontSize:8,color:GRY,align:'right'}},
+        {text:'OBJ%',     options:{bold:true,fontSize:8,color:GRY,align:'right'}}
+      ]];
+      for (var ei=0; ei<Math.min(empRank.length,9); ei++) {
+        var e = empRank[ei];
+        var ec = e.obj>0 ? e.real/e.obj*100 : 0;
+        var ecc = ec>=100?GRN:ec>=80?ORG:RED;
+        eRows.push([
+          {text:String(ei+1),  options:{fontSize:8,align:'center',color:GRY}},
+          {text:e.emp,          options:{fontSize:8,bold:true}},
+          {text:fmtK(e.real),   options:{fontSize:8,align:'right',bold:true,color:ACC}},
+          {text:e.obj>0?ec.toFixed(0)+'%':'--', options:{fontSize:8,align:'right',bold:true,color:ecc}}
+        ]);
+      }
+      if (eRows.length > 1) {
+        slide.addTable(eRows, { x:0.1, y:2.35, w:4.85, colW:[0.35,2.1,1.7,0.7], border:{pt:0.5,color:'E2E8F0'}, fill:WHT, rowH:0.33 });
+      }
+
+      // Clientes
+      slide.addText('TOP 10 CLIENTES', { x:5.1, y:2.05, w:4.8, h:0.28, fontSize:9, bold:true, color:ACC });
+      var cRows = [[
+        {text:'#',         options:{bold:true,fontSize:8,color:GRY,align:'center'}},
+        {text:'CLIENTE',   options:{bold:true,fontSize:8,color:GRY}},
+        {text:'REALIZADO', options:{bold:true,fontSize:8,color:GRY,align:'right'}}
+      ]];
+      for (var ci=0; ci<topCli.length; ci++) {
+        var c = topCli[ci];
+        var nome = c.nome.length>32 ? c.nome.slice(0,32)+'...' : c.nome;
+        cRows.push([
+          {text:String(ci+1), options:{fontSize:8,align:'center',color:GRY}},
+          {text:nome,          options:{fontSize:8}},
+          {text:fmtK(c.real),  options:{fontSize:8,align:'right',bold:true,color:ACC}}
+        ]);
+      }
+      if (cRows.length > 1) {
+        slide.addTable(cRows, { x:5.1, y:2.35, w:4.8, colW:[0.35,3.1,1.35], border:{pt:0.5,color:'E2E8F0'}, fill:WHT, rowH:0.33 });
+      }
+
+      slide.addText('Cr Lima Comercial  |  Dashboard 2026', { x:0, y:6.9, w:10, h:0.28, fontSize:7, color:'94A3B8', align:'center' });
+    }
+
+    var hoje = new Date();
+    var dd = String(hoje.getDate()).padStart(2,'0');
+    var mm = String(hoje.getMonth()+1).padStart(2,'0');
+    await pptx.writeFile({ fileName: 'Dashboard_Vendedores_' + dd + mm + '2026.pptx' });
+  } catch(err) {
+    alert('Erro ao gerar PPT: ' + err.message);
+    console.error(err);
+  }
+  if (btn) { btn.textContent = ' PPT todos os vendedores'; btn.disabled = false; }
 }
 
 </script>
