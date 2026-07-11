@@ -11,10 +11,11 @@
 ╚══════════════════════════════════════════════════════════════╝
 """
 
-import os, json, re, sys, shutil, subprocess
+import os, json, re, sys, shutil, subprocess, unicodedata
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
+from difflib import SequenceMatcher
 
 # ============================================================
 #  CONFIGURAÇÃO
@@ -24,6 +25,24 @@ INDEX_HTML      = PASTA_PROJETO / "index.html"
 PASTA_NOVOS     = PASTA_PROJETO / "NOVOS_DADOS"      # coloca aqui os xlsx novos
 PASTA_ARQUIVO   = PASTA_PROJETO / "FATURAMENTO DAS EMPRESAS"  # arquivo após processar
 AUTO_PUSH       = True   # False = não publica no GitHub automaticamente
+
+# ============================================================
+#  ALIASES DE CLIENTES  (nome no ficheiro → nome no dashboard)
+#  Adiciona aqui quando o nome legal difere do nome fantasia
+# ============================================================
+CLIENTES_ALIAS = {
+    # AQUAFAST
+    'SDB COMERCIO DE ALIMENTOS LTDA':  'FORT ATACADISTA',
+    'SDB COMERCIO DE ALIMENTOS':       'FORT ATACADISTA',
+    # PAYOT — Farmácias São João (razão social → nome fantasia no dashboard)
+    'COMERCIO DE MEDICAMENTOS BRAIR LTDA':                          'FARMACIAS SAO JOAO',
+    'COMERCIO DE MEDICAMENTOS BRAIR LTDA FARMACIAS SAO JOAO':       'FARMACIAS SAO JOAO',
+    'COMERCIO DE MEDICAMENTOS BRAIR LTDA (FARMACIAS SAO JOAO)':     'FARMACIAS SAO JOAO',
+    'FARMACIAS SAO JOAO COMERCIO DE MEDICAMENTOS BRAIR LTDA':       'FARMACIAS SAO JOAO',
+}
+
+# Limiar de matching fuzzy (0.0-1.0). 0.82 apanha abreviações.
+FUZZY_THRESHOLD = 0.82
 
 # ============================================================
 #  MAPEAMENTO DE MESES
@@ -123,11 +142,18 @@ def ler_faturamento(filepath):
             print(f"  ❌ Erro ao reprocessar cabeçalho: {e}")
             return None, None
 
-    cols_upper = {re.sub(r'\s+','_', c.strip().upper()): c for c in df.columns}
+    def norm_col(s):
+        """Normaliza nome de coluna: sem acentos, só alfanumérico + underscore."""
+        s = unicodedata.normalize('NFD', str(s).strip())
+        s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
+        s = re.sub(r'[^A-Za-z0-9\s_]', '', s)
+        return re.sub(r'\s+', '_', s).upper()
+
+    cols_upper = {norm_col(c): c for c in df.columns}
 
     # Coluna de cliente
     cliente_col = None
-    for cand in ['CLIENTE','RAZAO_SOCIAL','RAZÃO_SOCIAL','NOME_CLIENTE','NOME']:
+    for cand in ['CLIENTE','RAZAO_SOCIAL','NOME_CLIENTE','NOME_DO_CLIENTE','NOME']:
         if cand in cols_upper:
             cliente_col = cols_upper[cand]
             break
@@ -136,9 +162,12 @@ def ler_faturamento(filepath):
         print(f"     Colunas disponíveis: {list(df.columns)}")
         return None, None
 
-    # Coluna de valor (RECEITA > BRUTO_COM_IMP > VALOR)
+    # Coluna de valor
     valor_col = None
-    for cand in ['RECEITA','BRUTO_COM_IMP','VALOR_LIQUIDO','VALOR','TOTAL']:
+    for cand in ['RECEITA','BRUTO_COM_IMP','VALOR_LIQUIDO','VALOR_VENDA','VALOR_BRUTO',
+                 'VL_VENDA','VL_TOTAL','VL_BRUTO','TOTAL_VENDA','FAT_LIQUIDO',
+                 'VALOR_LIQ','VALOR_TOTAL_DA_NOTA','FATURADO_R',
+                 'VALOR','TOTAL','FATURAMENTO']:
         if cand in cols_upper:
             valor_col = cols_upper[cand]
             break
@@ -147,9 +176,10 @@ def ler_faturamento(filepath):
         print(f"     Colunas disponíveis: {list(df.columns)}")
         return None, None
 
-    # Coluna de NF (opcional) — suporta vários nomes de coluna
+    # Coluna de NF (opcional)
     nf_col = None
-    for cand in ['NF','NUMERO_SERIE','NÚMERO_SÉRIE','NUMERO_NF','NOTA_FISCAL','NUMERO_NOTA','NUM_NF','SERIE']:
+    for cand in ['NF','NUMERO_SERIE','NUMERO_NF','NOTA_FISCAL','NUMERO_DA_NOTA_FISCAL',
+                 'NOTA','NUMERO_NOTA','NUM_NF','SERIE']:
         if cand in cols_upper:
             nf_col = cols_upper[cand]
             break
@@ -161,8 +191,9 @@ def ler_faturamento(filepath):
         """Remove sufixo de código numérico: 'EMPRESA SA-123456' → 'EMPRESA SA'"""
         return re.sub(r'-\d{4,}$', '', str(s)).strip()
 
-    totais = {}
-    nfs    = {}  # {nome_normalizado: [nf1, nf2, ...]}
+    totais      = {}  # {nome: total_valor}
+    nfs         = {}  # {nome: [nf1, nf2, ...]}
+    nfs_valores = {}  # {nome: [(nf_str, valor), ...]} — para expansão linha-a-linha
     for _, row in df.iterrows():
         nome = normalizar(limpar_nome(row[cliente_col]))
         if not nome or nome in ('TOTAL','SUBTOTAL','NAN',''):
@@ -177,8 +208,9 @@ def ler_faturamento(filepath):
             nf_val = str(row[nf_col]).strip()
             if nf_val and nf_val.upper() not in ('NAN', 'NONE', ''):
                 nfs.setdefault(nome, []).append(nf_val)
+                nfs_valores.setdefault(nome, []).append((nf_val, val))
 
-    return totais, nfs
+    return totais, nfs, nfs_valores
 
 def carregar_dados_html(html):
     """Extrai JSON de DADOS_EMBEDDED do HTML."""
@@ -309,7 +341,7 @@ def main():
             continue
 
         # Ler faturamento
-        fat, nfs_fat = ler_faturamento(filepath)
+        fat, nfs_fat, nfs_valores_fat = ler_faturamento(filepath)
         if fat is None:
             resumo_erros.append(f"{filepath.name} — erro ao ler")
             continue
@@ -319,37 +351,82 @@ def main():
 
         # Fazer matching com clientes_detalhado
         lookup = construir_lookup(cd[chave_empresa])
+        # Normalizar aliases para comparação
+        alias_norm = {normalizar(k): normalizar(v) for k, v in CLIENTES_ALIAS.items()}
         matches = 0
         nao_encontrados = []
 
+        def _aplicar_match(nome_dash, valor, label=''):
+            nonlocal matches
+            if nome_dash not in lookup:
+                return False
+            vend, idx = lookup[nome_dash]
+            meses = cd[chave_empresa][vend][idx].setdefault('meses', [0]*12)
+            while len(meses) < 12:
+                meses.append(0)
+            meses[mes_idx] = round(valor, 2)
+            if label:
+                print(f"     ~ {label}")
+            matches += 1
+            return True
+
         for nome_fat, valor in fat.items():
-            if nome_fat in lookup:
-                vend, idx = lookup[nome_fat]
-                # Garantir array com 12 posições
-                meses = cd[chave_empresa][vend][idx].setdefault('meses', [0]*12)
-                while len(meses) < 12:
-                    meses.append(0)
-                meses[mes_idx] = round(valor, 2)
-                matches += 1
+            # 1. Match exato
+            if _aplicar_match(nome_fat, valor):
+                continue
+            # 2. Alias configurado
+            nome_alias = alias_norm.get(nome_fat)
+            if nome_alias and _aplicar_match(nome_alias, valor, f"Alias: '{nome_fat}' → '{nome_alias}'"):
+                continue
+            # 3. Match fuzzy
+            best, best_r = None, 0
+            for chave in lookup:
+                r = SequenceMatcher(None, nome_fat, chave).ratio()
+                if r > best_r:
+                    best_r, best = r, chave
+            if best and best_r >= FUZZY_THRESHOLD:
+                _aplicar_match(best, valor, f"Fuzzy {best_r:.0%}: '{nome_fat}' → '{best}'")
             else:
                 nao_encontrados.append((nome_fat, valor))
 
-        # Atualizar NF em comissoes_detalhe (quando o ficheiro tem coluna de NF)
-        if nfs_fat:
+        # Atualizar NF em comissoes_detalhe — uma entrada por NF com valor individual
+        if nfs_valores_fat:
             mes_key = MESES_NOME[mes_idx].upper()
             com_det = dados.get('comissoes_detalhe', {})
             nf_updates = 0
-            for vend_entries in com_det.values():
+            for vend_key, vend_entries in com_det.items():
                 if mes_key not in vend_entries:
                     continue
-                emp_entries = vend_entries[mes_key].get(chave_empresa, [])
+                emp_entries = vend_entries[mes_key].get(chave_empresa)
+                if not emp_entries:
+                    continue
+                nova_lista = []
                 for entry in emp_entries:
                     nome_entry = normalizar(re.sub(r'-\d{4,}$', '', entry.get('nome', '')).strip())
-                    if nome_entry in nfs_fat and (not entry.get('nf') or entry['nf'] == '—'):
-                        entry['nf'] = '/'.join(nfs_fat[nome_entry])
-                        nf_updates += 1
+                    nf_atual   = entry.get('nf', '')
+                    # Expandir entradas sem NF ou com NFs já concatenadas ("nf1/nf2")
+                    nv = nfs_valores_fat.get(nome_entry, [])
+                    if nv and (not nf_atual or nf_atual == '—' or '/' in str(nf_atual)):
+                        # Calcular taxa de comissão a partir da entrada existente
+                        fat_entry = entry.get('fat') or sum(v for _, v in nv)
+                        com_entry = entry.get('com', 0)
+                        taxa      = (com_entry / fat_entry) if fat_entry else 0
+                        for nf_num, nf_val in nv:
+                            nova_lista.append({
+                                'nf':      nf_num,
+                                'nome':    entry.get('nome', ''),
+                                'fat':     round(nf_val, 2),
+                                'com':     round(nf_val * taxa, 2),
+                                'status':  entry.get('status', 'ABERTO'),
+                                'com_pago': entry.get('com_pago', 0),
+                                'mes_pago': entry.get('mes_pago', ''),
+                            })
+                            nf_updates += 1
+                    else:
+                        nova_lista.append(entry)
+                vend_entries[mes_key][chave_empresa] = nova_lista
             if nf_updates:
-                print(f"  🔢 {nf_updates} NF(s) atualizada(s) em comissoes_detalhe")
+                print(f"  🔢 {nf_updates} NF(s) gravada(s) individualmente em comissoes_detalhe")
 
         print(f"  ✅ {matches} cliente(s) atualizados")
 
