@@ -2711,7 +2711,8 @@ function renderFinanceiroTable() {
   tbody.innerHTML = '';
   const temDetalhe = DATA.receitas_empresa_mensal || {};
 
-  fin.filter(f => f.receita > 0 || f.despesa > 0).forEach(f => {
+  const finRows = fin.filter(f => f.receita > 0 || f.despesa > 0);
+  finRows.forEach(f => {
     const liq = f.liquido;
     const p = f.receita > 0 ? (f.despesa/f.receita*100).toFixed(1) : 0;
     const statusClass = liq > 0 ? 'badge-ok' : 'badge-bad';
@@ -2732,6 +2733,24 @@ function renderFinanceiroTable() {
       </tr>
     `;
   });
+  // Totals row
+  if (finRows.length > 0) {
+    const totRec = finRows.reduce((s,f) => s + (f.receita||0), 0);
+    const totDesp = finRows.reduce((s,f) => s + (f.despesa||0), 0);
+    const totLiq = finRows.reduce((s,f) => s + (f.liquido||0), 0);
+    const totPct = totRec > 0 ? (totDesp/totRec*100).toFixed(1) : 0;
+    const totClass = totLiq >= 0 ? '#22c55e' : '#ef4444';
+    tbody.innerHTML += `
+      <tr style="background:#f0f4ff;border-top:2px solid var(--border);font-weight:700">
+        <td style="padding:9px 12px;color:var(--accent);font-size:12px">TOTAL YTD</td>
+        <td style="color:#22c55e;font-size:13px">${fmtFull(totRec)}</td>
+        <td style="color:#ef4444;font-size:13px">${fmtFull(totDesp)}</td>
+        <td style="font-size:12px">${totPct}%</td>
+        <td style="color:${totClass};font-size:13px">${fmtFull(totLiq)}</td>
+        <td><span class="${totLiq>=0?'badge-ok':'badge-bad'}">${totLiq>=0?'Positivo':'Negativo'}</span></td>
+      </tr>
+    `;
+  }
 }
 
 function toggleReceitaEmpresa(mes) {
@@ -5418,11 +5437,14 @@ function abrirVgClientes(empresa, vendedor) {
   titulo.innerHTML = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${cor};margin-right:6px;vertical-align:middle"></span>${vendedor} <span style="color:var(--muted);font-weight:400">×</span> ${empresa}`;
   document.getElementById('vg-cli-modal-sub').textContent = 'Relação de clientes · realizado mensal 2026';
 
-  // Hist/Obj from acomp_vendas
+  // Hist/Obj from acomp_vendas — YTD (same period as realizado)
   const vData = DATA.acomp_vendas[vendedor] || {};
   const empTotals = {hist:0, obj:0};
-  for (const mesData of Object.values(vData)) {
-    const d = mesData[empresa] || {};
+  const currentM2 = new Date().getMonth();
+  const colsLimit = Math.min(currentM2 + 1, 6);
+  for (let mi = 0; mi < colsLimit; mi++) {
+    const mesKey = MESES_KEYS_UP[mi];
+    const d = (vData[mesKey] || {})[empresa] || {};
     empTotals.hist += d.hist||0;
     empTotals.obj  += d.obj ||0;
   }
