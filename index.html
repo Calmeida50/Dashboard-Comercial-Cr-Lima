@@ -184,7 +184,7 @@
   .vg-emp-row:hover td { background: #dbeafe !important; }
   #vg-cli-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; }
   #vg-cli-modal.open { display: flex; }
-  #vg-cli-modal-inner { background: #fff; width: 90%; max-width: 860px; max-height: 85vh; display: flex; flex-direction: column; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
+  #vg-cli-modal-inner { background: #fff; width: 95vw; max-width: 1400px; max-height: 95vh; display: flex; flex-direction: column; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; }
   #vg-cli-modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
   #vg-cli-modal-body { overflow-y: auto; flex: 1; padding: 12px 16px; }
   /* Comissoes compact */
@@ -4361,6 +4361,17 @@ function renderRankingClientes() {
     tr.onclick = () => abrirModalMix(c);
     tbody.appendChild(tr);
   });
+  // Totals row
+  if (lista.length > 0) {
+    const trTotal = document.createElement('tr');
+    trTotal.style.cssText = 'background:#f0f4ff;font-weight:700;border-top:2px solid var(--border)';
+    trTotal.innerHTML = `
+      <td colspan="3" style="padding:9px 12px;font-size:12px;color:var(--accent);font-weight:700">TOTAL (${lista.length} clientes)</td>
+      <td style="text-align:right;font-weight:700;font-size:13px;padding:9px 12px;color:var(--accent)">${fmt(totalReal)}</td>
+      <td style="text-align:right;padding:9px 12px;font-size:12px;font-weight:600;color:var(--muted)">100%</td>
+    `;
+    tbody.appendChild(trTotal);
+  }
 }
 
 function abrirModalMix(cliente) {
@@ -5402,37 +5413,117 @@ function renderVendRankingExpand(nome, container) {
 }
 
 function abrirVgClientes(empresa, vendedor) {
-  document.getElementById('vg-cli-modal-titulo').textContent = vendedor + ' — ' + empresa;
+  const cor = EMPRESA_CORES[empresa] || '#4f6ef7';
+  const titulo = document.getElementById('vg-cli-modal-titulo');
+  titulo.innerHTML = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${cor};margin-right:6px;vertical-align:middle"></span>${vendedor} <span style="color:var(--muted);font-weight:400">×</span> ${empresa}`;
   document.getElementById('vg-cli-modal-sub').textContent = 'Relação de clientes · realizado mensal 2026';
+
+  // Hist/Obj from acomp_vendas
+  const vData = DATA.acomp_vendas[vendedor] || {};
+  const empTotals = {hist:0, obj:0};
+  for (const mesData of Object.values(vData)) {
+    const d = mesData[empresa] || {};
+    empTotals.hist += d.hist||0;
+    empTotals.obj  += d.obj ||0;
+  }
+
   const cliList = ((DATA.clientes_detalhado||{})[empresa]||{})[vendedor]||[];
   const MS = ['Jan','Fev','Mar','Abr','Mai','Jun'];
   const currentM = new Date().getMonth();
   const cols = Math.min(currentM + 1, 6);
+
   const sorted = [...cliList].map(c=>({...c,ytd:(c.meses||[]).slice(0,cols).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.ytd-a.ytd);
   const ativos = sorted.filter(c=>c.ytd>0);
   const inativos = sorted.filter(c=>c.ytd===0);
-  const thead = MS.slice(0,cols).map(m=>`<th style="text-align:right;padding:4px 6px;font-size:10px;color:var(--muted);white-space:nowrap">${m}</th>`).join('');
+  const realYTD = ativos.reduce((s,c)=>s+c.ytd, 0);
+  const colTotals = Array.from({length:cols},(_,i)=>sorted.reduce((s,c)=>s+((c.meses||[])[i]||0),0));
+
+  // Summary stats
+  const cresc = empTotals.hist > 0 ? ((realYTD/empTotals.hist-1)*100) : null;
+  const crescCor = cresc===null?'var(--muted)':cresc>=0?'#22c55e':'#ef4444';
+  const crescTxt = cresc===null?'—':(cresc>=0?'▲ ':'▼ ')+Math.abs(cresc).toFixed(1)+'%';
+  const ating = empTotals.obj > 0 ? (realYTD/empTotals.obj*100) : null;
+  const atingCor = ating===null?'var(--muted)':ating>=100?'#22c55e':ating>=80?'#f59e0b':'#ef4444';
+
+  const thead = MS.slice(0,cols).map(m=>`<th style="text-align:right;padding:6px 8px;font-size:11px;color:var(--muted)">${m}</th>`).join('');
+  const totalTds = colTotals.map(v=>`<td style="text-align:right;padding:7px 8px;font-size:12px;font-weight:700;color:#1e2a3a">${fmt(v)}</td>`).join('');
+
   const rowHtml = c => {
-    const tds = Array.from({length:cols},(_,i)=>{const v=(c.meses||[])[i]||0;return `<td style="text-align:right;padding:4px 6px;font-size:11px;${v>0?'color:#22c55e;font-weight:600':'color:#cbd5e0'}">${v>0?fmt(v):'—'}</td>`;}).join('');
+    const tds = Array.from({length:cols},(_,i)=>{
+      const v=(c.meses||[])[i]||0;
+      return `<td style="text-align:right;padding:5px 8px;font-size:12px;${v>0?'color:#22c55e;font-weight:600':'color:#cbd5e0'}">${v>0?fmt(v):'—'}</td>`;
+    }).join('');
     return `<tr style="border-bottom:1px solid var(--border)">
-      <td style="padding:5px 8px;font-size:12px;max-width:220px">${c.nome}</td>${tds}
-      <td style="text-align:right;padding:5px 8px;font-size:12px;font-weight:700;${c.ytd>0?'color:var(--accent)':'color:var(--muted)'}">${c.ytd>0?fmt(c.ytd):'—'}</td>
+      <td style="padding:6px 8px;font-size:12px;font-weight:500">${c.nome}</td>${tds}
+      <td style="text-align:right;padding:6px 8px;font-size:12px;font-weight:700;${c.ytd>0?'color:var(--accent)':'color:var(--muted)'}">${c.ytd>0?fmt(c.ytd):'—'}</td>
     </tr>`;
   };
-  document.getElementById('vg-cli-modal-body').innerHTML = `<div style="overflow-x:auto">
-    ${ativos.length?`<div style="font-size:11px;font-weight:600;color:#22c55e;margin:6px 4px 4px">${ativos.length} ativo${ativos.length!==1?'s':''} em 2026</div>`:''}
-    <table style="width:100%;border-collapse:collapse;min-width:500px">
-      <thead><tr style="background:var(--bg);border-bottom:2px solid var(--border)">
-        <th style="text-align:left;padding:4px 8px;font-size:11px;color:var(--muted)">Cliente</th>${thead}
-        <th style="text-align:right;padding:4px 8px;font-size:11px;color:var(--muted)">Total YTD</th>
-      </tr></thead>
-      <tbody>${ativos.map(rowHtml).join('')}${inativos.length?`<tr><td colspan="${cols+2}" style="padding:8px;font-size:11px;color:var(--muted);background:var(--bg)">⏳ Sem compra em 2026 (${inativos.length} clientes)</td></tr>${inativos.map(rowHtml).join('')}`:''}</tbody>
-    </table></div>`;
+
+  document.getElementById('vg-cli-modal-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--border)">
+      <div style="background:#f8f9fc;border-radius:8px;padding:10px 14px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600">Histórico 2025</div>
+        <div style="font-size:17px;font-weight:700;margin-top:3px">${fmt(empTotals.hist)}</div>
+      </div>
+      <div style="background:#f8f9fc;border-radius:8px;padding:10px 14px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600">Objetivo 2026</div>
+        <div style="font-size:17px;font-weight:700;margin-top:3px">${fmt(empTotals.obj)}</div>
+        ${ating!==null?`<div style="font-size:11px;color:${atingCor};font-weight:600;margin-top:2px">${ating.toFixed(1)}% atingido</div>`:''}
+      </div>
+      <div style="background:#f0f7ff;border-radius:8px;padding:10px 14px;border:1px solid rgba(37,99,235,0.18)">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600">Realizado YTD</div>
+        <div style="font-size:17px;font-weight:700;margin-top:3px;color:var(--accent)">${fmt(realYTD)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${ativos.length} clientes ativos</div>
+      </div>
+      <div style="background:#f8f9fc;border-radius:8px;padding:10px 14px">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600">Cresc. vs 2025</div>
+        <div style="font-size:17px;font-weight:700;margin-top:3px;color:${crescCor}">${crescTxt}</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;padding:8px 16px 4px">
+      <button onclick="exportarVgClientes('${empresa}','${vendedor}')" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px">⬇ Exportar Excel</button>
+    </div>
+    <div style="overflow-x:auto;padding:0 8px 16px">
+      ${ativos.length?`<div style="font-size:11px;font-weight:600;color:#22c55e;margin:4px 8px 4px">${ativos.length} ativo${ativos.length!==1?'s':''} em 2026</div>`:''}
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--bg);border-bottom:2px solid var(--border)">
+          <th style="text-align:left;padding:6px 8px;font-size:11px;color:var(--muted)">Cliente</th>${thead}
+          <th style="text-align:right;padding:6px 8px;font-size:11px;color:var(--muted)">Total YTD</th>
+        </tr></thead>
+        <tbody>
+          ${ativos.map(rowHtml).join('')}
+          ${inativos.length?`<tr><td colspan="${cols+2}" style="padding:8px 8px 4px;font-size:11px;color:var(--muted);background:var(--bg)">⏳ Sem compra em 2026 — ${inativos.length} clientes</td></tr>${inativos.map(rowHtml).join('')}`:''}
+          <tr style="border-top:2px solid var(--border);background:#f0f4ff">
+            <td style="padding:7px 8px;font-size:12px;font-weight:700;color:var(--accent)">TOTAL</td>
+            ${totalTds}
+            <td style="text-align:right;padding:7px 8px;font-size:13px;font-weight:700;color:var(--accent)">${fmt(realYTD)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
   document.getElementById('vg-cli-modal').classList.add('open');
 }
 
+
 function fecharVgModal() {
   document.getElementById('vg-cli-modal').classList.remove('open');
+}
+
+function exportarVgClientes(empresa, vendedor) {
+  if (typeof XLSX === 'undefined') { alert('Biblioteca Excel não carregada'); return; }
+  const cliList = ((DATA.clientes_detalhado||{})[empresa]||{})[vendedor]||[];
+  const MS_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho'];
+  const currentM = new Date().getMonth();
+  const cols = Math.min(currentM + 1, 6);
+  const sorted = [...cliList].map(c=>({...c,ytd:(c.meses||[]).slice(0,cols).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.ytd-a.ytd);
+  const rows = [['Cliente',...MS_FULL.slice(0,cols),'Total YTD']];
+  sorted.forEach(c => rows.push([c.nome,...Array.from({length:cols},(_,i)=>(c.meses||[])[i]||0),c.ytd]));
+  const totalRow = ['TOTAL',...Array.from({length:cols},(_,i)=>sorted.reduce((s,c)=>s+((c.meses||[])[i]||0),0)),sorted.reduce((s,c)=>s+c.ytd,0)];
+  rows.push(totalRow);
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  XLSX.utils.book_append_sheet(wb, ws, (vendedor+'-'+empresa).substring(0,31));
+  XLSX.writeFile(wb, 'clientes_' + vendedor + '_' + empresa + '.xlsx');
 }
 
 </script>
