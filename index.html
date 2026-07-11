@@ -5437,17 +5437,19 @@ function abrirVgClientes(empresa, vendedor) {
   titulo.innerHTML = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${cor};margin-right:6px;vertical-align:middle"></span>${vendedor} <span style="color:var(--muted);font-weight:400">×</span> ${empresa}`;
   document.getElementById('vg-cli-modal-sub').textContent = 'Relação de clientes · realizado mensal 2026';
 
-  // Hist/Obj from acomp_vendas — YTD (same period as realizado)
+  // Hist/Obj from acomp_vendas — YTD Jan→mês corrente
   const vData = DATA.acomp_vendas[vendedor] || {};
   const empTotals = {hist:0, obj:0};
-  const currentM2 = new Date().getMonth();
-  const colsLimit = Math.min(currentM2 + 1, 6);
-  for (let mi = 0; mi < colsLimit; mi++) {
+  const currentM2 = new Date().getMonth(); // 0=Jan … 6=Jul
+  const colsLimitHO = currentM2 + 1;       // inclui mês corrente (ex: julho = 7)
+  for (let mi = 0; mi < colsLimitHO; mi++) {
     const mesKey = MESES_KEYS_UP[mi];
     const d = (vData[mesKey] || {})[empresa] || {};
     empTotals.hist += d.hist||0;
     empTotals.obj  += d.obj ||0;
   }
+  const MS_NOMES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const periodoHO = 'Jan–' + MS_NOMES[currentM2];
 
   const cliList = ((DATA.clientes_detalhado||{})[empresa]||{})[vendedor]||[];
   const MS = ['Jan','Fev','Mar','Abr','Mai','Jun'];
@@ -5484,11 +5486,11 @@ function abrirVgClientes(empresa, vendedor) {
   document.getElementById('vg-cli-modal-body').innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--border)">
       <div style="background:#f8f9fc;border-radius:8px;padding:10px 14px">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600">Histórico 2025</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600">Histórico 2025 (${periodoHO})</div>
         <div style="font-size:17px;font-weight:700;margin-top:3px">${fmt(empTotals.hist)}</div>
       </div>
       <div style="background:#f8f9fc;border-radius:8px;padding:10px 14px">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600">Objetivo 2026</div>
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:var(--muted);font-weight:600">Objetivo 2026 (${periodoHO})</div>
         <div style="font-size:17px;font-weight:700;margin-top:3px">${fmt(empTotals.obj)}</div>
         ${ating!==null?`<div style="font-size:11px;color:${atingCor};font-weight:600;margin-top:2px">${ating.toFixed(1)}% atingido</div>`:''}
       </div>
