@@ -7315,32 +7315,115 @@ function renderDartora_Geral() {
 })();
 /* _dtTabsV2 aplicado */
 </script>
+
 <script>
-/* ── Dartora Hide Brand Btns ── */
+/* ── Dartora Nilo Format ── */
 (function() {
   var MARCAS = ['GRANADO','PRUDENCE','EVER GREEN','CLESS','BELLIZ'];
+  var CORES = {
+    GRANADO:'#2563eb', PRUDENCE:'#7c3aed',
+    'EVER GREEN':'#059669', CLESS:'#d97706', BELLIZ:'#dc2626'
+  };
+  window._dtNiloView  = 'geral';
+  window._dtNiloMarca = MARCAS[0];
 
-  function esconde() {
-    document.querySelectorAll('button').forEach(function(b) {
-      if (MARCAS.indexOf(b.textContent.trim()) >= 0) {
-        b.style.cssText = 'display:none!important';
-      }
+  /* --- CSS --- */
+  var st = document.createElement('style');
+  st.textContent =
+    '#dt-view-mensal{display:inline-flex!important}' +
+    '#dt-view-geral{display:none!important}'         +
+    '#dt-empresa-tabs{display:none!important}';
+  (document.head||document.documentElement).appendChild(st);
+
+  window.dtNiloStyles = function() {
+    var v = window._dtNiloView||'geral';
+    var m = window._dtNiloMarca||MARCAS[0];
+    /* view tabs */
+    var map = {geral:'mensal', produto:'produto', vendedor:'vendedor'};
+    Object.keys(map).forEach(function(k) {
+      var btn = document.getElementById('dt-view-'+map[k]);
+      if (!btn) return;
+      var on = k === v;
+      btn.style.background = on ? '#1e293b' : '#fff';
+      btn.style.color      = on ? '#fff' : 'var(--text)';
+      btn.style.border     = on ? 'none' : '2px solid #e2e8f0';
+      btn.style.fontWeight = on ? '700' : '600';
     });
-    var et = document.getElementById('dt-empresa-tabs');
-    if (et) et.style.cssText = 'display:none!important';
+    /* brand tabs */
+    MARCAS.forEach(function(mc) {
+      var btn = document.getElementById('dt-nilo-m-'+mc.replace(/\s/g,'_'));
+      if (!btn) return;
+      var on = mc === m;
+      btn.style.background = on ? (CORES[mc]||'#2563eb') : '#fff';
+      btn.style.color      = on ? '#fff' : 'var(--text)';
+      btn.style.border     = on ? 'none' : '2px solid #e2e8f0';
+      btn.style.fontWeight = on ? '700' : '600';
+    });
+  };
+
+  window.dtNiloRender = function() {
+    var v = window._dtNiloView||'geral';
+    var m = window._dtNiloMarca||MARCAS[0];
+    if (v === 'geral') {
+      window._dtMensalNivel = 'marca';
+      window._dtMensalSel   = m;
+      if (typeof selectDartoraView === 'function') selectDartoraView('mensal');
+    } else if (v === 'produto') {
+      window._dartoraEmpresa = m;
+      if (typeof selectDartoraView === 'function') selectDartoraView('produto');
+    } else {
+      if (typeof selectDartoraView === 'function') selectDartoraView(v);
+    }
+    dtNiloStyles();
+  };
+
+  function buildNav() {
+    var mensal = document.getElementById('dt-view-mensal');
+    if (!mensal || !mensal.parentNode) return;
+
+    /* Renomeia Mensal -> Geral */
+    mensal.textContent = 'Geral';
+    mensal.onclick = function() {
+      window._dtNiloView = 'geral'; dtNiloRender();
+    };
+
+    /* Rastreia Produto e Vendedor */
+    var bP = document.getElementById('dt-view-produto');
+    var bV = document.getElementById('dt-view-vendedor');
+    if (bP) bP.onclick = function() { window._dtNiloView='produto'; dtNiloRender(); };
+    if (bV) bV.onclick = function() { window._dtNiloView='vendedor'; dtNiloRender(); };
+
+    /* Brand row */
+    if (document.getElementById('dt-nilo-brand-row')) {
+      dtNiloStyles(); return;
+    }
+    var row = document.createElement('div');
+    row.id = 'dt-nilo-brand-row';
+    row.style.cssText = 'display:flex;gap:8px;margin:8px 0 16px;flex-wrap:wrap;';
+    MARCAS.forEach(function(mc) {
+      var btn = document.createElement('button');
+      btn.id = 'dt-nilo-m-'+mc.replace(/\s/g,'_');
+      btn.textContent = mc;
+      btn.style.cssText = 'padding:5px 14px;border-radius:8px;cursor:pointer;font-size:11px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;transition:all .15s;';
+      btn.onclick = function() { window._dtNiloMarca=mc; dtNiloRender(); };
+      row.appendChild(btn);
+    });
+    mensal.parentNode.insertAdjacentElement('afterend', row);
+    dtNiloStyles();
   }
 
-  esconde();
-  setInterval(esconde, 300);
-  var obs = new MutationObserver(esconde);
-  function startObs() {
-    if (document.body) obs.observe(document.body, {childList:true, subtree:true});
+  function init() {
+    buildNav();
+    dtNiloRender();
   }
-  if (document.body) startObs();
-  else document.addEventListener('DOMContentLoaded', startObs);
 
+  if (document.readyState==='loading') {
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(init,200); });
+  } else {
+    setTimeout(init, 200);
+  }
 })();
-/* _dtHideBrandBtns aplicado */
+/* _dtNiloFormat aplicado */
 </script>
 </body>
 </html>
