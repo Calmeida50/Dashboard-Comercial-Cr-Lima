@@ -7225,5 +7225,95 @@ function renderDartora_Geral() {
 })();
 /* _dtFixCombined aplicado */
 </script>
+<script>
+/* ── Dartora Tabs V2 ── */
+(function() {
+
+  /* === CSS: oculta Mensal tab + brand tabs === */
+  var st = document.createElement('style');
+  st.textContent = '#dt-view-mensal{display:none!important}#dt-empresa-tabs{display:none!important}';
+  (document.head || document.documentElement).appendChild(st);
+
+  /* === Por Produto: soma total === */
+  function parseV(txt) {
+    if (!txt) return 0;
+    var s = txt.replace(/[^\d]/g, '');
+    var n = parseInt(s);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function addProdTotal() {
+    var tbody = document.getElementById('dt-table-tbody');
+    if (!tbody || tbody.querySelector('.dt-prod-total')) return;
+    var rows = tbody.querySelectorAll('tr:not(.dt-prod-total)');
+    if (!rows.length) return;
+    /* S\xf3 roda na view de produto (6 colunas) */
+    var first = rows[0].querySelectorAll('td');
+    if (first.length < 6) return;
+    var t26 = 0, t25 = 0, tQtd = 0;
+    rows.forEach(function(tr) {
+      var tds = tr.querySelectorAll('td');
+      if (tds.length < 6) return;
+      var v26  = tds[2].textContent.trim();
+      var v25  = tds[3].textContent.trim();
+      var vQtd = tds[5].textContent.trim();
+      if (v26  !== '—' && v26  !== '') t26  += parseV(v26);
+      if (v25  !== '—' && v25  !== '') t25  += parseV(v25);
+      if (vQtd !== '—' && vQtd !== '') tQtd += parseV(vQtd);
+    });
+    var vari = t26 - t25;
+    var pct  = t25 > 0 ? ((t26 / t25 - 1) * 100) : null;
+    var cV   = vari >= 0 ? '#16a34a' : '#dc2626';
+    var row  = document.createElement('tr');
+    row.className = 'dt-prod-total';
+    row.style.cssText = 'background:#f1f5f9;font-weight:700;border-top:2px solid #e2e8f0';
+    row.innerHTML =
+      '<td style="padding:12px 16px"></td>'
+      + '<td style="padding:12px 20px;font-size:13px">Total YTD</td>'
+      + '<td style="padding:12px 16px;text-align:right;font-weight:700">' + fmt(t26) + '</td>'
+      + '<td style="padding:12px 16px;text-align:right;color:var(--muted)">'
+      + (t25 > 0 ? fmt(t25) : '—') + '</td>'
+      + '<td style="padding:12px 16px;text-align:right;color:'
+      + (pct !== null ? cV : 'var(--muted)') + '"> '
+      + (pct !== null ? (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%' : '—') + '</td>'
+      + '<td style="padding:12px 16px;text-align:right">'
+      + tQtd.toLocaleString('pt-BR') + '</td>';
+    tbody.appendChild(row);
+  }
+
+  /* Wrapa fun\xe7\xf5es conhecidas de produto */
+  ['renderDartora_Produto','renderDartora_ProdutoMarca',
+   'renderDartoraProduto','renderDartoraProdutoMarca',
+   'renderDartora_produto'].forEach(function(fn) {
+    var orig = window[fn];
+    if (typeof orig === 'function') {
+      window[fn] = function() { orig.apply(this, arguments); addProdTotal(); };
+    }
+  });
+
+  /* Wrapa selectDartoraView */
+  var _oSel = window.selectDartoraView;
+  if (typeof _oSel === 'function') {
+    window.selectDartoraView = function(view) {
+      _oSel.apply(this, arguments);
+      if (view === 'produto') setTimeout(addProdTotal, 50);
+    };
+  }
+
+  /* Fallback: renderDartoraContent */
+  var _oRC = window.renderDartoraContent;
+  if (typeof _oRC === 'function') {
+    window.renderDartoraContent = function() {
+      _oRC.apply(this, arguments);
+      setTimeout(function() {
+        var t = document.getElementById('dt-table-title');
+        if (t && t.textContent && t.textContent.indexOf('Produto') >= 0) addProfTotal();
+      }, 50);
+    };
+  }
+
+})();
+/* _dtTabsV2 aplicado */
+</script>
 </body>
 </html>
