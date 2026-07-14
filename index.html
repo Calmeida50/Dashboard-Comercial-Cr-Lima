@@ -7315,5 +7315,32 @@ function renderDartora_Geral() {
 })();
 /* _dtTabsV2 aplicado */
 </script>
+<script>
+/* ── Dartora Hide Brand Btns ── */
+(function() {
+  var MARCAS = ['GRANADO','PRUDENCE','EVER GREEN','CLESS','BELLIZ'];
+
+  function esconde() {
+    document.querySelectorAll('button').forEach(function(b) {
+      if (MARCAS.indexOf(b.textContent.trim()) >= 0) {
+        b.style.cssText = 'display:none!important';
+      }
+    });
+    var et = document.getElementById('dt-empresa-tabs');
+    if (et) et.style.cssText = 'display:none!important';
+  }
+
+  esconde();
+  setInterval(esconde, 300);
+  var obs = new MutationObserver(esconde);
+  function startObs() {
+    if (document.body) obs.observe(document.body, {childList:true, subtree:true});
+  }
+  if (document.body) startObs();
+  else document.addEventListener('DOMContentLoaded', startObs);
+
+})();
+/* _dtHideBrandBtns aplicado */
+</script>
 </body>
 </html>
