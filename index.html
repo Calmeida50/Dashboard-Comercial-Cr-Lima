@@ -7151,5 +7151,79 @@ function renderDartora_Geral() {
 }
 /* _dtGeralPatch aplicado */
 </script>
+<script>
+/* ── Dartora Fix Combined ── */
+(function() {
+
+  /* === FIX 1: Mensal — oculta brand tabs + total row === */
+  var _oC = window.renderDartora_MensalConsolidado;
+  if (typeof _oC === 'function') {
+    window.renderDartora_MensalConsolidado = function() {
+      _oC();
+      var et = document.getElementById('dt-empresa-tabs');
+      if (et) et.style.display = 'none';
+    };
+  }
+
+  var _oM = window.renderDartora_MensalMarca;
+  if (typeof _oM === 'function') {
+    window.renderDartora_MensalMarca = function(marca) {
+      _oM(marca);
+      var et = document.getElementById('dt-empresa-tabs');
+      if (et) et.style.display = 'none';
+      /* Adiciona Total YTD */
+      var d   = (DATA.sellout_dartora||{})[marca]||{};
+      var m26 = d.mensal_2026||{}, m25 = d.mensal_2025||{};
+      var cor = SELLOUT_CORES[marca]||'#2563eb';
+      var t26 = 0, t25 = 0;
+      MESES_SO_KEY.forEach(function(k) {
+        var v = m26[k]||0; if (!v) return;
+        t26 += v; t25 += (m25[k]||0);
+      });
+      var vari = t26 - t25;
+      var pct  = t25 > 0 ? ((t26/t25-1)*100) : null;
+      var cV   = vari >= 0 ? '#16a34a' : '#dc2626';
+      var tbody = document.getElementById('dt-table-tbody');
+      if (tbody) {
+        tbody.innerHTML +=
+          '<tr style="background:#f1f5f9;font-weight:700;border-top:2px solid #e2e8f0">'
+          +'<td style="padding:12px 20px;font-size:13px">Total YTD</td>'
+          +'<td style="padding:12px 16px;text-align:right;color:var(--muted)">'+(t25>0?fmt(t25):'—')+'</td>'
+          +'<td style="padding:12px 16px;text-align:right;font-weight:700;color:'+cor+'">'+fmt(t26)+'</td>'
+          +'<td style="padding:12px 16px;text-align:right;color:'+(t25>0?cV:'var(--muted)')+'"> '+(t25>0?(vari>=0?'+':'')+fmt(vari):'—')+'</td>'
+          +'<td style="padding:12px 16px;text-align:right;color:'+(pct!==null?cV:'var(--muted)')+'"> '+(pct!==null?(pct>=0?'+':'')+pct.toFixed(1)+'%':'—')+'</td>'
+          +'</tr>';
+      }
+    };
+  }
+
+  /* === FIX 2: Geral — clique na marca vai para Mensal === */
+  var _oG = window.renderDartora_Geral;
+  if (typeof _oG === 'function') {
+    window.renderDartora_Geral = function() {
+      _oG();
+      /* Muda subtitle */
+      var sub = document.getElementById('dt-table-sub');
+      if (sub) sub.textContent = 'Evolu\xe7\xe3o YTD — clique na marca para ver o comparativo mensal';
+      /* Muda onclick de cada linha para ir ao Mensal */
+      var tbody = document.getElementById('dt-table-tbody');
+      if (!tbody) return;
+      var rows = tbody.querySelectorAll('tr[onclick]');
+      rows.forEach(function(tr) {
+        var oc = tr.getAttribute('onclick');
+        if (!oc) return;
+        var match = oc.match(/_dartoraEmpresa='([^']+)'/);
+        if (!match) return;
+        var marca = match[1];
+        tr.setAttribute('onclick',
+          "_dtMensalNivel='marca';_dtMensalSel='"+marca+"';selectDartoraView('mensal')"
+        );
+      });
+    };
+  }
+
+})();
+/* _dtFixCombined aplicado */
+</script>
 </body>
 </html>
