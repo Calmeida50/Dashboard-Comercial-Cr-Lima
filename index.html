@@ -6814,25 +6814,23 @@ window.renderNT_MensalMarca = function(marca) {
 </script>
 
 <script>
-/* ── Patch Dartora Mensal Consolidado ── */
+/* ── Patch Dartora Mensal Consolidado v2 ── */
 window._dtMensalNivel = 'consolidado';
 window._dtMensalSel   = null;
 
-(function() {
-  var _prevDtRender = window.renderDartoraContent;
-  window.renderDartoraContent = function() {
-    if (window._dartoraView === 'mensal') {
-      if (window._dtMensalNivel === 'marca') {
-        renderDartora_MensalMarca(window._dtMensalSel);
-      } else {
-        window._dtMensalNivel = 'consolidado';
-        renderDartora_MensalConsolidado();
-      }
+window._prevDtRender2 = window.renderDartoraContent;
+window.renderDartoraContent = function() {
+  if (_dartoraView === 'mensal') {
+    if (_dtMensalNivel === 'marca') {
+      renderDartora_MensalMarca(_dtMensalSel);
     } else {
-      _prevDtRender();
+      _dtMensalNivel = 'consolidado';
+      renderDartora_MensalConsolidado();
     }
-  };
-})();
+  } else {
+    window._prevDtRender2();
+  }
+};
 
 function renderDartora_MensalConsolidado() {
   var marcas = ['GRANADO','PRUDENCE','EVER GREEN','CLESS','BELLIZ'];
@@ -6848,7 +6846,7 @@ function renderDartora_MensalConsolidado() {
     + '<th style="padding:10px 20px;text-align:left;color:var(--muted);font-weight:600">Marca</th>'
     + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">2025</th>'
     + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">2026</th>'
-    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Variação</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Varia\xe7\xe3o</th>'
     + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Δ%</th>'
     + '</tr>';
   tbody.innerHTML = '';
@@ -6869,10 +6867,9 @@ function renderDartora_MensalConsolidado() {
     var corV = vari >= 0 ? '#16a34a' : '#dc2626';
     var bg   = rowIdx % 2 === 0 ? '' : 'background:#f8fafc';
     rowIdx++;
-    var me = marca.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     tbody.innerHTML +=
       '<tr style="border-bottom:1px solid #f1f5f9;' + bg + ';cursor:pointer" '
-      + 'onclick="renderDartora_MensalMarca(\'' + me + '\')">'
+      + 'onclick="_dtMensalNivel=\'marca\';_dtMensalSel=\'' + marca.replace(/'/g,"\\'") + '\';renderDartoraContent()">'
       + '<td style="padding:12px 20px;font-weight:700;color:' + cor + '">' + marca + '</td>'
       + '<td style="padding:12px 16px;text-align:right;color:var(--muted)">'
         + (tot25 > 0 ? fmt(tot25) : '—') + '</td>'
@@ -6889,8 +6886,8 @@ function renderDartora_MensalConsolidado() {
 }
 
 function renderDartora_MensalMarca(marca) {
-  window._dtMensalNivel = 'marca';
-  window._dtMensalSel   = marca;
+  _dtMensalNivel = 'marca';
+  _dtMensalSel   = marca;
   var cor = SELLOUT_CORES[marca] || '#2563eb';
   var d   = (DATA.sellout_dartora || {})[marca] || {};
   var m26 = d.mensal_2026 || {};
@@ -6908,7 +6905,7 @@ function renderDartora_MensalMarca(marca) {
       vb = document.createElement('div');
       vb.id = 'dt-mensal-voltar-btn';
       vb.style.cssText = 'padding:6px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0';
-      vb.innerHTML = '<button onclick="renderDartora_MensalVoltar()" '
+      vb.innerHTML = '<button onclick="_dtMensalNivel=\'consolidado\';renderDartoraContent()" '
         + 'style="background:none;border:none;color:#2563eb;cursor:pointer;font-size:12px;font-weight:600;padding:0">'
         + '← Voltar para Consolidado</button>';
       card.prepend(vb);
@@ -6918,10 +6915,10 @@ function renderDartora_MensalMarca(marca) {
   var thead = document.getElementById('dt-table-thead');
   var tbody = document.getElementById('dt-table-tbody');
   thead.innerHTML = '<tr>'
-    + '<th style="padding:10px 20px;text-align:left;color:var(--muted);font-weight:600">Mês</th>'
+    + '<th style="padding:10px 20px;text-align:left;color:var(--muted);font-weight:600">M\xeas</th>'
     + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">2025</th>'
     + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">2026</th>'
-    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Variação</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Varia\xe7\xe3o</th>'
     + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Δ%</th>'
     + '</tr>';
   tbody.innerHTML = '';
@@ -6950,14 +6947,6 @@ function renderDartora_MensalMarca(marca) {
         + (pct !== null ? (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%' : '—') + '</td>'
       + '</tr>';
   });
-}
-
-function renderDartora_MensalVoltar() {
-  window._dtMensalNivel = 'consolidado';
-  window._dtMensalSel   = null;
-  var vb = document.getElementById('dt-mensal-voltar-btn');
-  if (vb) vb.style.display = 'none';
-  renderDartora_MensalConsolidado();
 }
 /* _dtMensalPatch aplicado */
 </script>
