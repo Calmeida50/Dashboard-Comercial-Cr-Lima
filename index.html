@@ -6950,5 +6950,206 @@ function renderDartora_MensalMarca(marca) {
 }
 /* _dtMensalPatch aplicado */
 </script>
+
+<script>
+/* ── Patch Dartora Geral (Consolidado por Marca) ── */
+
+/* Override para defaultar no Geral ao abrir Dartora */
+if (typeof window.renderSelloutDartora === 'function') {
+  var _origRSDt = window.renderSelloutDartora;
+  window.renderSelloutDartora = function() {
+    _dartoraView = 'geral';
+    _origRSDt();
+  };
+}
+
+/* Nova camada em renderDartoraContent */
+(function() {
+  var _prevG = window.renderDartoraContent;
+  window.renderDartoraContent = function() {
+    if (_dartoraView === 'geral') {
+      renderDartora_Geral();
+    } else {
+      _prevG();
+    }
+  };
+})();
+
+/* Override selectDartoraView para aceitar 'geral' */
+(function() {
+  var _prevSel = window.selectDartoraView;
+  window.selectDartoraView = function(view) {
+    /* Gerencia estilo do botão Geral */
+    var btnG = document.getElementById('dt-view-geral');
+    if (btnG) {
+      var a = view === 'geral';
+      btnG.style.background = a ? '#1e293b' : '#fff';
+      btnG.style.color      = a ? '#fff'    : 'var(--text)';
+      btnG.style.border     = a ? 'none'    : '2px solid #e2e8f0';
+      btnG.style.fontWeight = a ? '700'     : '600';
+    }
+    if (view === 'geral') {
+      _dartoraView = 'geral';
+      renderDartoraContent();
+    } else {
+      _prevSel(view);
+    }
+  };
+})();
+
+/* Injeta botão Geral antes de Por Produto */
+function _injectDtGeralBtn() {
+  if (document.getElementById('dt-view-geral')) return;
+  var btnP = document.getElementById('dt-view-produto');
+  if (!btnP) return;
+  var btnG = document.createElement('button');
+  btnG.id = 'dt-view-geral';
+  btnG.textContent = 'Geral';
+  btnG.onclick = function() { selectDartoraView('geral'); };
+  /* Copiar estilo base do botão Por Produto */
+  btnG.style.cssText = btnP.style.cssText;
+  btnG.style.background = '#1e293b';
+  btnG.style.color      = '#fff';
+  btnG.style.border     = 'none';
+  btnG.style.fontWeight = '700';
+  btnP.parentNode.insertBefore(btnG, btnP);
+  /* Desfaz destaque de Por Produto */
+  btnP.style.background = '#fff';
+  btnP.style.color      = 'var(--text)';
+  btnP.style.border     = '2px solid #e2e8f0';
+  btnP.style.fontWeight = '600';
+}
+
+/* Função principal: Geral Consolidado */
+function renderDartora_Geral() {
+  var marcas = ['GRANADO','PRUDENCE','EVER GREEN','CLESS','BELLIZ'];
+
+  /* Injeta botão se ainda não existe */
+  _injectDtGeralBtn();
+
+  /* Atualiza estados dos botões de view */
+  ['produto','vendedor','mensal'].forEach(function(v) {
+    var b = document.getElementById('dt-view-' + v);
+    if (!b) return;
+    b.style.background = '#fff';
+    b.style.color      = 'var(--text)';
+    b.style.border     = '2px solid #e2e8f0';
+    b.style.fontWeight = '600';
+  });
+
+  /* Oculta brand tabs se existirem */
+  var et = document.getElementById('dt-empresa-tabs');
+  if (et) et.style.display = 'none';
+
+  /* Oculta botão voltar do mensal se estiver visível */
+  var vb = document.getElementById('dt-mensal-voltar-btn');
+  if (vb) vb.style.display = 'none';
+
+  /* KPIs */
+  var tot26 = 0, tot25 = 0;
+  marcas.forEach(function(m) {
+    var d   = (DATA.sellout_dartora || {})[m] || {};
+    var m26 = d.mensal_2026 || {};
+    var m25 = d.mensal_2025 || {};
+    MESES_SO_KEY.forEach(function(k) {
+      var v26 = m26[k] || 0;
+      if (!v26) return;
+      tot26 += v26; tot25 += (m25[k] || 0);
+    });
+  });
+  var varAll = tot26 - tot25;
+  var pctAll = tot25 > 0 ? ((tot26/tot25 - 1)*100) : 0;
+
+  /* Atualiza KPIs se o elemento existir */
+  var kpiEl = document.getElementById('dt-kpis');
+  if (kpiEl) {
+    kpiEl.innerHTML =
+      '<div class="kpi-card" style="flex:1;min-width:150px">'
+      + '<div class="label">Total 2026 (YTD)</div>'
+      + '<div class="value" style="font-size:20px;color:#1e293b">' + fmt(tot26) + '</div>'
+      + '<div class="delta ' + (pctAll>=0?'up':'down') + '">'
+      + (pctAll>=0?'▲':'▼') + ' ' + Math.abs(pctAll).toFixed(1) + '% vs 2025</div>'
+      + '</div>'
+      + '<div class="kpi-card" style="flex:1;min-width:150px">'
+      + '<div class="label">Total 2025 (YTD)</div>'
+      + '<div class="value" style="font-size:20px">' + fmt(tot25) + '</div>'
+      + '<div class="delta" style="color:var(--muted)">Mesmo per\xedodo</div>'
+      + '</div>'
+      + '<div class="kpi-card" style="flex:1;min-width:150px">'
+      + '<div class="label">Varia\xe7\xe3o Absoluta</div>'
+      + '<div class="value" style="font-size:20px;color:' + (varAll>=0?'#16a34a':'#dc2626') + '">'
+      + (varAll>=0?'+':'') + fmt(varAll) + '</div>'
+      + '<div class="delta" style="color:var(--muted)">Jan\xe2\x80\x93Jun 2026</div>'
+      + '</div>';
+  }
+
+  document.getElementById('dt-table-title').textContent = 'Consolidado por Marca';
+  var sub = document.getElementById('dt-table-sub');
+  if (sub) sub.textContent = 'Evolu\xe7\xe3o YTD — clique na marca para ver os produtos';
+
+  var thead = document.getElementById('dt-table-thead');
+  var tbody = document.getElementById('dt-table-tbody');
+
+  thead.innerHTML = '<tr>'
+    + '<th style="padding:10px 20px;text-align:left;color:var(--muted);font-weight:600">Marca</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">2026 (YTD)</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">2025 (mesmo per\xedodo)</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Varia\xe7\xe3o</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Δ%</th>'
+    + '</tr>';
+
+  tbody.innerHTML = '';
+  var ytot26 = 0, ytot25 = 0;
+  var rowIdx = 0;
+
+  marcas.forEach(function(marca) {
+    var d   = (DATA.sellout_dartora || {})[marca] || {};
+    var m26 = d.mensal_2026 || {};
+    var m25 = d.mensal_2025 || {};
+    var cor = SELLOUT_CORES[marca] || '#2563eb';
+    var v26 = 0, v25 = 0;
+    MESES_SO_KEY.forEach(function(k) {
+      var x = m26[k] || 0; if (!x) return;
+      v26 += x; v25 += (m25[k] || 0);
+    });
+    ytot26 += v26; ytot25 += v25;
+    var vari = v26 - v25;
+    var pct  = v25 > 0 ? ((v26/v25 - 1)*100) : null;
+    var corV = vari >= 0 ? '#16a34a' : '#dc2626';
+    var bg   = rowIdx % 2 === 0 ? '' : 'background:#f8fafc';
+    rowIdx++;
+    var me = marca.replace(/'/g,"\\'");
+    tbody.innerHTML +=
+      '<tr style="border-bottom:1px solid #f1f5f9;' + bg + ';cursor:pointer"'
+      + ' onclick="_dartoraEmpresa=\'' + me + '\';selectDartoraView(\'produto\')"'
+      + ' onmouseenter="this.style.background=\'#f0f9ff\'"'
+      + ' onmouseleave="this.style.background=\'' + (rowIdx%2===0?'#f8fafc':'') + '\'">'
+      + '<td style="padding:14px 20px;font-weight:700;color:' + cor + ';font-size:13px">' + marca + '</td>'
+      + '<td style="padding:14px 16px;text-align:right;font-weight:700;color:' + cor + '">' + fmt(v26) + '</td>'
+      + '<td style="padding:14px 16px;text-align:right;color:var(--muted)">' + (v25>0?fmt(v25):'—') + '</td>'
+      + '<td style="padding:14px 16px;text-align:right;font-weight:600;color:' + (v25>0?corV:'var(--muted)') + '">'
+      + (v25>0?(vari>=0?'+':'')+fmt(vari):'—') + '</td>'
+      + '<td style="padding:14px 16px;text-align:right;font-weight:700;color:' + (pct!==null?corV:'var(--muted)') + '">'
+      + (pct!==null?(pct>=0?'+':'')+pct.toFixed(1)+'%':'—') + '</td>'
+      + '</tr>';
+  });
+
+  /* Rodapé total */
+  var vt  = ytot26 - ytot25;
+  var pt  = ytot25 > 0 ? ((ytot26/ytot25 - 1)*100) : 0;
+  var cT  = vt >= 0 ? '#16a34a' : '#dc2626';
+  tbody.innerHTML +=
+    '<tr style="background:#f1f5f9;font-weight:700;border-top:2px solid #e2e8f0">'
+    + '<td style="padding:14px 20px;font-size:13px">YTD Total</td>'
+    + '<td style="padding:14px 16px;text-align:right;color:#1e293b">' + fmt(ytot26) + '</td>'
+    + '<td style="padding:14px 16px;text-align:right;color:var(--muted)">' + fmt(ytot25) + '</td>'
+    + '<td style="padding:14px 16px;text-align:right;color:' + cT + '">'
+    + (vt>=0?'+':'') + fmt(vt) + '</td>'
+    + '<td style="padding:14px 16px;text-align:right;color:' + cT + '">'
+    + (pt>=0?'+':'') + pt.toFixed(1) + '%</td>'
+    + '</tr>';
+}
+/* _dtGeralPatch aplicado */
+</script>
 </body>
 </html>
