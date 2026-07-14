@@ -6730,5 +6730,87 @@ function renderDartora_VendedorDetalhe(nomeVendedor) {
     + '</tr>';
 }
 </script>
+
+<script>
+/* ── Patch NT Mensal: apenas meses com dados 2026, sem click ── */
+window.renderNT_MensalMarca = function(marca) {
+  _ntGeralModo = 'mensal';
+  _niloTozzoEmpresa = marca;
+
+  /* Botão Voltar */
+  var vb = document.getElementById('nt-voltar-btn');
+  if (!vb) {
+    var secGeral = document.getElementById('nt-section-geral');
+    var card = secGeral.querySelector('.card');
+    vb = document.createElement('div');
+    vb.id = 'nt-voltar-btn';
+    vb.style.cssText = 'padding:6px 20px;background:#f8fafc;border-bottom:1px solid #e2e8f0';
+    vb.innerHTML = '<button onclick="renderNT_Consolidado()" style="background:none;border:none;'
+      + 'color:#2563eb;cursor:pointer;font-size:12px;font-weight:600;padding:0">'
+      + '&#8592; Voltar para Consolidado</button>';
+    card.prepend(vb);
+  }
+  vb.style.display = '';
+
+  var d   = (DATA.sellout_nilo_tozzo || {})[marca] || {};
+  var m26 = d.mensal_2026 || {};
+  var m25 = d.mensal_2025 || {};
+  var cor = SELLOUT_CORES[marca] || '#2563eb';
+
+  document.getElementById('nt-table-title').textContent =
+    marca + ' — Comparativo Mensal 2025 vs 2026';
+
+  var tbody = document.getElementById('nt-mensal-tbody');
+  var table = tbody.closest('table');
+  var thRow = table.querySelector('thead tr');
+  if (thRow) thRow.innerHTML =
+    '<th style="padding:10px 20px;text-align:left;color:var(--muted);font-weight:600">M\xeas</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">2025</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">2026</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Varia\xe7\xe3o</th>'
+    + '<th style="padding:10px 16px;text-align:right;color:var(--muted);font-weight:600">Δ%</th>';
+
+  tbody.innerHTML = '';
+  var tot26 = 0, tot25 = 0, rowIdx = 0;
+
+  MESES_SO_KEY.forEach(function(k, i) {
+    var v26 = m26[k] || 0;
+    /* Mostrar apenas meses com dados 2026 (Jan ate mes corrente) */
+    if (!v26) return;
+    var v25 = m25[k] || 0;
+    tot26 += v26; tot25 += v25;
+    var vari = v26 - v25;
+    var pct  = v25 > 0 ? ((v26/v25 - 1)*100) : null;
+    var corV = vari >= 0 ? '#16a34a' : '#dc2626';
+    var bg   = rowIdx % 2 === 0 ? '' : 'background:#f8fafc';
+    rowIdx++;
+    tbody.innerHTML +=
+      '<tr style="border-bottom:1px solid #f1f5f9;' + bg + '">'
+      + '<td style="padding:12px 20px;font-weight:600">' + MESES_SO_NOME[i] + '</td>'
+      + '<td style="padding:12px 16px;text-align:right;color:var(--muted)">'
+        + (v25 > 0 ? fmt(v25) : '—') + '</td>'
+      + '<td style="padding:12px 16px;text-align:right;font-weight:700;color:' + cor + '">'
+        + fmt(v26) + '</td>'
+      + '<td style="padding:12px 16px;text-align:right;font-weight:600;color:'
+        + (v25 > 0 ? corV : 'var(--muted)') + '">'
+        + (v25 > 0 ? (vari >= 0 ? '+' : '') + fmt(vari) : '—') + '</td>'
+      + '<td style="padding:12px 16px;text-align:right;font-weight:700;color:'
+        + (pct !== null ? corV : 'var(--muted)') + '">'
+        + (pct !== null ? (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%' : '—') + '</td>'
+      + '</tr>';
+  });
+
+  /* Rodapé */
+  var vt = tot26 - tot25;
+  var pt = tot25 > 0 ? ((tot26/tot25 - 1)*100) : 0;
+  document.getElementById('nt-tot-25').textContent = fmt(tot25);
+  document.getElementById('nt-tot-26').textContent = fmt(tot26);
+  document.getElementById('nt-tot-var').textContent = (vt >= 0 ? '+' : '') + fmt(vt);
+  document.getElementById('nt-tot-pct').textContent = (pt >= 0 ? '+' : '') + pt.toFixed(1) + '%';
+  document.getElementById('nt-tot-var').style.color = vt >= 0 ? '#16a34a' : '#dc2626';
+  document.getElementById('nt-tot-pct').style.color = pt >= 0 ? '#16a34a' : '#dc2626';
+};
+/* _ntMensalPatch aplicado */
+</script>
 </body>
 </html>
