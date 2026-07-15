@@ -7318,21 +7318,22 @@ function renderDartora_Geral() {
 
 
 
+
 <script>
-/* -- Dartora V3 -- */
+/* -- Dartora V4 -- */
 (function() {
   var MARCAS = ['GRANADO','PRUDENCE','EVER GREEN','CLESS','BELLIZ'];
   var CORES = {
     GRANADO:'#2563eb', PRUDENCE:'#7c3aed',
     'EVER GREEN':'#059669', CLESS:'#d97706', BELLIZ:'#dc2626'
   };
-  window._dtV2View  = 'geral';
-  window._dtV2Marca = MARCAS[0];
+  window._dtV4View  = 'geral';
+  window._dtV4Marca = MARCAS[0];
 
   function escondeBtnsOriginais() {
     document.querySelectorAll('button').forEach(function(b) {
       var t = b.textContent.trim();
-      if (MARCAS.indexOf(t) >= 0 && !b.id.startsWith('dt-v2-')) {
+      if (MARCAS.indexOf(t) >= 0 && !b.id.startsWith('dt-v4-')) {
         b.style.cssText = 'display:none!important';
       }
     });
@@ -7343,30 +7344,30 @@ function renderDartora_Geral() {
   function criarBotoesMarca(row) {
     MARCAS.forEach(function(mc) {
       var btn = document.createElement('button');
-      btn.id = 'dt-v2-m-'+mc.replace(/\s/g,'_');
+      btn.id = 'dt-v4-m-'+mc.replace(/\s/g,'_');
       btn.textContent = mc;
       btn.style.cssText = 'padding:5px 14px;border-radius:8px;cursor:pointer;font-size:11px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;transition:all .15s;';
-      btn.onclick = function() { window._dtV2Marca=mc; dtV2Render(); };
+      btn.onclick = function() { window._dtV4Marca=mc; dtV4Render(); };
       row.appendChild(btn);
     });
   }
 
   function getOrCreateBrandRow() {
-    var row = document.getElementById('dt-v2-brand-row');
+    var row = document.getElementById('dt-v4-brand-row');
     if (row) return row;
     var geral = document.getElementById('dt-view-geral');
     if (!geral || !geral.parentNode) return null;
     row = document.createElement('div');
-    row.id = 'dt-v2-brand-row';
-    row.style.cssText = 'display:none;gap:8px;margin:8px 0 16px;flex-wrap:wrap;';
+    row.id = 'dt-v4-brand-row';
+    row.style.cssText = 'display:none;gap:8px;margin:8px 0 4px;flex-wrap:wrap;width:100%;';
     criarBotoesMarca(row);
-    geral.parentNode.insertAdjacentElement('afterend', row);
+    geral.parentNode.appendChild(row);
     return row;
   }
 
-  window.dtV2Styles = function() {
-    var v = window._dtV2View;
-    var m = window._dtV2Marca;
+  window.dtV4Styles = function() {
+    var v = window._dtV4View;
+    var m = window._dtV4Marca;
     ['geral','produto','vendedor'].forEach(function(k) {
       var btn = document.getElementById('dt-view-'+k);
       if (!btn) return;
@@ -7379,7 +7380,7 @@ function renderDartora_Geral() {
     var row = getOrCreateBrandRow();
     if (row) row.style.display = (v !== 'geral') ? 'flex' : 'none';
     MARCAS.forEach(function(mc) {
-      var btn = document.getElementById('dt-v2-m-'+mc.replace(/\s/g,'_'));
+      var btn = document.getElementById('dt-v4-m-'+mc.replace(/\s/g,'_'));
       if (!btn) return;
       var on = mc === m;
       btn.style.background = on ? (CORES[mc]||'#2563eb') : '#fff';
@@ -7389,9 +7390,9 @@ function renderDartora_Geral() {
     });
   };
 
-  window.dtV2Render = function() {
-    var v = window._dtV2View;
-    var m = window._dtV2Marca;
+  window.dtV4Render = function() {
+    var v = window._dtV4View;
+    var m = window._dtV4Marca;
     if (v === 'geral') {
       if (typeof selectDartoraView === 'function') selectDartoraView('geral');
     } else if (v === 'produto') {
@@ -7400,25 +7401,27 @@ function renderDartora_Geral() {
     } else {
       if (typeof selectDartoraView === 'function') selectDartoraView(v);
     }
-    setTimeout(function() { escondeBtnsOriginais(); dtV2Styles(); }, 150);
+    [100, 300, 600].forEach(function(ms) {
+      setTimeout(function() { escondeBtnsOriginais(); dtV4Styles(); }, ms);
+    });
   };
 
   function buildNav() {
     var geral = document.getElementById('dt-view-geral');
     if (!geral || !geral.parentNode) return;
-    geral.onclick = function() { window._dtV2View='geral'; dtV2Render(); };
+    geral.onclick = function() { window._dtV4View='geral'; dtV4Render(); };
     var bP = document.getElementById('dt-view-produto');
     var bV = document.getElementById('dt-view-vendedor');
-    if (bP) bP.onclick = function() { window._dtV2View='produto'; dtV2Render(); };
-    if (bV) bV.onclick = function() { window._dtV2View='vendedor'; dtV2Render(); };
+    if (bP) bP.onclick = function() { window._dtV4View='produto'; dtV4Render(); };
+    if (bV) bV.onclick = function() { window._dtV4View='vendedor'; dtV4Render(); };
     getOrCreateBrandRow();
-    dtV2Styles();
+    dtV4Styles();
   }
 
   function init() {
     escondeBtnsOriginais();
     buildNav();
-    dtV2Render();
+    dtV4Render();
   }
 
   if (document.readyState==='loading') {
@@ -7427,7 +7430,7 @@ function renderDartora_Geral() {
     setTimeout(init, 200);
   }
 })();
-/* _dtDartoraV3 aplicado */
+/* _dtDartoraV4 aplicado */
 </script>
 </body>
 </html>
