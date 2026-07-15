@@ -7591,5 +7591,79 @@ setTimeout(fix,500);})();
 })();
 /* _fixCvModalV3 */
 </script>
+<script>
+/* fix CV modal v4 — negativo + total correto */
+(function(){
+  if(window._fixCvModalV4)return;
+  window._fixCvModalV4=true;
+  var F100=['CRISTIANO','EDIMAR'];
+  function parseBR(s){
+    return parseFloat((s||'').replace(/R\$\s*/g,'').replace(/\./g,'').replace(',','.').replace(/−/g,'-').trim())||0;
+  }
+  function fmtBR(n){
+    var neg=n<0;
+    var s=Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+    return (neg?'R$ -':'R$ ')+s;
+  }
+  function getRate(nome){
+    var u=(nome||'').toUpperCase();
+    return F100.some(function(n){return u.indexOf(n)>=0;})?1:0.6;
+  }
+  function fixAll(){
+    var nome='';
+    var els=document.querySelectorAll('h1,h2,h3,h4,strong,b,span,div');
+    for(var i=0;i<els.length;i++){
+      var t=(els[i].childNodes.length===1?els[i].textContent:'')||'';
+      if(t.indexOf('por Cliente')>=0){
+        var pts=t.split('—');
+        if(pts.length<2)pts=t.split(' - ');
+        if(pts.length>=2){nome=pts[0].trim().toUpperCase();break;}
+      }
+    }
+    if(!nome)return;
+    var rate=getRate(nome);
+    var totalCV=0, totalRow=null;
+    document.querySelectorAll('tr').forEach(function(row){
+      var cells=row.querySelectorAll('td');
+      /* linha TOTAL */
+      if(cells.length>0&&cells.length<6){
+        if((cells[0].textContent||'').trim().toUpperCase().indexOf('TOTAL')>=0){
+          totalRow=row; return;
+        }
+      }
+      if(cells.length<6)return;
+      if((cells[3].textContent||'').indexOf('R$')<0)return;
+      var cvCell=cells[5]; if(!cvCell)return;
+      var com=parseBR((cells[4]||{}).textContent);
+      /* COM negativo: calcula CV negativo */
+      if(com<0){
+        cvCell.textContent=fmtBR(com*rate);
+        cvCell.style.color='#ef4444';
+        cvCell.style.fontWeight='500';
+      }
+      /* Acumula CV (positivo ou negativo) para o total */
+      var cv=parseBR(cvCell.textContent);
+      totalCV+=cv;
+    });
+    /* Atualiza linha TOTAL */
+    if(totalRow&&totalCV!==0){
+      var cells=totalRow.querySelectorAll('td');
+      var cvCell=cells[cells.length-1];
+      if(cvCell){
+        cvCell.textContent=fmtBR(totalCV);
+        cvCell.style.color=totalCV<0?'#ef4444':'#d97706';
+        cvCell.style.fontWeight='600';
+      }
+    }
+  }
+  var _p=null;
+  new MutationObserver(function(){
+    if(_p)return;
+    _p=setTimeout(function(){_p=null;fixAll();},300);
+  }).observe(document.body,{childList:true,subtree:true});
+  setTimeout(fixAll,800);
+})();
+/* _fixCvModalV4 */
+</script>
 </body>
 </html>
