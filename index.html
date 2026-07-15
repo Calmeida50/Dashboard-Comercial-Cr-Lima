@@ -7504,5 +7504,36 @@ function renderDartora_Geral() {
 })();
 /* _dtDartoraV7 aplicado */
 </script>
+<script>
+(function(){if(window._fixCvModalV2)return;window._fixCvModalV2=true;
+var F=['CRISTIANO','EDIMAR'];
+function p(s){return parseFloat((s||'').replace(/R\$\s*/g,'').replace(/\./g,'').replace(',','.'))||0;}
+function f(n){return 'R$ '+Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function g(nome){var u=(nome||'').toUpperCase();return F.some(function(n){return u.indexOf(n)>=0;})?1:0.6;}
+function fix(){
+  var nome='',el=document.querySelectorAll('h1,h2,h3,h4,strong,b,span,div');
+  for(var i=0;i<el.length;i++){
+    var t=(el[i].childNodes.length===1?el[i].textContent:'')||'';
+    if(t.indexOf('por Cliente')>=0){
+      var pts=t.split('—');if(pts.length<2)pts=t.split(' - ');
+      if(pts.length>=2){nome=pts[0].trim().toUpperCase();break;}
+    }
+  }
+  if(!nome)return;
+  var r=g(nome);
+  document.querySelectorAll('tr').forEach(function(row){
+    var c=row.querySelectorAll('td');if(c.length<6)return;
+    if((c[3].textContent||'').indexOf('R$')<0)return;
+    var cv=c[5];if(!cv)return;
+    var ct=cv.textContent.replace(/\s/g,'');
+    if(ct&&ct!=='−'&&ct!=='-'&&ct!=='R$0'&&ct!=='R$ 0')return;
+    var com=p(c[4].textContent);
+    if(com>0){cv.textContent=f(com*r);cv.style.color='#d97706';cv.style.fontWeight='500';}
+  });
+}
+var _t=null;
+new MutationObserver(function(){if(_t)return;_t=setTimeout(function(){_t=null;fix();},120);}).observe(document.body,{childList:true,subtree:true});
+setTimeout(fix,500);})();
+</script>
 </body>
 </html>
