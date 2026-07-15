@@ -5569,7 +5569,7 @@ function exportarComissaoVendedorModal() {
     let totFat=0, totCom=0, totCv=0;
     Object.entries(vMesEmpresas).sort(([a],[b]) => a.localeCompare(b)).forEach(([emp, clientes]) => {
       clientes.sort((a,b) => b.fat-a.fat).forEach(c => {
-        rows.push([emp, c.nf||'—', c.nome, c.fat, c.com, c.cv]);
+        rows.push([emp, c.nf||'—', c.nome, c.fat, c.com, (c.cv > 0 ? c.cv : c.com * (['CRISTIANO','EDIMAR'].some(function(n){return nome.toUpperCase().indexOf(n) >= 0;}) ? 1.0 : 0.6)) /* _fixCvModal */]);
         totFat+=c.fat; totCom+=c.com; totCv+=c.cv;
       });
     });
