@@ -7321,26 +7321,27 @@ function renderDartora_Geral() {
 
 
 
+
 <script>
-/* -- Dartora V6 -- */
+/* -- Dartora V7 -- */
 (function() {
-  if (window._dtDartoraV6) return;
-  window._dtDartoraV6 = true;
+  if (window._dtDartoraV7) return;
+  window._dtDartoraV7 = true;
 
   var MARCAS = ['GRANADO','PRUDENCE','EVER GREEN','CLESS','BELLIZ'];
   var CORES = {
     GRANADO:'#2563eb', PRUDENCE:'#7c3aed',
     'EVER GREEN':'#059669', CLESS:'#d97706', BELLIZ:'#dc2626'
   };
-  window._dtV6View  = 'geral';
-  window._dtV6Marca = MARCAS[0];
+  window._dtV7View  = 'geral';
+  window._dtV7Marca = MARCAS[0];
 
-  function log(msg) { console.log('[DTV6] ' + msg); }
+  function log(msg) { console.log('[DTV7] ' + msg); }
 
   function escondeBtnsOriginais() {
     document.querySelectorAll('button').forEach(function(b) {
       var t = b.textContent.trim();
-      if (MARCAS.indexOf(t) >= 0 && !b.id.startsWith('dt-v6-')) {
+      if (MARCAS.indexOf(t) >= 0 && !b.id.startsWith('dt-v7-')) {
         b.style.cssText = 'display:none!important';
       }
     });
@@ -7348,42 +7349,82 @@ function renderDartora_Geral() {
     if (et) et.style.cssText = 'display:none!important';
   }
 
+  /* Clica o botao original da marca (mesmo oculto) para usar o handler correto */
+  function clicarBrandOriginal(mc) {
+    var alvo = null;
+    document.querySelectorAll('button').forEach(function(b) {
+      if (b.textContent.trim() === mc && !b.id.startsWith('dt-v7-')) {
+        alvo = b;
+      }
+    });
+    if (alvo) {
+      log('clicando original: ' + mc);
+      alvo.style.cssText = '';
+      alvo.click();
+      alvo.style.cssText = 'display:none!important';
+      return true;
+    }
+    /* Tambem tenta pelos filhos do dt-empresa-tabs */
+    var et = document.getElementById('dt-empresa-tabs');
+    if (et) {
+      et.querySelectorAll('button').forEach(function(b) {
+        if (b.textContent.trim() === mc) { alvo = b; }
+      });
+      if (alvo) {
+        log('clicando tab original: ' + mc);
+        var oldEt = et.style.cssText;
+        et.style.cssText = '';
+        alvo.style.cssText = '';
+        alvo.click();
+        et.style.cssText = 'display:none!important';
+        alvo.style.cssText = 'display:none!important';
+        return true;
+      }
+    }
+    log('botao original nao encontrado para: ' + mc);
+    return false;
+  }
+
   function criarBotoesMarca(row) {
     MARCAS.forEach(function(mc) {
       var btn = document.createElement('button');
-      btn.id = 'dt-v6-m-' + mc.replace(/\s/g, '_');
+      btn.id = 'dt-v7-m-' + mc.replace(/\s/g, '_');
       btn.textContent = mc;
       btn.style.cssText = 'padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;border:2px solid #e2e8f0;background:#fff;color:#1e293b;font-weight:600;transition:all .15s;margin:2px;';
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
-        window._dtV6Marca = mc;
+        window._dtV7Marca = mc;
         window._dartoraEmpresa = mc;
-        log('marca: ' + mc);
-        var fn = window._dtV6OrigSdv || window.selectDartoraView;
-        if (typeof fn === 'function') fn.call(window, 'produto');
+        log('marca selecionada: ' + mc);
+        var clicou = clicarBrandOriginal(mc);
+        if (!clicou) {
+          var fn = window._dtV7OrigSdv || window.selectDartoraView;
+          if (typeof fn === 'function') fn.call(window, 'produto');
+        }
+        syncStyles();
       });
       row.appendChild(btn);
     });
   }
 
   function getOrCreateBrandRow() {
-    var row = document.getElementById('dt-v6-brand-row');
+    var row = document.getElementById('dt-v7-brand-row');
     if (row && row.parentNode) return row;
     var geral = document.getElementById('dt-view-geral');
     if (!geral) { log('sem dt-view-geral'); return null; }
     var nav = geral.parentNode;
     if (!nav || !nav.parentNode) { log('sem pai do nav'); return null; }
     row = document.createElement('div');
-    row.id = 'dt-v6-brand-row';
+    row.id = 'dt-v7-brand-row';
     row.style.cssText = 'display:none;gap:8px;padding:6px 0 4px;flex-wrap:wrap;';
     criarBotoesMarca(row);
     nav.parentNode.insertBefore(row, nav.nextSibling);
-    log('brand row criado em ' + (nav.parentNode.id || nav.parentNode.className || nav.parentNode.tagName));
+    log('brand row criado');
     return row;
   }
 
   function syncStyles() {
-    var v = window._dtV6View, m = window._dtV6Marca;
+    var v = window._dtV7View, m = window._dtV7Marca;
     log('sync view=' + v + ' marca=' + m);
     ['geral', 'produto', 'vendedor'].forEach(function(k) {
       var btn = document.getElementById('dt-view-' + k);
@@ -7397,10 +7438,9 @@ function renderDartora_Geral() {
     var row = getOrCreateBrandRow();
     if (row) {
       row.style.display = (v !== 'geral') ? 'flex' : 'none';
-      log('row display=' + row.style.display);
     }
     MARCAS.forEach(function(mc) {
-      var btn = document.getElementById('dt-v6-m-' + mc.replace(/\s/g, '_'));
+      var btn = document.getElementById('dt-v7-m-' + mc.replace(/\s/g, '_'));
       if (!btn) return;
       var on = mc === m;
       btn.style.background = on ? (CORES[mc] || '#2563eb') : '#fff';
@@ -7426,33 +7466,30 @@ function renderDartora_Geral() {
 
   var obs = new MutationObserver(function() { schedule('mutation'); });
 
-  /* Event delegation: capture phase dispara ANTES do onclick original */
   document.addEventListener('click', function(e) {
     var el = e.target;
     for (var i = 0; i < 6 && el && el !== document; i++, el = el.parentNode) {
-      if (el.id === 'dt-view-geral')    { window._dtV6View = 'geral';    log('nav: geral');    break; }
-      if (el.id === 'dt-view-produto')  { window._dtV6View = 'produto';  log('nav: produto');  break; }
-      if (el.id === 'dt-view-vendedor') { window._dtV6View = 'vendedor'; log('nav: vendedor'); break; }
+      if (el.id === 'dt-view-geral')    { window._dtV7View = 'geral';    log('nav: geral');    break; }
+      if (el.id === 'dt-view-produto')  { window._dtV7View = 'produto';  log('nav: produto');  break; }
+      if (el.id === 'dt-view-vendedor') { window._dtV7View = 'vendedor'; log('nav: vendedor'); break; }
     }
     setTimeout(function() { schedule('click-100'); }, 100);
     setTimeout(function() { schedule('click-500'); }, 500);
     setTimeout(function() { schedule('click-1200'); }, 1200);
-  }, true); /* capture=true */
+  }, true);
 
   function init() {
     log('start - selectDartoraView: ' + (typeof window.selectDartoraView));
     if (typeof window.selectDartoraView === 'function') {
-      window._dtV6OrigSdv = window.selectDartoraView;
+      window._dtV7OrigSdv = window.selectDartoraView;
       window.selectDartoraView = function(v) {
-        window._dtV6OrigSdv.apply(this, arguments);
-        log('sdv chamado: ' + v);
+        window._dtV7OrigSdv.apply(this, arguments);
+        log('sdv: ' + v);
         schedule('sdv');
         setTimeout(function() { schedule('sdv-300'); }, 300);
         setTimeout(function() { schedule('sdv-800'); }, 800);
       };
       log('selectDartoraView wrapped');
-    } else {
-      log('AVISO: selectDartoraView nao encontrado');
     }
     obs.observe(document.body, { childList: true, subtree: true });
     escondeBtnsOriginais();
@@ -7465,7 +7502,7 @@ function renderDartora_Geral() {
     setTimeout(init, 200);
   }
 })();
-/* _dtDartoraV6 aplicado */
+/* _dtDartoraV7 aplicado */
 </script>
 </body>
 </html>
