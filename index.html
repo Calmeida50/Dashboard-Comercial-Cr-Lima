@@ -7535,5 +7535,61 @@ var _t=null;
 new MutationObserver(function(){if(_t)return;_t=setTimeout(function(){_t=null;fix();},120);}).observe(document.body,{childList:true,subtree:true});
 setTimeout(fix,500);})();
 </script>
+<script>
+/* fix CV total v3 */
+(function(){
+  if(window._fixCvModalV3)return;
+  window._fixCvModalV3=true;
+
+  function parseBR(s){
+    return parseFloat((s||'').replace(/R\$\s*/g,'').replace(/\./g,'').replace(',','.').trim())||0;
+  }
+  function fmtBR(n){
+    return 'R$ '+Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  }
+
+  function fixTotal(){
+    var inModal=false;
+    var els=document.querySelectorAll('h1,h2,h3,h4,strong,b,span,div');
+    for(var i=0;i<els.length;i++){
+      var t=(els[i].childNodes.length===1?els[i].textContent:'')||'';
+      if(t.indexOf('por Cliente')>=0){inModal=true;break;}
+    }
+    if(!inModal)return;
+
+    var totalCV=0, totalRow=null;
+    document.querySelectorAll('tr').forEach(function(row){
+      var cells=row.querySelectorAll('td');
+      if(cells.length>0&&cells.length<6){
+        if((cells[0].textContent||'').trim().toUpperCase().indexOf('TOTAL')>=0){
+          totalRow=row; return;
+        }
+      }
+      if(cells.length>=6){
+        var cv=parseBR((cells[5]||{}).textContent);
+        if(cv>0) totalCV+=cv;
+      }
+    });
+
+    if(totalRow&&totalCV>0){
+      var cells=totalRow.querySelectorAll('td');
+      var cvCell=cells[cells.length-1];
+      if(cvCell){
+        cvCell.textContent=fmtBR(totalCV);
+        cvCell.style.color='#d97706';
+        cvCell.style.fontWeight='600';
+      }
+    }
+  }
+
+  var _p=null;
+  new MutationObserver(function(){
+    if(_p)return;
+    _p=setTimeout(function(){_p=null;fixTotal();},250);
+  }).observe(document.body,{childList:true,subtree:true});
+  setTimeout(fixTotal,700);
+})();
+/* _fixCvModalV3 */
+</script>
 </body>
 </html>
