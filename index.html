@@ -5248,8 +5248,14 @@ function renderEstoqueProdutos() {
     produtos = produtos.filter(p => p.st === _sjEstoqueFiltro);
   }
   // Ordena por cobertura (dias) crescente: menor cobertura = mais urgente primeiro.
-  // Ruptura (cob=0) fica no topo; "Sem giro" (cob≥999) fica no fim.
-  produtos = produtos.slice().sort((a, b) => (a.cob ?? 999) - (b.cob ?? 999));
+  // Ruptura (cob=0) fica no topo; "Sem giro" (giro=0) fica no fim.
+  produtos = produtos.slice().sort((a, b) => {
+    const aZero = !a.giro || a.giro === 0;
+    const bZero = !b.giro || b.giro === 0;
+    if (aZero && !bZero) return 1;
+    if (!aZero && bZero) return -1;
+    return (a.cob ?? 9999) - (b.cob ?? 9999);
+  });
 
   tbody.innerHTML = '';
   if (!produtos.length) {
@@ -5265,7 +5271,7 @@ function renderEstoqueProdutos() {
     const tr = document.createElement('tr');
     tr.style.borderBottom = '1px solid #f1f5f9';
     if (d.tem_giro) {
-      const cobStr = p.cob >= 999 ? 'Sem giro' : (p.cob === 0 ? '—' : p.cob.toFixed(0) + 'd');
+      const cobStr = (!p.giro || p.giro === 0) ? 'Sem giro' : (p.cob === 0 ? '—' : p.cob.toFixed(0) + 'd');
       tr.innerHTML = `
         <td style="padding:7px 10px;text-align:center">${badge}</td>
         <td style="padding:7px 10px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.nome}">${p.nome}</td>
