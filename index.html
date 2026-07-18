@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Comercial 2026 | Cr Lima v59</title>
+<title>Dashboard Comercial 2026 | Cr Lima v61</title>
 <style>
   #login-overlay {
     position: fixed; inset: 0; z-index: 9999;
@@ -975,9 +975,13 @@
 
     <!-- #3: MELHORIA: Pagamento de Comissões -->
     <div class="card" style="margin-bottom:16px" id="card-pagamentos-com">
-      <div class="card-header">
-        <h3>💳 Pagamento de Comissões</h3>
-        <span style="font-size:12px;color:var(--muted)">Status por vendedor — atualize com_pago para marcar como pago</span>
+      <div class="card-header" style="flex-direction:column;align-items:flex-start;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <h3>💳 Pagamento de Comissões</h3>
+          <button onclick="marcarTodosAnteriorPago()" style="padding:6px 14px;background:#16a34a;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">✓ Marcar todos como pago</button>
+        </div>
+        <!-- Botões por mês -->
+        <div id="pag-meses-btns" style="display:flex;flex-wrap:wrap;gap:6px"></div>
       </div>
       <div class="pag-summary-grid" id="pag-summary-grid">
         <div class="pag-kpi">
@@ -3878,11 +3882,114 @@ function verificarClientesNovos() {
 // ============================================================
 //  MELHORIA #3: Pagamentos de comissões
 // ============================================================
+
+// Salvar dados atualizados no localStorage para persistir baixas
+function salvarDadosPagamento() {
+  try {
+    localStorage.setItem('dashboard_data_v28', JSON.stringify(DATA));
+  } catch(e) { console.warn('Erro ao salvar:', e); }
+}
+
+// Marcar um mês específico como pago para todos os vendedores
+function marcarMesPago(mes) {
+  const resumo = DATA.comissoes_resumo || {};
+  let totalMarcado = 0;
+  Object.values(resumo).forEach(v => {
+    const mesData = v[mes];
+    if (mesData && mesData.com > 0) {
+      // Calcular quanto deste mês ainda não foi pago
+      // Pago acumulado por mês (salvo em _pago_por_mes)
+      v._pago_por_mes = v._pago_por_mes || {};
+      const jaPagoMes = v._pago_por_mes[mes] || 0;
+      const restaMes = Math.max(0, mesData.com - jaPagoMes);
+      if (restaMes > 0) {
+        v._pago_por_mes[mes] = mesData.com;
+        v.com_pago = (v.com_pago || 0) + restaMes;
+        totalMarcado += restaMes;
+      }
+    }
+  });
+  if (totalMarcado > 0) {
+    salvarDadosPagamento();
+    renderComissoesPage();
+  }
+}
+
+// Desmarcar um mês (reverter pagamento)
+function desmarcarMesPago(mes) {
+  const resumo = DATA.comissoes_resumo || {};
+  Object.values(resumo).forEach(v => {
+    v._pago_por_mes = v._pago_por_mes || {};
+    const pagMes = v._pago_por_mes[mes] || 0;
+    if (pagMes > 0) {
+      v.com_pago = Math.max(0, (v.com_pago || 0) - pagMes);
+      v._pago_por_mes[mes] = 0;
+    }
+  });
+  salvarDadosPagamento();
+  renderComissoesPage();
+}
+
+// Marcar todos os meses com dados como pagos
+function marcarTodosAnteriorPago() {
+  const resumo = DATA.comissoes_resumo || {};
+  const MESES_KEYS = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+  const mesesComDados = MESES_KEYS.filter(m =>
+    Object.values(resumo).some(v => v[m] && v[m].com > 0)
+  );
+  mesesComDados.forEach(mes => marcarMesPago(mes));
+}
+
+// Verificar se um mês está 100% pago
+function mesPagoStatus(mes) {
+  const resumo = DATA.comissoes_resumo || {};
+  let totalCom = 0, totalPagoMes = 0;
+  Object.values(resumo).forEach(v => {
+    const mesData = v[mes];
+    if (mesData && mesData.com > 0) {
+      totalCom += mesData.com;
+      totalPagoMes += (v._pago_por_mes || {})[mes] || 0;
+    }
+  });
+  if (totalCom === 0) return 'sem_dados';
+  if (totalPagoMes >= totalCom - 0.01) return 'pago';
+  if (totalPagoMes > 0) return 'parcial';
+  return 'aberto';
+}
+
 function renderPagamentosComissoes(vendors) {
   let totalCom = 0, totalPago = 0;
   const resumo = DATA.comissoes_resumo || {};
   const MESES_KEYS = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
-  
+  const MESES_SHORT_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  // Descobrir meses com dados de comissão
+  const resumoGlobal = DATA.comissoes_resumo || {};
+  const mesesComDadosPag = MESES_KEYS.filter(m =>
+    Object.values(resumoGlobal).some(v => v[m] && v[m].com > 0)
+  );
+
+  // Render month buttons
+  const btnContainer = document.getElementById('pag-meses-btns');
+  if (btnContainer) {
+    btnContainer.innerHTML = mesesComDadosPag.map((mes, i) => {
+      const status = mesPagoStatus(mes);
+      const label = MESES_SHORT_PT[MESES_KEYS.indexOf(mes)];
+      const isPago = status === 'pago';
+      const isParc = status === 'parcial';
+      const bgColor = isPago ? '#16a34a' : isParc ? '#d97706' : '#e2e8f0';
+      const textColor = isPago || isParc ? 'white' : '#475569';
+      const icon = isPago ? '✓ ' : isParc ? '~ ' : '';
+      const onclick = isPago
+        ? `desmarcarMesPago('${mes}')`
+        : `marcarMesPago('${mes}')`;
+      const title = isPago ? 'Clique para desmarcar' : isParc ? 'Parcialmente pago — clique para completar' : 'Marcar como pago';
+      return `<button onclick="${onclick}" title="${title}"
+        style="padding:5px 12px;background:${bgColor};color:${textColor};border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s">
+        ${icon}${label}</button>`;
+    }).join('');
+  }
+
   const tbody = document.getElementById('tbody-pagamentos');
   if (!tbody) return;
   
@@ -4728,8 +4835,17 @@ function abrirDetalheVendedor(nome, mesIdx) {
         const port = totalClientesVendedor(nome);
         const temDadosMes = Object.values(DATA.clientes_detalhado||{}).some(e=>Object.values(e).some(v=>v.some(c=>(c.meses||[])[mesIdx]>0)));
         if (!temDadosMes && port > 0) {
+          // Mostrar referência do mês anterior quando julho ainda não tem comissões importadas
+          const prevIdx = mesIdx > 0 ? mesIdx - 1 : null;
+          const prevCnt = prevIdx !== null ? contarClientesMes(nome, prevIdx) : 0;
+          const _MESES_NM = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+          const prevNome = prevIdx !== null ? _MESES_NM[prevIdx] : '';
+          if (prevCnt > 0) {
+            return `<div class="value" style="font-size:14px">${prevCnt}</div>
+              <div class="delta" style="color:#d97706">⚡ Ref. ${prevNome} — ${mesNome} em processamento</div>`;
+          }
           return `<div class="value" style="font-size:18px;color:var(--muted)">—</div>
-          <div class="delta" style="color:#f59e0b">⏳ Dados de COMISSÕES não importados para ${mesNome}</div>`;
+            <div class="delta" style="color:#94a3b8">${mesNome} em processamento</div>`;
         }
         return `<div class="value" style="font-size:14px">${cnt}</div>
         <div class="delta" style="color:var(--muted)">de ${port} no portfólio</div>`;
@@ -4761,11 +4877,19 @@ function abrirDetalheVendedor(nome, mesIdx) {
     const faltam = v.total_cli - v.positiv_mes;
     const temDadosMesEmp = v.total_cli > 0 && ((DATA.clientes_detalhado||{})[v.emp]||{})
       && Object.values((DATA.clientes_detalhado||{})[v.emp]||{}).some(arr=>arr.some(c=>(c.meses||[])[mesIdx]>0));
+    // Referência do mês anterior quando mês atual não tem dados de comissão
+    const _prevMesEmp = mesIdx > 0 ? mesIdx - 1 : null;
+    const prevPositivEmp = (!temDadosMesEmp && _prevMesEmp !== null && v.total_cli > 0)
+      ? (((DATA.clientes_detalhado||{})[v.emp]||{})[nome]||[]).filter(c => (c.meses||[])[_prevMesEmp] > 0).length : 0;
+    const _MESES_SH = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
     const cliTxt = v.total_cli === 0 ? '—'
-      : !temDadosMesEmp ? `<span style="color:#f59e0b;font-size:11px">⏳ sem dados</span>`
+      : !temDadosMesEmp
+        ? (prevPositivEmp > 0
+          ? `<span style="color:#d97706;font-size:11px" title="Referência de ${_prevMesEmp!==null?_MESES_SH[_prevMesEmp]:''} — ${mesNome} em processamento">⚡ ${prevPositivEmp} (${_prevMesEmp!==null?_MESES_SH[_prevMesEmp]:''})</span>`
+          : `<span style="color:#94a3b8;font-size:11px">—</span>`)
       : `<span style="color:${v.positiv_mes>0?'#22c55e':'#8892b0'}">${v.positiv_mes}✓</span> <span style="color:${faltam>0?'#ef4444':'#8892b0'}">${faltam > 0 ? faltam+'✗' : ''}</span>`;
     tbody.innerHTML += `
-      <tr style="cursor:pointer" onclick="abrirDetalheClientes('${v.emp}', ${mesIdx})" title="Ver clientes de ${v.emp}">
+      <tr style="cursor:pointer" onclick="abrirDetalheClientes('${v.emp}', ${temDadosMesEmp ? mesIdx : (_prevMesEmp !== null ? _prevMesEmp : mesIdx)})" title="${temDadosMesEmp ? 'Ver clientes de ' + v.emp : 'Ver clientes de ' + v.emp + ' (ref. mês anterior)'}">
         <td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${cor};margin-right:5px"></span><strong style="color:var(--accent)">${v.emp}</strong> <span style="font-size:10px;color:var(--muted)">↗</span></td>
         <td style="color:var(--muted);font-size:12px">${fmt(v.hist)}</td>
         <td style="color:var(--muted);font-size:12px">${fmt(v.obj)}</td>
