@@ -208,6 +208,19 @@
   .progress-pct { font-size: 12px; font-weight: 600; min-width: 36px; text-align: right; }
 
   /* MELHORIA: Progress bar aprimorada */
+  /* ── Matriz de Presença ── */
+  .matriz-wrap { overflow: auto; max-height: 520px; }
+  .matriz-table { border-collapse: collapse; min-width: 100%; font-size: 12px; }
+  .matriz-table thead th { position: sticky; top: 0; background: var(--card); z-index: 10; padding: 6px 4px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  .matriz-table th.emp-col { writing-mode: vertical-rl; transform: rotate(180deg); padding: 8px 6px; text-align: left; height: 80px; vertical-align: bottom; min-width: 32px; }
+  .matriz-table td { padding: 3px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+  .matriz-table td.cli-col { position: sticky; left: 0; background: var(--card); z-index: 5; padding: 4px 12px; text-align: left; white-space: nowrap; font-size: 11px; min-width: 200px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--border); }
+  .matriz-table th.cli-col-h { position: sticky; left: 0; z-index: 20; background: var(--card); min-width: 200px; padding: 6px 12px; text-align: left; border-right: 1px solid var(--border); }
+  .matriz-table tbody tr:hover td { background: #f0f9ff !important; }
+  .matriz-table tbody tr:hover td.cli-col { background: #e0f2fe !important; }
+  .mz-cell-on { display: inline-block; width: 18px; height: 18px; border-radius: 4px; }
+  .mz-cell-off { display: inline-block; width: 18px; height: 18px; border-radius: 4px; background: #fee2e2; border: 1px solid #fca5a5; opacity: 0.6; }
+  .mz-vend-badge { display: inline-block; font-size: 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 0 3px; color: var(--muted); margin-left: 4px; }
   .progress-bar-ext { display: flex; flex-direction: column; gap: 3px; min-width: 160px; }
   .progress-bar-ext .pb-row { display: flex; align-items: center; gap: 6px; }
   .progress-bar-ext .pb-bar { height: 10px; border-radius: 5px; background: #e2e8f0; flex: 1; overflow: hidden; }
@@ -1149,6 +1162,25 @@
       </div>
       <div id="clientes-vendedor-wrap">
         <p style="color:var(--muted);font-size:13px;padding:20px 0">Selecione uma empresa acima para ver os clientes positivados por vendedor.</p>
+      </div>
+    </div>
+    <!-- MATRIZ DE PRESENÇA -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-header" style="flex-wrap:wrap;gap:8px">
+        <div>
+          <h3 style="margin:0">🗺️ Matriz de Presença — Clientes × Empresas</h3>
+          <p style="font-size:12px;color:var(--muted);margin:2px 0 0">🟩 compra · 🟥 não compra — <span id="matriz-periodo"></span></p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="text" id="matriz-search" placeholder="🔍 Buscar cliente..." oninput="filtrarMatriz()" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;width:200px;background:var(--card);color:var(--text)">
+          <select id="matriz-filtro-vend" onchange="filtrarMatriz()" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card);color:var(--text)">
+            <option value="">Todos os vendedores</option>
+          </select>
+          <span style="font-size:12px;color:var(--muted)" id="matriz-count"></span>
+        </div>
+      </div>
+      <div id="matriz-presenca-body" class="matriz-wrap">
+        <p style="color:var(--muted);padding:20px;font-size:13px">Carregando matriz...</p>
       </div>
     </div>
   </div>
@@ -3042,6 +3074,10 @@ function renderClientesPage() {
       sel.innerHTML += `<option value="${emp}">${emp}</option>`;
     }
   });
+
+  // Matriz de presença
+  _matrizData = null;
+  renderMatrizPresenca();
 }
 
 function renderClientesPorVendedor() {
@@ -3093,6 +3129,125 @@ function renderClientesPorVendedor() {
       </table>
     </div>
   `;
+}
+
+// ============================================================
+//  MATRIZ DE PRESENÇA
+// ============================================================
+let _matrizData = null; // cache
+
+function renderMatrizPresenca() {
+  const detalhado = DATA.clientes_detalhado || {};
+  const empresas = Object.keys(detalhado).filter(e => e !== 'GERAL').sort();
+  if (!empresas.length) {
+    document.getElementById('matriz-presenca-body').innerHTML =
+      '<p style="color:var(--muted);padding:20px;font-size:13px">Dados detalhados de clientes não disponíveis. Importe os relatórios de comissão para visualizar a matriz.</p>';
+    return;
+  }
+
+  // Atualiza período
+  const perEl = document.getElementById('matriz-periodo');
+  if (perEl) perEl.textContent = buildPeriodoHTML ? buildPeriodoHTML('').replace(/<[^>]*>/g,'') : '';
+
+  // Build: cliente → { emp1: true/false, emp2: ..., vendedor: '...' }
+  const mapa = {}; // { 'CLIENTE': { BELLIZ: true, GRANADO: false, ..., _vend: 'CRISTIANO' } }
+  const vendedoresList = new Set();
+
+  empresas.forEach(function(emp) {
+    const vendedores = detalhado[emp] || {};
+    Object.entries(vendedores).forEach(function(entry) {
+      const vend = entry[0]; const clientes = entry[1];
+      vendedoresList.add(vend);
+      (clientes || []).forEach(function(c) {
+        const nome = (c.nome || '').trim();
+        if (!nome) return;
+        const ativo = (c.meses || []).some(function(v){ return v > 0; });
+        if (!mapa[nome]) mapa[nome] = { _vend: vend };
+        if (ativo) {
+          mapa[nome][emp] = true;
+          if (!mapa[nome]._vend) mapa[nome]._vend = vend;
+        } else if (mapa[nome][emp] === undefined) {
+          mapa[nome][emp] = false;
+        }
+      });
+    });
+  });
+
+  // Preenche select de vendedores
+  const selVend = document.getElementById('matriz-filtro-vend');
+  if (selVend) {
+    const curVend = selVend.value;
+    selVend.innerHTML = '<option value="">Todos os vendedores</option>';
+    [...vendedoresList].sort().forEach(function(v) {
+      selVend.innerHTML += '<option value="' + v + '"' + (v === curVend ? ' selected' : '') + '>' + v + '</option>';
+    });
+  }
+
+  _matrizData = { mapa: mapa, empresas: empresas };
+  _buildMatrizHTML(mapa, empresas, '', '');
+}
+
+function _buildMatrizHTML(mapa, empresas, searchTerm, vendFiltro) {
+  // Sort: mais empresas primeiro, depois alfabético
+  const nomes = Object.keys(mapa).filter(function(n) {
+    if (searchTerm && !n.toUpperCase().includes(searchTerm.toUpperCase())) return false;
+    if (vendFiltro && mapa[n]._vend !== vendFiltro) return false;
+    return true;
+  }).sort(function(a, b) {
+    const cntA = empresas.filter(function(e){ return mapa[a][e]; }).length;
+    const cntB = empresas.filter(function(e){ return mapa[b][e]; }).length;
+    if (cntB !== cntA) return cntB - cntA;
+    return a.localeCompare(b, 'pt-BR');
+  });
+
+  const cntEl = document.getElementById('matriz-count');
+  if (cntEl) cntEl.textContent = nomes.length + ' clientes';
+
+  if (!nomes.length) {
+    document.getElementById('matriz-presenca-body').innerHTML =
+      '<p style="color:var(--muted);padding:20px;font-size:13px">Nenhum cliente encontrado.</p>';
+    return;
+  }
+
+  // Header
+  let html = '<table class="matriz-table"><thead><tr>';
+  html += '<th class="cli-col-h">Cliente</th>';
+  html += '<th style="text-align:center;position:sticky;top:0;background:var(--card);z-index:10;padding:4px;font-size:10px;color:var(--muted);min-width:28px">Mix</th>';
+  empresas.forEach(function(emp) {
+    const cor = EMPRESA_CORES[emp] || '#8892b0';
+    html += '<th class="emp-col" style="color:' + cor + '">' + emp + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  // Rows
+  nomes.forEach(function(nome) {
+    const row = mapa[nome];
+    const cnt = empresas.filter(function(e){ return row[e]; }).length;
+    const mixColor = cnt === empresas.length ? '#16a34a' : cnt >= Math.ceil(empresas.length/2) ? '#d97706' : '#ef4444';
+    html += '<tr><td class="cli-col" title="' + nome + '">' + nome;
+    if (row._vend) html += ' <span class="mz-vend-badge">' + row._vend.split(' ')[0] + '</span>';
+    html += '</td>';
+    html += '<td style="text-align:center;font-size:11px;font-weight:700;color:' + mixColor + '">' + cnt + '</td>';
+    empresas.forEach(function(emp) {
+      const cor = EMPRESA_CORES[emp] || '#8892b0';
+      if (row[emp]) {
+        html += '<td><span class="mz-cell-on" style="background:' + cor + ';opacity:0.75" title="' + nome + ' → ' + emp + '"></span></td>';
+      } else {
+        html += '<td><span class="mz-cell-off" title="' + nome + ' não compra ' + emp + '"></span></td>';
+      }
+    });
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('matriz-presenca-body').innerHTML = html;
+}
+
+function filtrarMatriz() {
+  if (!_matrizData) return;
+  const search = (document.getElementById('matriz-search').value || '').trim();
+  const vend = document.getElementById('matriz-filtro-vend').value || '';
+  _buildMatrizHTML(_matrizData.mapa, _matrizData.empresas, search, vend);
 }
 
 // ============================================================
@@ -4442,11 +4597,15 @@ function renderPedidosTempoReal(rows, targetMes, targetAno) {
     const pct = obj > 0 ? Math.round(e.total / obj * 100) : 0;
     const cor = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
     const pctTxt = obj > 0 ? `<span style="color:${cor};font-weight:700">${pct}%</span>` : '<span style="color:var(--muted)">—</span>';
-    html += `<tr>
-      <td><strong>${emp}</strong></td>
+    const empId = emp.replace(/[^a-zA-Z0-9]/g,'_');
+    html += `<tr style="cursor:pointer" onclick="toggleEmpresaDrilldown('${emp}',${mesCorrente},${anoCorrente3})" id="row-emp-${empId}">
+      <td><span id="arr-${empId}" style="color:var(--muted);margin-right:6px;font-size:10px">▶</span><strong>${emp}</strong></td>
       <td style="text-align:center">${e.count}</td>
       <td style="text-align:right">${fmt(e.total)}</td>
       <td style="text-align:right">${pctTxt}</td>
+    </tr>
+    <tr id="drilldown-${empId}" style="display:none;background:#f8fafc">
+      <td colspan="4" style="padding:0;border-bottom:2px solid #e2e8f0"></td>
     </tr>`;
   });
   html += `<tr style="border-top:2px solid var(--border)">
@@ -4474,6 +4633,59 @@ function recomputeLiveForMonth(mes) {
   LIVE_PEDIDOS_ANO = ano;
   LIVE_PEDIDOS = computeLiveAggregates(PEDIDOS_RAW_ROWS, mes, ano);
   renderPedidosTempoReal(PEDIDOS_RAW_ROWS, mes, ano);
+}
+
+function toggleEmpresaDrilldown(emp, mes, ano) {
+  const empId = emp.replace(/[^a-zA-Z0-9]/g,'_');
+  const row = document.getElementById('drilldown-' + empId);
+  const arr = document.getElementById('arr-' + empId);
+  if (!row) return;
+  const isOpen = row.style.display !== 'none';
+  if (isOpen) {
+    row.style.display = 'none';
+    if (arr) arr.textContent = '▶';
+    return;
+  }
+  if (arr) arr.textContent = '▼';
+  if (!PEDIDOS_RAW_ROWS) { row.style.display = ''; return; }
+  const clientes = {};
+  PEDIDOS_RAW_ROWS.forEach(function(r) {
+    const parsed = parsePedidoData((r[0]||'').trim());
+    if (parsed && (parsed.mes !== mes || parsed.ano !== ano)) return;
+    const empresa = (r[1]||'').trim().toUpperCase();
+    if (empresa !== emp) return;
+    const cliente = (r[2]||'').trim() || '(sem cliente)';
+    const rawVal = (r[3]||'0').replace(/[R$\s]/g,'');
+    const valor = (function() {
+      if (!rawVal || rawVal === '-') return 0;
+      const lastDot = rawVal.lastIndexOf('.');
+      const lastComma = rawVal.lastIndexOf(',');
+      if (lastComma > lastDot) return parseFloat(rawVal.replace(/\./g,'').replace(',','.')) || 0;
+      return parseFloat(rawVal.replace(/,/g,'')) || 0;
+    })();
+    const vendedorRaw = (r[4]||'').trim().toUpperCase();
+    const vendedor = [...VENDEDORES_VALIDOS].find(function(v){ return vendedorRaw === v || vendedorRaw.startsWith(v + ' '); }) || vendedorRaw || '—';
+    if (!clientes[cliente]) clientes[cliente] = { total: 0, count: 0, vendedor: vendedor };
+    clientes[cliente].total += valor;
+    clientes[cliente].count++;
+  });
+  const fmtV = function(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); };
+  const sorted = Object.entries(clientes).sort(function(a,b){ return b[1].total - a[1].total; });
+  let html = '<table style="width:100%;font-size:12px;border-collapse:collapse">';
+  html += '<thead><tr style="background:#f1f5f9"><th style="text-align:left;padding:6px 20px;font-weight:600;color:#64748b;font-size:11px">CLIENTE</th>';
+  html += '<th style="text-align:left;padding:6px 8px;font-weight:600;color:#64748b;font-size:11px">VENDEDOR</th>';
+  html += '<th style="text-align:center;padding:6px 8px;font-weight:600;color:#64748b;font-size:11px">PED.</th>';
+  html += '<th style="text-align:right;padding:6px 20px;font-weight:600;color:#64748b;font-size:11px">VALOR</th></tr></thead><tbody>';
+  sorted.forEach(function(entry) {
+    const cli = entry[0]; const d = entry[1];
+    html += '<tr style="border-top:1px solid #e2e8f0"><td style="padding:5px 20px">' + cli + '</td>';
+    html += '<td style="padding:5px 8px;color:#64748b;font-size:11px">' + d.vendedor + '</td>';
+    html += '<td style="text-align:center;padding:5px 8px;color:#94a3b8">' + d.count + '</td>';
+    html += '<td style="text-align:right;padding:5px 20px;font-weight:600">' + fmtV(d.total) + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  row.querySelector('td').innerHTML = html;
+  row.style.display = '';
 }
 
 function renderAcompanhamento() {
