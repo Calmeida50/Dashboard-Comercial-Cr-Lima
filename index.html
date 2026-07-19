@@ -3190,6 +3190,8 @@ function renderMatrizPresenca() {
 function _buildMatrizHTML(mapa, empresas, searchTerm, vendFiltro) {
   // Sort: mais empresas primeiro, depois alfabético
   const nomes = Object.keys(mapa).filter(function(n) {
+    // Apenas clientes com pelo menos uma compra em qualquer empresa (ativos)
+    if (!empresas.some(function(e){ return mapa[n][e]; })) return false;
     if (searchTerm && !n.toUpperCase().includes(searchTerm.toUpperCase())) return false;
     if (vendFiltro && mapa[n]._vend !== vendFiltro) return false;
     return true;
