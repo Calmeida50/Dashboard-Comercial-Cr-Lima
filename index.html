@@ -1179,6 +1179,11 @@
           <span style="font-size:12px;color:var(--muted)" id="matriz-count"></span>
         </div>
       </div>
+      <div style="padding:8px 16px 4px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+        <span style="font-size:11px;color:var(--muted);font-weight:600;margin-right:4px">⬇ Exportar Excel:</span>
+        <div id="matriz-export-btns" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+        <button onclick="exportarMatrizVendedor('')" style="padding:3px 10px;font-size:11px;background:#1e40af;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600">Todos</button>
+      </div>
       <div id="matriz-presenca-body" class="matriz-wrap">
         <p style="color:var(--muted);padding:20px;font-size:13px">Carregando matriz...</p>
       </div>
@@ -3187,6 +3192,7 @@ function renderMatrizPresenca() {
   }
 
   _matrizData = { mapa: mapa, empresas: empresas };
+  _renderMatrizExportBtns(vendedoresList);
   _buildMatrizHTML(mapa, empresas, '', '');
 }
 
@@ -3266,6 +3272,61 @@ function filtrarMatriz() {
   const search = (document.getElementById('matriz-search').value || '').trim();
   const vend = document.getElementById('matriz-filtro-vend').value || '';
   _buildMatrizHTML(_matrizData.mapa, _matrizData.empresas, search, vend);
+}
+
+function exportarMatrizVendedor(vendFiltro) {
+  if (!_matrizData) return;
+  const { mapa, empresas } = _matrizData;
+
+  // Filtra clientes
+  const nomes = Object.keys(mapa).filter(function(n) {
+    if (!empresas.some(function(e){ return mapa[n][e]; })) return false;
+    if (vendFiltro && mapa[n]._vend !== vendFiltro) return false;
+    return true;
+  }).sort(function(a,b){
+    const cA = empresas.filter(function(e){return mapa[a][e];}).length;
+    const cB = empresas.filter(function(e){return mapa[b][e];}).length;
+    return cB !== cA ? cB - cA : a.localeCompare(b,'pt-BR');
+  });
+
+  // Cabeçalho
+  const header = ['CLIENTE', 'VENDEDOR', 'MIX'].concat(empresas);
+  const rows = [header];
+
+  nomes.forEach(function(nome) {
+    const row = mapa[nome];
+    const mix = empresas.filter(function(e){ return row[e]; }).length;
+    const linha = [nome, row._vend || '', mix];
+    empresas.forEach(function(emp) { linha.push(row[emp] ? 'SIM' : ''); });
+    rows.push(linha);
+  });
+
+  // Linha de totais
+  const totRow = ['TOTAL CLIENTES', '', nomes.length];
+  empresas.forEach(function(emp) {
+    totRow.push(nomes.filter(function(n){ return mapa[n][emp]; }).length);
+  });
+  rows.push([]);
+  rows.push(totRow);
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+
+  // Largura das colunas
+  ws['!cols'] = [{ wch: 45 }, { wch: 12 }, { wch: 5 }].concat(empresas.map(function(){ return { wch: 12 }; }));
+
+  const nomeArq = vendFiltro ? 'Matriz_' + vendFiltro : 'Matriz_Todos';
+  XLSX.utils.book_append_sheet(wb, ws, vendFiltro || 'Todos');
+  XLSX.writeFile(wb, nomeArq + '_Presenca.xlsx');
+}
+
+function _renderMatrizExportBtns(vendedoresList) {
+  const container = document.getElementById('matriz-export-btns');
+  if (!container) return;
+  const vends = [...vendedoresList].sort();
+  container.innerHTML = vends.map(function(v) {
+    return '<button onclick="exportarMatrizVendedor(\'' + v + '\')" style="padding:3px 10px;font-size:11px;background:var(--bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-weight:600;color:var(--text)">' + v + '</button>';
+  }).join('');
 }
 
 // ============================================================
