@@ -3244,6 +3244,19 @@ function _buildMatrizHTML(mapa, empresas, searchTerm, vendFiltro) {
     html += '</tr>';
   });
 
+  // Linha de totais por empresa
+  html += '<tr style="border-top:2px solid var(--border);background:#f8fafc;position:sticky;bottom:0">';
+  html += '<td class="cli-col" style="font-weight:700;font-size:11px;color:var(--muted);background:#f8fafc">TOTAL CLIENTES</td>';
+  html += '<td style="text-align:center;font-weight:700;font-size:11px;color:var(--muted)">' + nomes.length + '</td>';
+  empresas.forEach(function(emp) {
+    const cnt = nomes.filter(function(n){ return mapa[n][emp]; }).length;
+    const cor = EMPRESA_CORES[emp] || '#8892b0';
+    const pct = nomes.length > 0 ? Math.round(cnt / nomes.length * 100) : 0;
+    const textColor = pct >= 50 ? cor : '#94a3b8';
+    html += '<td style="text-align:center;padding:4px 2px"><span style="font-weight:700;font-size:12px;color:' + textColor + '">' + cnt + '</span><br><span style="font-size:9px;color:#94a3b8">' + pct + '%</span></td>';
+  });
+  html += '</tr>';
+
   html += '</tbody></table>';
   document.getElementById('matriz-presenca-body').innerHTML = html;
 }
