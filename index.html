@@ -5792,7 +5792,9 @@ function renderSelloutLojas() {
   if (!tbody || !v) return;
   renderParetoCard(emp);
   tbody.innerHTML = '';
-  (v.top_lojas || []).forEach((l, idx) => {
+  const lojas = v.top_lojas || [];
+  let tot26 = 0, tot25 = 0;
+  lojas.forEach((l, idx) => {
     const c = l.val25 > 0 ? ((l.val26/l.val25 - 1)*100) : null;
     const corC = c === null ? '' : (c >= 0 ? 'color:#16a34a' : 'color:#dc2626');
     const row = document.createElement('tr');
@@ -5800,13 +5802,29 @@ function renderSelloutLojas() {
       <td style="padding:6px 8px;color:var(--muted);width:28px">${idx+1}</td>
       <td style="padding:6px 8px;font-weight:600">${l.nome}</td>
       <td style="padding:6px 8px;text-align:right;font-weight:700">${fmt(l.val26)}</td>
-      <td style="padding:6px 8px;text-align:right;color:var(--muted)">${fmt(l.val25)}</td>
+      <td style="padding:6px 8px;text-align:right;color:var(--muted)">${l.val25 > 0 ? fmt(l.val25) : '—'}</td>
       <td style="padding:6px 8px;text-align:right;font-weight:600;${corC}">${c!==null?(c>=0?'+':'')+c.toFixed(1)+'%':'—'}</td>
     `;
     row.addEventListener('mouseover', () => Array.from(row.children).forEach(td => td.style.background='#f8fafc'));
     row.addEventListener('mouseout',  () => Array.from(row.children).forEach(td => td.style.background=''));
     tbody.appendChild(row);
+    tot26 += l.val26 || 0;
+    tot25 += l.val25 || 0;
   });
+  // Linha de totais
+  if (lojas.length > 0) {
+    const cTot = tot25 > 0 ? ((tot26/tot25 - 1)*100) : null;
+    const corTot = cTot === null ? '' : (cTot >= 0 ? 'color:#16a34a' : 'color:#dc2626');
+    const totRow = document.createElement('tr');
+    totRow.innerHTML = `
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;color:#94a3b8;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px"></td>
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;color:#f1f5f9;font-weight:800;font-size:12px">TOTAL — ${lojas.length.toLocaleString('pt-BR')} lojas</td>
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;color:#f1f5f9;text-align:right;font-weight:800;font-size:13px">${fmt(tot26)}</td>
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;color:#94a3b8;text-align:right;font-weight:700">${tot25 > 0 ? fmt(tot25) : '—'}</td>
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;text-align:right;font-weight:800;${corTot}">${cTot!==null?(cTot>=0?'+':'')+cTot.toFixed(1)+'%':'—'}</td>
+    `;
+    tbody.appendChild(totRow);
+  }
 }
 
 let _currentSelloutEmpresa = null;
