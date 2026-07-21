@@ -1541,7 +1541,8 @@
                 <tr>
                   <th style="padding:8px 10px;text-align:center;color:var(--muted);font-weight:600;white-space:nowrap">Status</th>
                   <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600">Produto</th>
-                  <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Lojas</th>
+                  <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Total<br>Rede</th>
+                  <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Lojas c/<br>Estoque</th>
                   <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Ruptura<br>Lojas</th>
                   <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Estoque<br>Total</th>
                   <th id="sj-est-col-giro" style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Giro<br>30d</th>
@@ -5973,15 +5974,19 @@ function renderEstoqueProdutos() {
     return (a.cob ?? 9999) - (b.cob ?? 9999);
   });
 
+  const TOTAL_REDE_SJ = 1237; // fonte: Relação de Lojas Atualizado 21.07.xlsx
+
   tbody.innerHTML = '';
   if (!produtos.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--muted)">Nenhum produto nesta categoria.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="padding:20px;text-align:center;color:var(--muted)">Nenhum produto nesta categoria.</td></tr>';
     return;
   }
 
   produtos.forEach(p => {
     const ss = STATUS_STYLE[p.st] || {bg:'#f1f5f9',color:'#64748b',label:p.st};
     const badge = `<span style="background:${ss.bg};color:${ss.color};padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap">${ss.label}</span>`;
+    // Lojas com estoque > 0 = total lojas que aparecem MENOS as em ruptura
+    const lojasComEst = Math.max(0, (p.lojas || 0) - (p.lojas_rup || 0));
     let pctRup = p.lojas > 0 ? Math.round(p.lojas_rup/p.lojas*100) : 0;
     let corRup = pctRup > 30 ? 'color:#dc2626;font-weight:700' : (pctRup > 0 ? 'color:#d97706' : 'color:var(--muted)');
     const tr = document.createElement('tr');
@@ -5991,7 +5996,8 @@ function renderEstoqueProdutos() {
       tr.innerHTML = `
         <td style="padding:7px 10px;text-align:center">${badge}</td>
         <td style="padding:7px 10px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.nome}">${p.nome}</td>
-        <td style="padding:7px 8px;text-align:right;color:var(--muted)">${p.lojas}</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--muted)">${TOTAL_REDE_SJ.toLocaleString('pt-BR')}</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--muted)">${lojasComEst.toLocaleString('pt-BR')}</td>
         <td style="padding:7px 8px;text-align:right;${corRup}">${p.lojas_rup > 0 ? p.lojas_rup + ' (' + pctRup + '%)' : '—'}</td>
         <td style="padding:7px 8px;text-align:right;font-weight:600">${p.qtde.toLocaleString('pt-BR')}</td>
         <td style="padding:7px 8px;text-align:right;color:var(--muted)">${p.giro.toLocaleString('pt-BR')}</td>
@@ -6001,7 +6007,8 @@ function renderEstoqueProdutos() {
       tr.innerHTML = `
         <td style="padding:7px 10px;text-align:center">${badge}</td>
         <td style="padding:7px 10px;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.nome}">${p.nome}</td>
-        <td style="padding:7px 8px;text-align:right;color:var(--muted)">${p.lojas}</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--muted)">${TOTAL_REDE_SJ.toLocaleString('pt-BR')}</td>
+        <td style="padding:7px 8px;text-align:right;color:var(--muted)">${lojasComEst.toLocaleString('pt-BR')}</td>
         <td style="padding:7px 8px;text-align:right;${corRup}">${p.lojas_rup > 0 ? p.lojas_rup + ' (' + pctRup + '%)' : '—'}</td>
         <td style="padding:7px 8px;text-align:right;font-weight:600">${p.qtde.toLocaleString('pt-BR')}</td>
         <td style="padding:7px 8px;text-align:right;color:var(--muted)">—</td>
