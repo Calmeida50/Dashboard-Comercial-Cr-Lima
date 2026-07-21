@@ -1420,8 +1420,8 @@
         <div class="card" style="padding:0;overflow:hidden">
           <div style="padding:16px 20px 10px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center">
             <div>
-              <h3 style="margin:0;font-size:14px;color:var(--text)">Top 200 Lojas</h3>
-              <p style="margin:4px 0 0;font-size:12px;color:var(--muted)">Sell out por loja 2026</p>
+              <h3 style="margin:0;font-size:14px;color:var(--text)">Ranking de Lojas</h3>
+              <p style="margin:4px 0 0;font-size:12px;color:var(--muted)">Sell out por loja 2026 — do maior para o menor</p>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
               <select id="sel-sellout-empresa" onchange="renderSelloutLojas()"
@@ -1431,6 +1431,7 @@
                 <option value="BELLIZ">BELLIZ</option>
                 <option value="CLESS">CLESS</option>
                 <option value="EVER GREEN">EVER GREEN</option>
+                <option value="PAYOT">PAYOT</option>
               </select>
               <button class="btn-export" style="font-size:11px;padding:5px 10px" onclick="exportarSellOutLojasPanel()">⬇ Excel</button>
             </div>
@@ -6644,7 +6645,7 @@ function exportarSellOutProdutosModal() {
   xlsxDownload(wb, 'SellOut_' + emp.replace(/\s+/g,'_') + '_Produtos.xlsx');
 }
 
-// ---- Sell Out — Top 200 Lojas (painel) ----
+// ---- Sell Out — Ranking de Lojas (painel) ----
 function exportarSellOutLojasPanel() {
   const emp = document.getElementById('sel-sellout-empresa').value;
   const so = DATA.sellout_sao_joao || {};
