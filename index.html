@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Comercial 2026 | Cr Lima v58</title>
+<title>Dashboard Comercial 2026 | Cr Lima v61</title>
 <style>
   #login-overlay {
     position: fixed; inset: 0; z-index: 9999;
@@ -207,6 +207,55 @@
   .progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
   .progress-pct { font-size: 12px; font-weight: 600; min-width: 36px; text-align: right; }
 
+  /* MELHORIA: Progress bar aprimorada */
+  /* ── Matriz de Presença ── */
+  .matriz-wrap { overflow: auto; max-height: 520px; }
+  .matriz-table { border-collapse: collapse; min-width: 100%; font-size: 12px; }
+  .matriz-table thead th { position: sticky; top: 0; background: var(--card); z-index: 10; padding: 6px 4px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  .matriz-table th.emp-col { writing-mode: vertical-rl; transform: rotate(180deg); padding: 8px 6px; text-align: left; height: 80px; vertical-align: bottom; min-width: 32px; }
+  .matriz-table td { padding: 3px 4px; text-align: center; border-bottom: 1px solid #f1f5f9; }
+  .matriz-table td.cli-col { position: sticky; left: 0; background: var(--card); z-index: 5; padding: 4px 12px; text-align: left; white-space: nowrap; font-size: 11px; min-width: 200px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; border-right: 1px solid var(--border); }
+  .matriz-table th.cli-col-h { position: sticky; left: 0; z-index: 20; background: var(--card); min-width: 200px; padding: 6px 12px; text-align: left; border-right: 1px solid var(--border); }
+  .matriz-table tbody tr:hover td { background: #f0f9ff !important; }
+  .matriz-table tbody tr:hover td.cli-col { background: #e0f2fe !important; }
+  .mz-cell-on { display: inline-block; width: 18px; height: 18px; border-radius: 4px; }
+  .mz-cell-off { display: inline-block; width: 18px; height: 18px; border-radius: 4px; background: #fee2e2; border: 1px solid #fca5a5; opacity: 0.6; }
+  .mz-vend-badge { display: inline-block; font-size: 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 0 3px; color: var(--muted); margin-left: 4px; }
+  .progress-bar-ext { display: flex; flex-direction: column; gap: 3px; min-width: 160px; }
+  .progress-bar-ext .pb-row { display: flex; align-items: center; gap: 6px; }
+  .progress-bar-ext .pb-bar { height: 10px; border-radius: 5px; background: #e2e8f0; flex: 1; overflow: hidden; }
+  .progress-bar-ext .pb-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+  .progress-bar-ext .pb-pct { font-size: 12px; font-weight: 700; min-width: 40px; text-align: right; }
+  .progress-bar-ext .pb-falta { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+  /* MELHORIA: Alerta clientes novos */
+  .alert-novos-clientes { background: #fffbeb; border: 1.5px solid #d97706; border-radius: 8px; padding: 12px 18px; margin-bottom: 16px; display: none; align-items: center; gap: 12px; box-shadow: 0 2px 6px rgba(217,119,6,0.15); }
+  .alert-novos-clientes.visible { display: flex; }
+  .alert-novos-text { font-size: 13px; color: #92400e; font-weight: 500; flex: 1; }
+  .alert-novos-btn { background: #d97706; color: white; border: none; border-radius: 6px; padding: 5px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+  /* MELHORIA: Pagamentos comissões */
+  .pag-summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  .pag-kpi { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; box-shadow: var(--shadow); }
+  .pag-kpi .pk-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pag-kpi .pk-value { font-size: 20px; font-weight: 700; margin: 8px 0 4px; }
+  .pag-kpi .pk-sub { font-size: 11px; color: var(--muted); }
+
+  /* MELHORIA: Botão PDF */
+  .btn-pdf { padding: 6px 14px; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s; }
+  .btn-pdf:hover { background: #b91c1c; }
+
+  /* MELHORIA: Print / PDF */
+  @media print {
+    #sidebar, .btn-export, .btn-pdf, .btn-outline { display: none !important; }
+    #main { margin-left: 0 !important; padding: 16px !important; }
+    .page { display: none !important; }
+    .page.active { display: block !important; }
+    .card { box-shadow: none !important; break-inside: avoid; }
+    body { background: white !important; }
+    #login-overlay { display: none !important; }
+  }
+
   /* BADGE STATUS */
   .badge-ok { background: rgba(34,197,94,0.15); color: var(--green); border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
   .badge-warn { background: rgba(245,158,11,0.15); color: var(--yellow); border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
@@ -401,6 +450,12 @@
 </aside>
 
 <main id="main">
+  <!-- #1: MELHORIA: Banner clientes novos não identificados -->
+  <div id="banner-novos-clientes" class="alert-novos-clientes" style="display:none">
+    <span style="font-size:20px">⚠️</span>
+    <span class="alert-novos-text" id="banner-novos-text"></span>
+    <button class="alert-novos-btn" onclick="document.getElementById('banner-novos-clientes').style.display='none'">Fechar</button>
+  </div>
 
   <!-- VISÃO GERAL -->
   <div id="page-visao-geral" class="page active">
@@ -805,6 +860,7 @@
           <h1>Desempenho por Vendedor</h1>
           <p id="vendedores-lista-sub">Ranking e realizado acumulado 2026 — clique no nome para ver detalhes</p>
         </div>
+        <button class="btn-pdf" onclick="exportarPDF()">🖨 PDF</button>
         <div style="display:flex;gap:8px;align-items:center;margin-top:4px">
           <button id="btn-todos" class="btn" onclick="toggleVarejo('todos')" style="background:var(--accent)">👥 Todos</button>
           <button id="btn-varejo" class="btn-outline" onclick="toggleVarejo('varejo')">🛒 Só Varejo</button>
@@ -814,7 +870,7 @@
         <div class="card-header"><h3>Ranking — Volume Realizado YTD</h3><span style="font-size:11px;color:var(--muted)">Clique no nome para detalhes</span></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>#</th><th>Vendedor</th><th>Histórico</th><th>Objetivo</th><th>Realizado</th><th>vs Hist</th><th>Atingimento</th></tr></thead>
+            <thead><tr><th>#</th><th>Vendedor</th><th>Histórico</th><th>Objetivo</th><th>Realizado</th><th>vs Mês Ant.</th><th>Meta (% atingida)</th></tr></thead>
             <tbody id="table-vendedores"></tbody>
           </table>
         </div>
@@ -907,7 +963,10 @@
   <div id="page-comissoes" class="page">
     <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
       <div><h1>Comissões</h1><p>Faturado, Comissão e Comissão Vendedor por mês — clique no vendedor para ver os clientes</p></div>
-      <button class="btn-export" onclick="exportarComissoes()">⬇ Excel</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn-export" onclick="exportarComissoes()">⬇ Excel</button>
+        <button class="btn-pdf" onclick="exportarPDF()">🖨 PDF</button>
+      </div>
     </div>
     <!-- Resumo por vendedor: Faturado / Comissão / Com.Vendedor por mês -->
     <div class="card" style="margin-bottom:16px">
@@ -923,6 +982,41 @@
         <table id="table-comissoes-resumo" class="table-comissoes" style="min-width:max-content">
           <thead id="thead-comissoes"></thead>
           <tbody id="tbody-comissoes"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- #3: MELHORIA: Pagamento de Comissões -->
+    <div class="card" style="margin-bottom:16px" id="card-pagamentos-com">
+      <div class="card-header" style="flex-direction:column;align-items:flex-start;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <h3>💳 Pagamento de Comissões</h3>
+          <button onclick="marcarTodosAnteriorPago()" style="padding:6px 14px;background:#16a34a;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">✓ Marcar todos como pago</button>
+        </div>
+        <!-- Botões por mês -->
+        <div id="pag-meses-btns" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+      <div class="pag-summary-grid" id="pag-summary-grid">
+        <div class="pag-kpi">
+          <div class="pk-label">Total Comissão</div>
+          <div class="pk-value" id="pag-total-com" style="color:var(--accent)">—</div>
+          <div class="pk-sub">Gerado no período</div>
+        </div>
+        <div class="pag-kpi">
+          <div class="pk-label">✅ Pago</div>
+          <div class="pk-value" id="pag-pago" style="color:var(--green)">—</div>
+          <div class="pk-sub">Comissão quitada</div>
+        </div>
+        <div class="pag-kpi">
+          <div class="pk-label">⏳ A Pagar</div>
+          <div class="pk-value" id="pag-aberto" style="color:#dc2626">—</div>
+          <div class="pk-sub">Saldo em aberto</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Vendedor</th><th style="color:#16a34a">Comissão Total</th><th style="color:#2563eb">Pago</th><th style="color:#dc2626">A Pagar</th><th>% Pago</th></tr></thead>
+          <tbody id="tbody-pagamentos"></tbody>
         </table>
       </div>
     </div>
@@ -1006,7 +1100,7 @@
         <!-- Lista de clientes -->
         <div class="table-wrap" style="max-height:400px;overflow-y:auto">
           <table>
-            <thead><tr><th>Empresa</th><th>NF</th><th>Cliente</th><th>Faturado</th><th>Comissão</th><th>Com. Vendedor</th></tr></thead>
+            <thead><tr><th style="width:32px;text-align:center">#</th><th>Empresa</th><th>NF</th><th>Cliente</th><th>Faturado</th><th>Comissão</th><th>Com. Vendedor</th></tr></thead>
             <tbody id="modal-com-clientes"></tbody>
           </table>
         </div>
@@ -1068,6 +1162,30 @@
       </div>
       <div id="clientes-vendedor-wrap">
         <p style="color:var(--muted);font-size:13px;padding:20px 0">Selecione uma empresa acima para ver os clientes positivados por vendedor.</p>
+      </div>
+    </div>
+    <!-- MATRIZ DE PRESENÇA -->
+    <div class="card" style="margin-top:16px">
+      <div class="card-header" style="flex-wrap:wrap;gap:8px">
+        <div>
+          <h3 style="margin:0">🗺️ Matriz de Presença — Clientes × Empresas</h3>
+          <p style="font-size:12px;color:var(--muted);margin:2px 0 0">🟩 compra · 🟥 não compra — <span id="matriz-periodo"></span></p>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input type="text" id="matriz-search" placeholder="🔍 Buscar cliente..." oninput="filtrarMatriz()" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;width:200px;background:var(--card);color:var(--text)">
+          <select id="matriz-filtro-vend" onchange="filtrarMatriz()" style="padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--card);color:var(--text)">
+            <option value="">Todos os vendedores</option>
+          </select>
+          <span style="font-size:12px;color:var(--muted)" id="matriz-count"></span>
+        </div>
+      </div>
+      <div style="padding:8px 16px 4px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+        <span style="font-size:11px;color:var(--muted);font-weight:600;margin-right:4px">⬇ Exportar Excel:</span>
+        <div id="matriz-export-btns" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+        <button onclick="exportarMatrizVendedor('')" style="padding:3px 10px;font-size:11px;background:#1e40af;color:white;border:none;border-radius:4px;cursor:pointer;font-weight:600">Todos</button>
+      </div>
+      <div id="matriz-presenca-body" class="matriz-wrap">
+        <p style="color:var(--muted);padding:20px;font-size:13px">Carregando matriz...</p>
       </div>
     </div>
   </div>
@@ -1298,12 +1416,60 @@
           </div>
         </div>
 
-        <!-- Top 200 lojas -->
+        <!-- Card Pareto 80% -->
+        <div id="pareto-card" class="card" style="padding:16px 20px;margin-bottom:0">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <span style="font-size:18px">🎯</span>
+            <div>
+              <h3 id="pareto-titulo" style="margin:0;font-size:14px;color:var(--text)">Concentração de Vendas — GRANADO</h3>
+              <p style="margin:2px 0 0;font-size:11px;color:var(--muted)">Análise Pareto (regra 80/20) · Sell out Jan–Jun 2026 · Rede São João</p>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+            <div style="background:#f0f9ff;border-radius:10px;padding:14px 16px;border-left:4px solid #0ea5e9;text-align:center">
+              <div style="font-size:11px;color:#0369a1;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Total de Lojas Ativas</div>
+              <div id="pareto-n-lojas" style="font-size:28px;font-weight:800;color:#0c4a6e">—</div>
+              <div style="font-size:10px;color:#0369a1;margin-top:2px">lojas compraram em 2026</div>
+            </div>
+            <div style="background:#f0fdf4;border-radius:10px;padding:14px 16px;border-left:4px solid #16a34a;text-align:center;position:relative">
+              <div style="font-size:11px;color:#15803d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">⭐ 80% do Faturamento</div>
+              <div id="pareto-p80" style="font-size:28px;font-weight:800;color:#14532d">—</div>
+              <div id="pareto-p80-pct" style="font-size:10px;color:#15803d;margin-top:2px">lojas = 80% das vendas</div>
+            </div>
+            <div style="background:#fefce8;border-radius:10px;padding:14px 16px;border-left:4px solid #ca8a04;text-align:center">
+              <div style="font-size:11px;color:#a16207;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">90% do Faturamento</div>
+              <div id="pareto-p90" style="font-size:28px;font-weight:800;color:#713f12">—</div>
+              <div id="pareto-p90-pct" style="font-size:10px;color:#a16207;margin-top:2px">lojas = 90% das vendas</div>
+            </div>
+          </div>
+          <!-- Barra visual -->
+          <div style="margin-top:14px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px">
+              <span>0%</span>
+              <span id="pareto-bar-label" style="font-weight:600;color:#15803d">— lojas = 80% do sell out</span>
+              <span>100% das lojas</span>
+            </div>
+            <div style="height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;display:flex">
+              <div id="pareto-bar-50" style="background:#86efac;height:100%;transition:width .4s"></div>
+              <div id="pareto-bar-80" style="background:#16a34a;height:100%;transition:width .4s"></div>
+              <div id="pareto-bar-90" style="background:#ca8a04;height:100%;transition:width .4s"></div>
+              <div id="pareto-bar-rest" style="background:#e2e8f0;height:100%;flex:1"></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:var(--muted)">
+              <span><span style="display:inline-block;width:10px;height:10px;background:#86efac;border-radius:2px;vertical-align:middle"></span> 50% do fat.</span>
+              <span><span style="display:inline-block;width:10px;height:10px;background:#16a34a;border-radius:2px;vertical-align:middle"></span> até 80%</span>
+              <span><span style="display:inline-block;width:10px;height:10px;background:#ca8a04;border-radius:2px;vertical-align:middle"></span> até 90%</span>
+              <span><span style="display:inline-block;width:10px;height:10px;background:#e2e8f0;border-radius:2px;vertical-align:middle"></span> restante</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ranking de Lojas -->
         <div class="card" style="padding:0;overflow:hidden">
           <div style="padding:16px 20px 10px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center">
             <div>
-              <h3 style="margin:0;font-size:14px;color:var(--text)">Top 200 Lojas</h3>
-              <p style="margin:4px 0 0;font-size:12px;color:var(--muted)">Sell out por loja 2026</p>
+              <h3 style="margin:0;font-size:14px;color:var(--text)">Ranking de Lojas</h3>
+              <p style="margin:4px 0 0;font-size:12px;color:var(--muted)">Sell out por loja 2026 — do maior para o menor</p>
             </div>
             <div style="display:flex;gap:8px;align-items:center">
               <select id="sel-sellout-empresa" onchange="renderSelloutLojas()"
@@ -1313,6 +1479,7 @@
                 <option value="BELLIZ">BELLIZ</option>
                 <option value="CLESS">CLESS</option>
                 <option value="EVER GREEN">EVER GREEN</option>
+                <option value="PAYOT">PAYOT</option>
               </select>
               <button class="btn-export" style="font-size:11px;padding:5px 10px" onclick="exportarSellOutLojasPanel()">⬇ Excel</button>
             </div>
@@ -1782,6 +1949,8 @@ function renderAll() {
   renderGeralCharts();
   // NÃO chamar renderEmpresasPage aqui — charts devem ser renderizados apenas quando a aba está visível
   renderFinanceiroTable();
+  // #1: MELHORIA: Verificar clientes não mapeados no banco
+  setTimeout(verificarClientesNovos, 800);
 }
 
 // ============================================================
@@ -2549,6 +2718,11 @@ function renderVendedoresCharts() {
     // Para cada vendedor: usa acomp_vendas TOTAL.real para meses confirmados
     // (essa fonte bate com o faturamento real das empresas)
     // + live para meses não confirmados
+    // #5: Determine last two confirmed months for comparison
+    const { idxConf: _idxConf } = getIdxYTD();
+    const _lastIdx = _idxConf.length > 0 ? _idxConf[_idxConf.length - 1] : null;
+    const _prevIdx = _idxConf.length > 1 ? _idxConf[_idxConf.length - 2] : null;
+
     entries = Object.entries(vendedores)
       .filter(([n]) => n !== 'VAREJO')
       .map(([nome]) => {
@@ -2565,7 +2739,12 @@ function renderVendedoresCharts() {
             real += (LIVE_PEDIDOS_MULTI[i].porVendedor||{})[nome] || 0;
           }
         }
-        return [nome, { real, hist, obj }];
+        // #5: Last month vs previous month comparison
+        const lastReal = _lastIdx !== null ?
+          (((DATA.acomp_vendas||{})[nome]||{})[MESES_KEYS_UP[_lastIdx]]||{}).TOTAL?.real || 0 : 0;
+        const prevReal = _prevIdx !== null ?
+          (((DATA.acomp_vendas||{})[nome]||{})[MESES_KEYS_UP[_prevIdx]]||{}).TOTAL?.real || 0 : 0;
+        return [nome, { real, hist, obj, lastReal, prevReal }];
       });
   }
   const sorted = entries.sort((a,b) => b[1].real - a[1].real);
@@ -2577,9 +2756,14 @@ function renderVendedoresCharts() {
   sorted.forEach(([nome, d], idx) => {
     const p = d.obj > 0 ? pct(d.real, d.obj) : null;
     const cor = p === null ? '#d97706' : p >= 100 ? '#16a34a' : p >= 80 ? '#d97706' : '#dc2626';
-    const vsHist = d.hist > 0 ? ((d.real/d.hist - 1)*100).toFixed(1) : null;
+    // #5: Month comparison (last confirmed vs previous confirmed)
+    const vsMesAnt = (d.prevReal > 0) ? ((d.lastReal / d.prevReal - 1) * 100).toFixed(1) : (d.hist > 0 ? ((d.real/d.hist-1)*100).toFixed(1) : null);
     const isVarejo = nome === 'VAREJO';
     if (!isVarejo) { sumHist += d.hist||0; sumObj += d.obj||0; sumReal += d.real||0; }
+    // #2: Enhanced progress bar with falta indicator
+    const falta = d.obj > 0 ? d.obj - d.real : 0;
+    const faltaStr = d.obj > 0 ? (falta > 0 ? 'Falta ' + fmt(falta) : '✓ Superou ' + fmt(Math.abs(falta))) : '';
+    const pbGrad = p === null ? '#d97706' : p >= 100 ? 'linear-gradient(90deg,#16a34a,#4ade80)' : p >= 80 ? 'linear-gradient(90deg,#d97706,#fbbf24)' : 'linear-gradient(90deg,#dc2626,#f87171)';
     tbody.innerHTML += `
       <tr style="${isVarejo ? 'background:#f0f7ff;font-weight:700' : ''}" >
         <td class="rank">${isVarejo ? '🛒' : idx+1}</td>
@@ -2587,11 +2771,14 @@ function renderVendedoresCharts() {
         <td style="color:var(--muted)">${fmt(d.hist||0)}</td>
         <td style="color:var(--muted)">${d.obj > 0 ? fmt(d.obj) : '—'}</td>
         <td style="font-weight:700">${fmt(d.real)}</td>
-        <td style="color:${vsHist!==null?(+vsHist>=0?'#16a34a':'#dc2626'):'var(--muted)'}">${vsHist!==null?(+vsHist>=0?'▲':'▼')+' '+Math.abs(vsHist)+'%':'—'}</td>
+        <td style="color:${vsMesAnt!==null?(+vsMesAnt>=0?'#16a34a':'#dc2626'):'var(--muted)'}">${vsMesAnt!==null?(+vsMesAnt>=0?'▲ +':'▼ ')+Math.abs(vsMesAnt)+'%':'—'}</td>
         <td>
-          <div class="progress-bar-wrap">
-            <div class="progress-bar"><div class="progress-bar-fill" style="width:${p?Math.min(p,120):50}%;background:${cor}"></div></div>
-            <span class="progress-pct" style="color:${cor}">${p !== null ? p+'%' : '—'}</span>
+          <div class="progress-bar-ext">
+            <div class="pb-row">
+              <div class="pb-bar"><div class="pb-fill" style="width:${p?Math.min(p,100):0}%;background:${pbGrad}"></div></div>
+              <span class="pb-pct" style="color:${cor}">${p !== null ? p+'%' : '—'}</span>
+            </div>
+            ${faltaStr ? `<div class="pb-falta" style="color:${falta<=0?'#16a34a':'var(--muted)'}">${faltaStr}</div>` : ''}
           </div>
         </td>
       </tr>`;
@@ -2611,7 +2798,10 @@ function renderVendedoresCharts() {
         totReal += LIVE_PEDIDOS_MULTI[i].totalGeral || 0;
       }
     }
-    const totVsHist = totHist > 0 ? ((totReal/totHist - 1)*100).toFixed(1) : null;
+    // #5: Total row month comparison
+    const lastGeralReal = _lastIdx !== null ? (geralEmp.real || [])[_lastIdx] || 0 : 0;
+    const prevGeralReal = _prevIdx !== null ? (geralEmp.real || [])[_prevIdx] || 0 : 0;
+    const totVsHist = prevGeralReal > 0 ? ((lastGeralReal / prevGeralReal - 1) * 100).toFixed(1) : (totHist > 0 ? ((totReal/totHist - 1)*100).toFixed(1) : null);
     const totP = totObj > 0 ? Math.round(totReal/totObj*100) : null;
     const totCor = totP === null ? '#d97706' : totP >= 100 ? '#16a34a' : totP >= 80 ? '#d97706' : '#dc2626';
     tbody.innerHTML += `
@@ -2621,7 +2811,7 @@ function renderVendedoresCharts() {
         <td style="color:var(--muted)">${fmt(totHist)}</td>
         <td style="color:var(--muted)">${totObj > 0 ? fmt(totObj) : '—'}</td>
         <td style="font-weight:700;color:var(--accent)">${fmt(totReal)}</td>
-        <td style="color:${totVsHist!==null?(+totVsHist>=0?'#16a34a':'#dc2626'):'var(--muted)'}">${totVsHist!==null?(+totVsHist>=0?'▲':'▼')+' '+Math.abs(totVsHist)+'%':'—'}</td>
+        <td style="color:${totVsHist!==null?(+totVsHist>=0?'#16a34a':'#dc2626'):'var(--muted)'}">${totVsHist!==null?(+totVsHist>=0?'▲ +':'▼ ')+Math.abs(totVsHist)+'%':'—'}</td>
         <td>
           <div class="progress-bar-wrap">
             <div class="progress-bar"><div class="progress-bar-fill" style="width:${totP?Math.min(totP,120):50}%;background:${totCor}"></div></div>
@@ -2938,6 +3128,10 @@ function renderClientesPage() {
       sel.innerHTML += `<option value="${emp}">${emp}</option>`;
     }
   });
+
+  // Matriz de presença
+  _matrizData = null;
+  renderMatrizPresenca();
 }
 
 function renderClientesPorVendedor() {
@@ -2989,6 +3183,199 @@ function renderClientesPorVendedor() {
       </table>
     </div>
   `;
+}
+
+// ============================================================
+//  MATRIZ DE PRESENÇA
+// ============================================================
+let _matrizData = null; // cache
+
+function renderMatrizPresenca() {
+  const detalhado = DATA.clientes_detalhado || {};
+  const empresas = Object.keys(detalhado).filter(e => e !== 'GERAL').sort();
+  if (!empresas.length) {
+    document.getElementById('matriz-presenca-body').innerHTML =
+      '<p style="color:var(--muted);padding:20px;font-size:13px">Dados detalhados de clientes não disponíveis. Importe os relatórios de comissão para visualizar a matriz.</p>';
+    return;
+  }
+
+  // Atualiza período
+  const perEl = document.getElementById('matriz-periodo');
+  if (perEl) perEl.textContent = buildPeriodoHTML ? buildPeriodoHTML('').replace(/<[^>]*>/g,'') : '';
+
+  // Build: cliente → { emp1: true/false, emp2: ..., vendedor: '...' }
+  const mapa = {}; // { 'CLIENTE': { BELLIZ: true, GRANADO: false, ..., _vend: 'CRISTIANO' } }
+  const vendedoresList = new Set();
+
+  empresas.forEach(function(emp) {
+    const vendedores = detalhado[emp] || {};
+    Object.entries(vendedores).forEach(function(entry) {
+      const vend = entry[0]; const clientes = entry[1];
+      vendedoresList.add(vend);
+      (clientes || []).forEach(function(c) {
+        const nome = (c.nome || '').trim();
+        if (!nome) return;
+        const ativo = (c.meses || []).some(function(v){ return v > 0; });
+        // Vendedor responsável vem do banco oficial (fonte da verdade)
+        const vendResp = getVendedorResponsavel(nome) || vend;
+        if (!mapa[nome]) mapa[nome] = { _vend: vendResp };
+        if (ativo) {
+          mapa[nome][emp] = true;
+          // Atualiza para vendedor do banco se ainda não foi definido pelo banco
+          if (getVendedorResponsavel(nome)) mapa[nome]._vend = vendResp;
+        } else if (mapa[nome][emp] === undefined) {
+          mapa[nome][emp] = false;
+        }
+      });
+    });
+  });
+
+  // Preenche select de vendedores
+  const selVend = document.getElementById('matriz-filtro-vend');
+  if (selVend) {
+    const curVend = selVend.value;
+    selVend.innerHTML = '<option value="">Todos os vendedores</option>';
+    [...vendedoresList].sort().forEach(function(v) {
+      selVend.innerHTML += '<option value="' + v + '"' + (v === curVend ? ' selected' : '') + '>' + v + '</option>';
+    });
+  }
+
+  _matrizData = { mapa: mapa, empresas: empresas };
+  _renderMatrizExportBtns(vendedoresList);
+  _buildMatrizHTML(mapa, empresas, '', '');
+}
+
+function _buildMatrizHTML(mapa, empresas, searchTerm, vendFiltro) {
+  // Sort: mais empresas primeiro, depois alfabético
+  const nomes = Object.keys(mapa).filter(function(n) {
+    // Apenas clientes com pelo menos uma compra em qualquer empresa (ativos)
+    if (!empresas.some(function(e){ return mapa[n][e]; })) return false;
+    if (searchTerm && !n.toUpperCase().includes(searchTerm.toUpperCase())) return false;
+    if (vendFiltro && mapa[n]._vend !== vendFiltro) return false;
+    return true;
+  }).sort(function(a, b) {
+    const cntA = empresas.filter(function(e){ return mapa[a][e]; }).length;
+    const cntB = empresas.filter(function(e){ return mapa[b][e]; }).length;
+    if (cntB !== cntA) return cntB - cntA;
+    return a.localeCompare(b, 'pt-BR');
+  });
+
+  const cntEl = document.getElementById('matriz-count');
+  if (cntEl) cntEl.textContent = nomes.length + ' clientes';
+
+  if (!nomes.length) {
+    document.getElementById('matriz-presenca-body').innerHTML =
+      '<p style="color:var(--muted);padding:20px;font-size:13px">Nenhum cliente encontrado.</p>';
+    return;
+  }
+
+  // Header
+  let html = '<table class="matriz-table"><thead><tr>';
+  html += '<th class="cli-col-h">Cliente</th>';
+  html += '<th style="text-align:center;position:sticky;top:0;background:var(--card);z-index:10;padding:4px;font-size:10px;color:var(--muted);min-width:28px">Mix</th>';
+  empresas.forEach(function(emp) {
+    const cor = EMPRESA_CORES[emp] || '#8892b0';
+    html += '<th class="emp-col" style="color:' + cor + '">' + emp + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  // Rows
+  nomes.forEach(function(nome) {
+    const row = mapa[nome];
+    const cnt = empresas.filter(function(e){ return row[e]; }).length;
+    const mixColor = cnt === empresas.length ? '#16a34a' : cnt >= Math.ceil(empresas.length/2) ? '#d97706' : '#ef4444';
+    html += '<tr><td class="cli-col" title="' + nome + '">' + nome;
+    if (row._vend) html += ' <span class="mz-vend-badge">' + row._vend.split(' ')[0] + '</span>';
+    html += '</td>';
+    html += '<td style="text-align:center;font-size:11px;font-weight:700;color:' + mixColor + '">' + cnt + '</td>';
+    empresas.forEach(function(emp) {
+      const cor = EMPRESA_CORES[emp] || '#8892b0';
+      if (row[emp]) {
+        html += '<td><span class="mz-cell-on" style="background:' + cor + ';opacity:0.75" title="' + nome + ' → ' + emp + '"></span></td>';
+      } else {
+        html += '<td><span class="mz-cell-off" title="' + nome + ' não compra ' + emp + '"></span></td>';
+      }
+    });
+    html += '</tr>';
+  });
+
+  // Linha de totais por empresa
+  html += '<tr style="border-top:2px solid var(--border);background:#f8fafc;position:sticky;bottom:0">';
+  html += '<td class="cli-col" style="font-weight:700;font-size:11px;color:var(--muted);background:#f8fafc">TOTAL CLIENTES</td>';
+  html += '<td style="text-align:center;font-weight:700;font-size:11px;color:var(--muted)">' + nomes.length + '</td>';
+  empresas.forEach(function(emp) {
+    const cnt = nomes.filter(function(n){ return mapa[n][emp]; }).length;
+    const cor = EMPRESA_CORES[emp] || '#8892b0';
+    const pct = nomes.length > 0 ? Math.round(cnt / nomes.length * 100) : 0;
+    const textColor = pct >= 50 ? cor : '#94a3b8';
+    html += '<td style="text-align:center;padding:4px 2px"><span style="font-weight:700;font-size:12px;color:' + textColor + '">' + cnt + '</span><br><span style="font-size:9px;color:#94a3b8">' + pct + '%</span></td>';
+  });
+  html += '</tr>';
+
+  html += '</tbody></table>';
+  document.getElementById('matriz-presenca-body').innerHTML = html;
+}
+
+function filtrarMatriz() {
+  if (!_matrizData) return;
+  const search = (document.getElementById('matriz-search').value || '').trim();
+  const vend = document.getElementById('matriz-filtro-vend').value || '';
+  _buildMatrizHTML(_matrizData.mapa, _matrizData.empresas, search, vend);
+}
+
+function exportarMatrizVendedor(vendFiltro) {
+  if (!_matrizData) return;
+  const { mapa, empresas } = _matrizData;
+
+  // Filtra clientes
+  const nomes = Object.keys(mapa).filter(function(n) {
+    if (!empresas.some(function(e){ return mapa[n][e]; })) return false;
+    if (vendFiltro && mapa[n]._vend !== vendFiltro) return false;
+    return true;
+  }).sort(function(a,b){
+    const cA = empresas.filter(function(e){return mapa[a][e];}).length;
+    const cB = empresas.filter(function(e){return mapa[b][e];}).length;
+    return cB !== cA ? cB - cA : a.localeCompare(b,'pt-BR');
+  });
+
+  // Cabeçalho
+  const header = ['CLIENTE', 'VENDEDOR', 'MIX'].concat(empresas);
+  const rows = [header];
+
+  nomes.forEach(function(nome) {
+    const row = mapa[nome];
+    const mix = empresas.filter(function(e){ return row[e]; }).length;
+    const linha = [nome, row._vend || '', mix];
+    empresas.forEach(function(emp) { linha.push(row[emp] ? 'SIM' : ''); });
+    rows.push(linha);
+  });
+
+  // Linha de totais
+  const totRow = ['TOTAL CLIENTES', '', nomes.length];
+  empresas.forEach(function(emp) {
+    totRow.push(nomes.filter(function(n){ return mapa[n][emp]; }).length);
+  });
+  rows.push([]);
+  rows.push(totRow);
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+
+  // Largura das colunas
+  ws['!cols'] = [{ wch: 45 }, { wch: 12 }, { wch: 5 }].concat(empresas.map(function(){ return { wch: 12 }; }));
+
+  const nomeArq = vendFiltro ? 'Matriz_' + vendFiltro : 'Matriz_Todos';
+  XLSX.utils.book_append_sheet(wb, ws, vendFiltro || 'Todos');
+  XLSX.writeFile(wb, nomeArq + '_Presenca.xlsx');
+}
+
+function _renderMatrizExportBtns(vendedoresList) {
+  const container = document.getElementById('matriz-export-btns');
+  if (!container) return;
+  const vends = [...vendedoresList].sort();
+  container.innerHTML = vends.map(function(v) {
+    return '<button onclick="exportarMatrizVendedor(\'' + v + '\')" style="padding:3px 10px;font-size:11px;background:var(--bg);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-weight:600;color:var(--text)">' + v + '</button>';
+  }).join('');
 }
 
 // ============================================================
@@ -3274,6 +3661,9 @@ function renderComissoesPage() {
     const tb = document.getElementById('tbody-com-empresa');
     if (tb) tb.innerHTML = `<tr><td colspan="20" style="padding:16px;color:#dc2626;text-align:center">Erro ao carregar: ${err.message}</td></tr>`;
   }
+
+  // #3: MELHORIA: Renderizar pagamentos
+  try { renderPagamentosComissoes(vendors); } catch(e) { console.warn('Pagamentos:', e); }
 }
 
 let COM_ANO_SELECIONADO = 2026;
@@ -3740,7 +4130,7 @@ function renderClientesComissao() {
 
   // Linha de totais
   tbody.innerHTML += `<tr style="background:#f8fafc;font-weight:700">
-    <td colspan="3">TOTAL</td>
+    <td></td><td colspan="3">TOTAL</td>
     <td style="color:#2563eb">${fmt(total_fat)}</td>
     <td style="color:#16a34a">${fmt(total_com)}</td>
     <td style="color:#d97706">${fmt(total_cv)}</td>
@@ -3752,6 +4142,193 @@ function fecharModalComissao(e) {
     document.getElementById('modal-comissao').style.display = 'none';
     comissaoVendedorAtual = null;
   }
+}
+
+// ============================================================
+//  MELHORIA #1: Detecção de clientes novos
+// ============================================================
+function verificarClientesNovos() {
+  const novos = DATA.clientes_desconhecidos || [];
+  if (novos.length === 0) return;
+  const banner = document.getElementById('banner-novos-clientes');
+  const txt = document.getElementById('banner-novos-text');
+  if (banner && txt) {
+    const preview = novos.slice(0,3).join(', ');
+    const extra = novos.length > 3 ? ` e mais ${novos.length - 3}...` : '';
+    txt.innerHTML = `⚠️ <strong>${novos.length} cliente(s) novo(s)</strong> detectado(s) no último faturamento não mapeado(s) no banco de dados: <em>${preview}${extra}</em>. Atualize o banco antes do próximo processamento.`;
+    banner.classList.add('visible');
+  }
+}
+
+// ============================================================
+//  MELHORIA #3: Pagamentos de comissões
+// ============================================================
+
+// Salvar dados atualizados no localStorage para persistir baixas
+function salvarDadosPagamento() {
+  try {
+    localStorage.setItem('dashboard_data_v28', JSON.stringify(DATA));
+  } catch(e) { console.warn('Erro ao salvar:', e); }
+}
+
+// Marcar um mês específico como pago para todos os vendedores
+function marcarMesPago(mes) {
+  const resumo = DATA.comissoes_resumo || {};
+  let totalMarcado = 0;
+  Object.values(resumo).forEach(v => {
+    const mesData = v[mes];
+    if (mesData && mesData.com > 0) {
+      // Calcular quanto deste mês ainda não foi pago
+      // Pago acumulado por mês (salvo em _pago_por_mes)
+      v._pago_por_mes = v._pago_por_mes || {};
+      const jaPagoMes = v._pago_por_mes[mes] || 0;
+      const restaMes = Math.max(0, mesData.com - jaPagoMes);
+      if (restaMes > 0) {
+        v._pago_por_mes[mes] = mesData.com;
+        v.com_pago = (v.com_pago || 0) + restaMes;
+        totalMarcado += restaMes;
+      }
+    }
+  });
+  if (totalMarcado > 0) {
+    salvarDadosPagamento();
+    renderComissoesPage();
+  }
+}
+
+// Desmarcar um mês (reverter pagamento)
+function desmarcarMesPago(mes) {
+  const resumo = DATA.comissoes_resumo || {};
+  Object.values(resumo).forEach(v => {
+    v._pago_por_mes = v._pago_por_mes || {};
+    const pagMes = v._pago_por_mes[mes] || 0;
+    if (pagMes > 0) {
+      v.com_pago = Math.max(0, (v.com_pago || 0) - pagMes);
+      v._pago_por_mes[mes] = 0;
+    }
+  });
+  salvarDadosPagamento();
+  renderComissoesPage();
+}
+
+// Marcar todos os meses com dados como pagos
+function marcarTodosAnteriorPago() {
+  const resumo = DATA.comissoes_resumo || {};
+  const MESES_KEYS = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+  const mesesComDados = MESES_KEYS.filter(m =>
+    Object.values(resumo).some(v => v[m] && v[m].com > 0)
+  );
+  mesesComDados.forEach(mes => marcarMesPago(mes));
+}
+
+// Verificar se um mês está 100% pago
+function mesPagoStatus(mes) {
+  const resumo = DATA.comissoes_resumo || {};
+  let totalCom = 0, totalPagoMes = 0;
+  Object.values(resumo).forEach(v => {
+    const mesData = v[mes];
+    if (mesData && mesData.com > 0) {
+      totalCom += mesData.com;
+      totalPagoMes += (v._pago_por_mes || {})[mes] || 0;
+    }
+  });
+  if (totalCom === 0) return 'sem_dados';
+  if (totalPagoMes >= totalCom - 0.01) return 'pago';
+  if (totalPagoMes > 0) return 'parcial';
+  return 'aberto';
+}
+
+function renderPagamentosComissoes(vendors) {
+  let totalCom = 0, totalPago = 0;
+  const resumo = DATA.comissoes_resumo || {};
+  const MESES_KEYS = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+  const MESES_SHORT_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  // Descobrir meses com dados de comissão
+  const resumoGlobal = DATA.comissoes_resumo || {};
+  const mesesComDadosPag = MESES_KEYS.filter(m =>
+    Object.values(resumoGlobal).some(v => v[m] && v[m].com > 0)
+  );
+
+  // Render month buttons
+  const btnContainer = document.getElementById('pag-meses-btns');
+  if (btnContainer) {
+    btnContainer.innerHTML = mesesComDadosPag.map((mes, i) => {
+      const status = mesPagoStatus(mes);
+      const label = MESES_SHORT_PT[MESES_KEYS.indexOf(mes)];
+      const isPago = status === 'pago';
+      const isParc = status === 'parcial';
+      const bgColor = isPago ? '#16a34a' : isParc ? '#d97706' : '#e2e8f0';
+      const textColor = isPago || isParc ? 'white' : '#475569';
+      const icon = isPago ? '✓ ' : isParc ? '~ ' : '';
+      const onclick = isPago
+        ? `desmarcarMesPago('${mes}')`
+        : `marcarMesPago('${mes}')`;
+      const title = isPago ? 'Clique para desmarcar' : isParc ? 'Parcialmente pago — clique para completar' : 'Marcar como pago';
+      return `<button onclick="${onclick}" title="${title}"
+        style="padding:5px 12px;background:${bgColor};color:${textColor};border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s">
+        ${icon}${label}</button>`;
+    }).join('');
+  }
+
+  const tbody = document.getElementById('tbody-pagamentos');
+  if (!tbody) return;
+  
+  tbody.innerHTML = '';
+  vendors.forEach((v, idx) => {
+    const com = v.comTotal;
+    const pago = (resumo[v.nome] || {}).com_pago || 0;
+    totalCom += com; totalPago += pago;
+    const aberto = com - pago;
+    const pctPago = com > 0 ? Math.round(pago / com * 100) : 0;
+    const corAberto = aberto > 0.01 ? '#dc2626' : '#16a34a';
+    const corBarra = pctPago >= 100 ? '#16a34a' : pctPago >= 50 ? '#d97706' : '#dc2626';
+    tbody.innerHTML += `<tr>
+      <td class="rank">${idx + 1}</td>
+      <td style="font-weight:600">${v.nome}</td>
+      <td style="color:#16a34a;font-weight:600">${fmt(com)}</td>
+      <td style="color:#2563eb">${pago > 0 ? fmt(pago) : '<span style="color:var(--muted)">—</span>'}</td>
+      <td style="color:${corAberto};font-weight:${aberto>0.01?'700':'400'}">${aberto > 0.01 ? fmt(aberto) : '<span style="color:#16a34a">✓ Quitado</span>'}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="flex:1;height:8px;border-radius:4px;background:#e2e8f0;overflow:hidden">
+            <div style="height:100%;width:${pctPago}%;background:${corBarra};border-radius:4px;transition:width 0.5s"></div>
+          </div>
+          <span style="font-size:11px;color:${corBarra};font-weight:600;min-width:28px">${pctPago}%</span>
+        </div>
+      </td>
+    </tr>`;
+  });
+  
+  // Total row
+  const totalAberto = totalCom - totalPago;
+  tbody.innerHTML += `<tr style="font-weight:700;border-top:2px solid var(--border);background:#f8fafc">
+    <td></td>
+    <td>TOTAL</td>
+    <td style="color:#16a34a">${fmt(totalCom)}</td>
+    <td style="color:#2563eb">${totalPago > 0 ? fmt(totalPago) : '—'}</td>
+    <td style="color:${totalAberto>0.01?'#dc2626':'#16a34a'}">${totalAberto > 0.01 ? fmt(totalAberto) : '✓ Tudo quitado'}</td>
+    <td></td>
+  </tr>`;
+  
+  // KPI cards
+  const elTotal = document.getElementById('pag-total-com');
+  const elPago = document.getElementById('pag-pago');
+  const elAberto = document.getElementById('pag-aberto');
+  if (elTotal) elTotal.textContent = fmt(totalCom);
+  if (elPago) elPago.textContent = totalPago > 0 ? fmt(totalPago) : 'R$ 0';
+  if (elAberto) elAberto.textContent = fmt(totalAberto);
+}
+
+// ============================================================
+//  MELHORIA #4: Exportar PDF
+// ============================================================
+function exportarPDF() {
+  // Salvar estado atual
+  const title = document.title;
+  document.title = 'Dashboard Comercial 2026 — Cr Lima';
+  window.print();
+  document.title = title;
 }
 
 // ============================================================
@@ -3870,6 +4447,19 @@ const EMPRESAS_ACOMP = ['GRANADO','CLESS','KISABOR','AQUAFAST','DEPIMIEL',
 // Vendedores reconhecidos
 const VENDEDORES_VALIDOS = new Set(['CRISTIANO','GRAZI','JEFERSON','MATHEUS','HEIDI','EDIMAR','SUELI','ÂNGELA','CESAR','SILVIA','B2B','THIELIN','AHMANDA']);
 const VAREJO_VENDEDORES = new Set([...VENDEDORES_VALIDOS].filter(v => v !== 'CRISTIANO'));
+
+const BANCO_VENDEDOR = {"20.808.832 JULIARA FERREIRA DA SILVA":"GRAZI","29.387.908 CARLA TESTA REBELATTO":"SILVIA","29387908 CARLA TESTA REBELATTO":"SILVIA","2A FARMACEUTICA LTDA":"MATHEUS","57.585.403 FERNANDA DE ANDRADE":"SUELI","A LORENA DE OLIVEIRA AMAM BIJUTERIAS":"SILVIA","ABREU PEREIRA E CIA LTDA ME":"MATHEUS","ADELAR B GONCALVES & CIA LTDA":"ÂNGELA","ADELAR B GONCALVES E CIA LTDA":"ÂNGELA","AGA DA TUPY COM. PROD FARMACEUTICOS LTDA":"THIELIN","AGAFARMA":"HEIDI","AGAFARMA HOSPITAL VIDA E SAUDE LTDA":"SILVIA","AIME COSMETICOS LTDA":"CESAR","ALCEU KLEINKAUF & CIA LTDA":"SUELI","ALCEU KLEINKAUF E CIA LTDA":"SUELI","ALCEU KLEINKAUF E CIALTDA":"SUELI","ALENCAR NEGRINI SIQUEIRA":"MATHEUS","ALENCAR NEGRINI SIQUEIRA ME":"MATHEUS","ALEXANDRE ACKERMANN E CIA LTDA":"SUELI","ALINE VOLOSKI BEAUTY STORE LTDA":"B2B","AMMO COSMETICOS LTDA":"SUELI","ANA LIDIA JANTSCH":"MATHEUS","ANDREA GARCIA R.BERTOLDO":"SUELI","ANDREAZZA":"ÂNGELA","ARMAZEM DAS UTILIDADES LTDA":"CESAR","AROMAS E POCOES COM DE MEDICAMENTOS LTDA":"GRAZI","ASSOCIAÇAO CULTURAL E BENEFICIENTE ILE MULHER":"HEIDI","ASUN COM DE GENEROS ALIMENTICIOS LTDA":"HEIDI","ASUN COMERCIO DE GENEROS ALIMENTICIOS EIRELI":"HEIDI","ASUN COMERCIO DE GENEROS ALIMENTICIOS LTDA":"HEIDI","ATACADAO S.A.":"EDIMAR","ATACADAO S/A":"EDIMAR","ATACADO IRMAOS TT LTDA":"MATHEUS","ATACADO VANTAJAO":"JEFERSON","ATACADO VANTAJÃO":"CRISTIANO","ATACADÃO S/A":"EDIMAR","AVELLANEDAAVELLANEDA LTDA":"SILVIA","AZZOLINI DISTRIBUIDORA DE COSMETICOS LTDA":"MATHEUS","BACCARIN E IANISKI LTDA":"SILVIA","BAH GURIA COMERCIO DE COSMETICOS LTDA":"SUELI","BAH, GURIA! COMERCIO DE COSMETICOS LTDA":"SUELI","BANDEIRA & TOMELERO PRODUTOS FARMACEUTICOS LTDA":"SILVIA","BEIRA RIO LJ 386 LAJEADO":"MATHEUS","BEIRA RIO LJ 389 LAJEADO":"MATHEUS","BELEZA CONSULTORIA, SALAO E BARB LTDA":"SUELI","BELEZA CONSULTORIA, SALAO E BARBEARIA LT":"SUELI","BELLER COMERCIO DE PAPEIS LTDA":"HEIDI","BIER VALE FARROUPILHA":"SUELI","BIO SUL COM PROD AGROPET IMP E EXP LTDA":"HEIDI","BONNO FREE SHOP LTDA":"CESAR","BRAIR (LJ 160) CD":"CRISTIANO","BRASAO SUPERMERCADOS S/A":"CESAR","BRASIL FREE SHOP COM VAREJISTA DE MERCADORIAS LTDA":"EDIMAR","BRS SP SUPRIMENTOS CORPORATIVOS S/A":"AHMANDA","BS FARMACIAS LTDA":"SILVIA","BUGS E MARTINS LTDA":"GRAZI","C & A COMERCIO DE ALIMENTOS LTDA":"SUELI","C&A COMERCIO DE ALIMENTOS LTDA":"SUELI","CALIONI BAVARESCO CIA LTDA":"ÂNGELA","CALIZA SUPERMERCADO LTDA":"MATHEUS","CANELA COSMETICOS LTDA":"SUELI","CARLOS ALBERTO DE SOUZA BUCKER":"MATHEUS","CARLOTA LAJEADO COSMETICOS LTDA":"MATHEUS","CARLOTA TEUTONIA COSMETICOS LTDA":"MATHEUS","CASA BEAUTY COSMETICOS LTDA":"SUELI","CASA BEAUTY COSMETICOS LTDA ME":"SUELI","CASA DE CARNES MOACIR LTDA":"GRAZI","CASACLARA ARTIGOS DE CAMA E MESA LTDA":"MATHEUS","CAYE E FILHOS COMERCIO ATACADISTA LTDA":"MATHEUS","CELEIRO DOS COSMETICOS LTDA":"SUELI","CENTRAL BELA LTDA":"SUELI","CENTRAL FARMACIA CAXIAS LTDA":"SUELI","CENTRAL GAUCHA DE COSMETICOS LTDA":"HEIDI","CEREALISTA GIRUA LTDA":"SILVIA","CERVOSUL":"HEIDI","CERVOSUL DISTRIB DE MEDICAMENTOS LTDA":"HEIDI","CERVOSUL DISTRIBUIDORA DE MEDICAMENTOS LTDA":"HEIDI","CIA. ZAFFARI COMERCIO E INDUSTRIA":"HEIDI","CLINICA REBELATTO":"CESAR","COMERCIAL MAGNABOSCO LTDA":"SUELI","COMERCIAL MELATTI LTDA":"MATHEUS","COMERCIAL ZAFFARI":"CRISTIANO","COMERCIAL ZAFFARI LTDA":"CRISTIANO","COMERCIO DE ALIMENTOS ANSOLIN LTDA":"CESAR","COMERCIO DE ALIMENTOS LOUZADA LTDA":"GRAZI","COMERCIO DE COSMETICOS CAXIENSE LTDA":"SUELI","COMERCIO DE MEDICAMENTOS BRAIR LTDA":"CRISTIANO","COMERCIO DE MEDICAMENTOS BRAIR LTDA ( FARMACIAS SAO JOAO )":"CRISTIANO","COMPANHIA APOLO DE SUPERMERCADOS":"SUELI","COMPANHIA ZAFFARI COM E IND":"HEIDI","COMPANHIA ZAFFARI COMERCIO E INDUSTRIA":"CRISTIANO","COMPREMED MEDICAMENTOS LTDA":"HEIDI","CONEXAO DA BEL C E DISTRIBUIDORA LTDA":"SILVIA","COOP AGRICOLA CAIRU LTDA":"SUELI","COOP AGRICOLA MISTA RIO BRANCO LTDA":"SUELI","COOP.TRIT.SEPEENSE LTDA":"EDIMAR","COOPERATIVA AGRICOLA":"SUELI","COOPERATIVA AGRICOLA CAIRU LTDA":"SUELI","COOPERATIVA AGRICOLA MIXTA SAO ROQUE LTDA":"SILVIA","COOPERATIVA AGROINDUSTRIAL ALFA":"MATHEUS","COOPERATIVA DALIA ALIMENTOS LTDA":"MATHEUS","COOPERATIVA TRITICOLA REGIONAL SAOLUIZEN":"SILVIA","COOPERATIVA TRITICOLA SARANDI LTDA":"MATHEUS","COPROBEL":"HEIDI","COSMETICOS CARAZINHO LTDA":"MATHEUS","COSMETICOS SANTAMARIENSE LTDA":"HEIDI","COTRIJAL COOPERATIVA AGROPECUARIA E INDUSTRIAL":"MATHEUS","COTRIPAL AGROPECUARIA COOPERATIVA":"MATHEUS","CRESTANI & FILHOS LTDA":"CESAR","CRISAN ANTONIO BROIL CAXIAS DO SUL":"SUELI","CRISAN BELA VISTA CAXIAS DO SUL":"SUELI","CRISAN CHARQUEADAS CAXIAS DO SUL":"SUELI","CRISAN ESPLANADA CAXIAS DO SUL":"SUELI","CRISAN INTERLAGOS CAXIAS DO SUL":"SUELI","CRISTO REI ALIMENTOS LTDA":"CESAR","D  D COSMETICOS LTDA":"MATHEUS","D & D COSMETICOS LTDA":"MATHEUS","D & G COMERCIO DE MEDICAMENTOS LTDA":"SUELI","DAMO E TOFOLO DROGARIA LTDA":"CESAR","DARIO NEVES & CIA LTDA":"THIELIN","DARIO NEVES CIA.LTDA":"THIELIN","DEITOS & DEITOS LTDA":"SILVIA","DESKART SUL":"CRISTIANO","DI HELLEN INDUSTRIA DE COSMETICOS LTDA":"MATHEUS","DIBS DISTRIBUIDORA DE ALIMENTOS LTDA":"SUELI","DIMAR LTDA":"CESAR","DIMED S A DISTRIBUIDORA DE MEDICAMENTOS":"CRISTIANO","DIMED S/A  DISTRIBUIDORA DE MEDICAMENTOS":"CRISTIANO","DIMED S/A - DISTRIBUIDORA DE MEDICAMENTOS":"CRISTIANO","DIMED S/A DISTRIB DE MEDICAMENTOS":"CRISTIANO","DIMEOESTE COMERCIO DE PRODUTOS FARMACEUT":"CESAR","DIMEOESTE COMERCIO DE PRODUTOS FARMACEUTICOS LTDA":"CESAR","DIMEOESTE COMERCIO DE PRODUTOS FARMACEUTICOS LTDA EPP":"CESAR","DINES DITRIBUIDORA E COMERCIO LTDA":"SUELI","DISCAPIL DISTRIBUIDORA CAXIENSE DE PILHAS LTDA":"SUELI","DISTRIBUIDORA DADO LTDA":"AHMANDA","DISTRIBUIDORA DE ALIMENTOS BEIRA RIO LAJ 386":"MATHEUS","DISTRIBUIDORA DE ALIMENTOS BEIRA RIO LAJ 389":"MATHEUS","DKCA COMERCIO DE COSMETICOS LTDA":"AHMANDA","DKIG COMERCIO DE COSMETICOS LTDA":"AHMANDA","DKNH COMERCIO DE COSMETICOS LTDA":"AHMANDA","DKPA COMERCIO DE COSMETICOS LTDA":"AHMANDA","DKSSC COMERCIO DE COSMETICOS LTDA":"AHMANDA","DKTR COMERCIO DE COSMETICOS LTDA":"AHMANDA","DORNELLES E CIA LTDA":"SUELI","DROG E FARMA CIPOLATTO ROCHA EIRELI EPP":"GRAZI","DROG E FARMA CIPOLATTO ROCHA EIRELI EPP (B2B)":"GRAZI","DROGARIA E FARMACIA DE MANIPULACAO GLICOFARMA LTDA":"SUELI","DROGARIA LVD LTDA":"THIELIN","DROGARIA PRATA LTDA":"SUELI","DROGARIA RECK & SGANDERLA LTDA.":"MATHEUS","DROGASUL DISTRIBUIDORA DE MEDICAMENTOS LTDA":"CESAR","DUTRA E DUTRA COM DE COSMETICOS LTDA":"MATHEUS","DUTY FREE SHOP TM IMPORTACAO E EXPORTACAO LTDA":"EDIMAR","E A FRIEDRICH LTDA":"MATHEUS","E. A. FRIEDRICH LTDA":"MATHEUS","EICKHOFF & CIA LTDA (B2B)":"GRAZI","EL RINCON DEL PELUQUERO CHUI LTDA":"THIELIN","ELIA HOLLMANN & CIA LTDA":"MATHEUS","ELIA HOLLMANN & CIA LTDA (2A FARMACEUTICA LTDA)":"MATHEUS","ELIPLAST EMBALAGENS PLASTICAS LTDA":"GRAZI","ELIZANGELA DOS SANTOS PINTO":"THIELIN","ELYSANTOS COMERCIO DE COSMETICOS EIRELI":"CESAR","EMPORIO MINUANO SAO JOSE LTDA":"SUELI","ENDERLE & MOURA LTDA":"SUELI","ESSENCIAL COSMETICOS LTDA":"MATHEUS","ESSENZIALE COM DE PRES E PROD DE BELEZA":"SUELI","ESTEFANI GAMBIN":"SILVIA","EUPHORIA COM. PERF. E SERV BELEZA EIRELI":"SUELI","FABESUL DISTRIBUIDORA LTDA":"HEIDI","FABIA RUTE KUHN WEBER":"SILVIA","FABIA RUTE KUHN WEBER LTDA":"SILVIA","FABIANE AMELIA MARTINELI 07672752928":"SILVIA","FAELA DISTRIBUIDORA LTDA":"CESAR","FARDIN MULLER LTDA":"MATHEUS","FARM INHACOR M.V.C COM DE MEDICAM LTDA":"SILVIA","FARMACIA BRASIL LTDA":"THIELIN","FARMACIA CASAGRANDE LTDA":"CESAR","FARMACIA CENTRAL LTDA":"CESAR","FARMACIA CHUI LTDA":"THIELIN","FARMACIA CONFIANÇA":"CRISTIANO","FARMACIA CONFIAN":"MATHEUS","FARMACIA DE MANIPULACAO SCHARDONG":"MATHEUS","FARMACIA DO IPAM LTDA":"SUELI","FARMACIA DO PEDRINHO LTDA":"SILVIA","FARMACIA DOIS IRMAOS LTDA":"SILVIA","FARMACIA E DROGARIA SOMENSI LTDA":"CESAR","FARMACIA ELDORADO LTDA":"CESAR","FARMACIA ERECHIM":"MATHEUS","FARMACIA FARMACENTRO LTDA":"SILVIA","FARMACIA GERAL LTDA":"SUELI","FARMACIA INHACOR M V C COMERCIAL DE MEDICAMENTOS LTDA":"SILVIA","FARMACIA INMVCCDE MEDICAMENTOS LTDA":"SILVIA","FARMACIA MARIN LTDA":"CESAR","FARMACIA MARTINI E OZELAME LTDA":"CESAR","FARMACIA PAGANI LTDA":"CESAR","FARMACIA SORRISO LTDA":"SILVIA","FARMACIA VIDORI LTDA":"CESAR","FARMACIAL ELDORADO LTDA":"CESAR","FARMACIAS ASSOCIADAS DE CRISSIUMAL LTDA":"SILVIA","FARMACIAS SAO RAFAEL LTDA":"CESAR","FARMAMELZ COMERCIO DE PRODUTOS FARMACEUTICOS LTDA":"CESAR","FASCINACAO PRESENTES E COSMETICOS LTDA":"SUELI","FASCINACAO PRESENTES LTDA":"SUELI","FELIPE GERMANO DA ROCHA":"SILVIA","FERNANDA CARMEN DIETER":"SILVIA","FERNANDA DE ANDRADE":"SUELI","FERNANDES E SILVA COM. DE COSMETICOS LTDA":"SILVIA","FERNANDO PEDRO SANDRI":"SILVIA","FISIO REFLEXO & SAUDE LTDA":"MATHEUS","FORT ATACADISTA":"EDIMAR","FRANCK F. MULLER SUPERMERCADO EIRELI":"AHMANDA","FVK ESCOVAS INTELIGENTES LTDA":"CESAR","G TONIETO COMERCIO ATACADISTA E VAREJISTA DE ALIM. LTDA":"SUELI","GABRIELA DE SOUZA COSMETERIA":"MATHEUS","GAIA COSMETICOS LTDA":"SUELI","GAUCHAFARMA DISTRIBUIDORA LTDA":"HEIDI","GAUCHAFARMA MEDICAMENTOS LTDA":"HEIDI","GENIAL PRODUTOS":"MATHEUS","GENIAL PRODUTOS PARA LIMPEZA LTDA":"MATHEUS","GILMAR MORAES ANTUNES COSMETICOS (ANTIGO: LUMAR)":"SUELI","GILTON BORGES DE PINHO":"THIELIN","GILTON BORGES DE PINHO & CIA LTDA":"THIELIN","GILTON BORGES DE PINHO E CIA LTDA":"THIELIN","GILTON BORGES DOS SANTOS":"EDIMAR","GLOSS COMERCIO DE COS E ACESSORIOS LTDA":"SUELI","GLOSS COMERCIO DE COSMETICOS E ACESSORIOS EIRELI":"SUELI","GRAZZIOTIN S A":"MATHEUS","GUARAPARI COM DE GENEROS ALIMENT LTDA":"HEIDI","GUARAPARI COMERCIO DE GENEROS ALIMENTICIOS LTDA":"HEIDI","GUARAPARI COMERCIO DE GENEROS ALIMENTICIOS LTDA.":"HEIDI","GUIMARAES E VARGAS LTDA":"THIELIN","H D DISTRIBUIDORA DE PRODUTOS HIGIENICOS":"SILVIA","HAMAMELIS FARMACIA DE MANIPULACAO LTDA":"SUELI","HAODAY BRASIL LTDA":"SUELI","HELANNA COMERCIO":"MATHEUS","HELANNA COMERCIO ATACADISTA DE PRODUTOS LTDA":"MATHEUS","HILMI ABDULLAH CIA.LTDA":"EDIMAR","HIMALAIA COM.DE PROD.ALIMENTAR":"HEIDI","HOSPITAL BENEFICENTE SAO JOAO BOSCO":"SUELI","HOSPITAL SÃO JOÃO BOSCO":"SUELI","HR COMERCIO DE MEDICAMENTOS LTDA":"CESAR","HUANE SOL COMÉRCIO ATACADISTA E VAREJISTA DE PRESENTES LTDA":"CESAR","ICONE COMERCIAL LTDA":"HEIDI","IMEC":"CRISTIANO","IMEC RS LAJEADO":"MATHEUS","IMPERIAL SUPERMERCADOS":"CESAR","IMPERIAL SUPERMERCADOS LTDA":"CESAR","IMPORTADORA BAGE":"HEIDI","IMPORTADORA BAGE S/A":"HEIDI","IMPORTADORA E DISTRIBUIDORA DE ALIMENTOS REDE POLO VENÂNCIO":"MATHEUS","IMPORTADORA E EXPORTADORA DE CEREAIS S/A":"CRISTIANO","IMPORTADORA E EXPORTADORA DE CEREAIS SA":"CRISTIANO","IRMAOS  ANDREAZZA":"ÂNGELA","IRMAOS ANDREAZZA":"ÂNGELA","IRMAOS ANDREAZZA LTDA":"ÂNGELA","IRMAOS BERTI LTDA":"SUELI","IRMAOS JAESCHKE & CIA LTDA":"SILVIA","IRMAOS JAESCHKE E CIA LTDA":"SILVIA","IRMAOS ZAT LTDA":"CESAR","ISAAC E MIGNON LTDA":"CESAR","J A R FARMACIAS LTDA":"SUELI","JACIR WELTER":"SILVIA","JAVIL COMERCIO DE COSMETICOS LTDA":"SUELI","JAVIL IND COM DE CONFECCOES E COSM LTDA":"SUELI","JEAN CARLOS TRUCULO":"CESAR","JOSSANA RAQUEL LAUXEN PEIXOTO 97381497034":"MATHEUS","JULIA COMERCIO DE PRESENTES":"CESAR","K K COM.IMPORTACAO E EXPORTACAO LTDA":"THIELIN","K K COMERCIO IMPORTACAO E EXPORTACAO LTDA":"THIELIN","KELLY PEREIRA BERNARDES":"SUELI","KI  BELEZA COMERCIO DE COSMETICOS LTDA":"THIELIN","KI - BELEZA COMERCIO DE COSMETICOS LTDA":"THIELIN","KI BELEZA COMERCIO DE COSMETICOS LTDA":"THIELIN","KK COMERCIO IMPORTACAO E EXPORTACAO LTDA":"THIELIN","KROLOW":"THIELIN","L ZAN CIA LTDA":"SUELI","L. J. KESSLER COMERCIO E REPRE":"MATHEUS","L. J. KESSLER COMERCIO E REPRES. LTDA ME":"MATHEUS","L. T. BORBA OLIVEIRA E CIA LTDA":"THIELIN","LADYDIU MEDICAMENTOS ESPECIAIS LTDA":"GRAZI","LAGOROCHA COMERCIO DE COSMETICOS LTDA":"MATHEUS","LAURI R DA SILVEIRA & CIA LTDA":"ÂNGELA","LAURI R DA SILVEIRA E CIA LTDA":"ÂNGELA","LDS PRODUTOS FARMACEUTICOS LTDA":"GRAZI","LENZ & CIA LTDA":"MATHEUS","LG FINK & CIA LTDA":"AHMANDA","LIBRAGA, BRANDAO E CIA. LTDA.":"EDIMAR","LINS FERRAO ARTIGOS DO VESTUARIO LTDA":"HEIDI","LOJA DO CABELEREIRO LTDA":"MATHEUS","LOJA POREXEMPLO COMERCIO DE UTILIDADES LTDA":"MATHEUS","LOJA POREXEMPLO COMÉRCIO DE UTILIDADES LTDA":"MATHEUS","LOJAS RENNER S.A.":"CRISTIANO","LONDRES MACRO ATAC":"JEFERSON","LONDRES MACRO ATACADO DE PRODUTOS ALIMENTICIOS LTDA":"JEFERSON","LUCIANE MANETTI PORTO":"THIELIN","LUCIARA DE OLIVEIRA GIANECHINI":"THIELIN","LUIS CLAUDIOMIR DE AVILA & CIA":"MATHEUS","LUIS CLAUDIOMIR DE AVILA & CIA LTDA":"MATHEUS","LULO LACOS INDUSTRIA E COMERCIO LTDA":"GRAZI","LUMIER COSMETICOS LTDA":"SUELI","MAC DISTRIBUIDORA DE PRODUTOS AUTOMOTIVOS LTDA":"SUELI","MACRO ATACADO KROLOW LTDA":"THIELIN","MACRODOCE COMERCIO DE ALIMENTOS LTDA":"AHMANDA","MACROPAMPA DISTRIBUIDORA LTDA":"CESAR","MADAME C LTDA":"CESAR","MADREPEROLA ACESSORIOS E MAQUIAGENS LTDA":"MATHEUS","MAKE IN SANTA COMERCIO DE COSMETICO LTDA":"SILVIA","MANA COMERCIO ATACADISTA LTDA":"MATHEUS","MARCUS SUPERMERCADO LTDA":"SUELI","MARCUS SUPERMERCADO LTDA.":"SUELI","MARIA BELLA COSMETICOS E PERFUMARIA LTDA":"CESAR","MARIA LUIZA DUARTE ELEUTHERIO PRODUTOS MEDICOS":"GRAZI","MASTER ATS SUPERMERCADOS LTDA":"MATHEUS","MAXI DISTRIBUIDORA DE COSMETICOS LTDA":"CESAR","MAYNARA HOFFMANN CARDOSO LTDA":"SILVIA","MELZ COMERCIO DE PRODUTOS FARMACEUTICOS LTDA":"CESAR","MENON COMERCIO E REPRESENTACOES LTDA":"MATHEUS","MENON COMERCIO E REPRESENTAÇÕES LTDA":"MATHEUS","MERCADO REICHERT LTDA":"AHMANDA","MICHELE KROLOW BERNAR":"THIELIN","MICKA BEAUTY SHOP LTDA":"MATHEUS","MILLER - COMERCIO DE ALIMENTOS LTDA":"MATHEUS","MILLER COMERCIO DE ALIMENTOS LTDA":"MATHEUS","MILLER- COMERCIO DE ALIMENTOS LTDA":"MATHEUS","MITHRASS COSMETICOS E SERVICOS LTDA":"AHMANDA","MOURA & SANTOS":"CESAR","MOURA COMERCIO DE ALIMENTOS LTDA":"CESAR","NADIA S KROETZ":"SILVIA","NH COMERCIO DE COSMETICOS LTDA":"HEIDI","NILO TOZZO DISTRIBUIDORA LTDA":"CRISTIANO","NKP FARMACIAS LTDA":"CESAR","O VANTAJAO":"ÂNGELA","O VANTAJAO ATACADO LTDA":"ÂNGELA","O VANTAJAO SANTA F?;24/02/2026\"":"JEFERSON","O VANTAJAO SANTA FE":"ÂNGELA","O VANTAJAO SANTA Fﾉ":"JEFERSON","O VANTAJAO STA FE DIST DE PROD ALIM LTDA":"ÂNGELA","OCTAVIANO ZANDONAI & CIA LTDA":"CESAR","ODETE MARIA STEIN BLUME - ME":"MATHEUS","ORG FARMACEUTICAS CONFIANCA LTDA":"MATHEUS","ORGANIZACOES FARMACEUTICAS CONFIANCA EIRELI":"MATHEUS","OSMAR NICOLINI COMER":"THIELIN","OSMAR NICOLINI SUPERMERCADOS LTDA":"THIELIN","OSNI BOING E CIA LTDA":"CESAR","OSNI BOING E CIA LTDA.":"CESAR","PACIFICO SUPERMERCADO E COMERCIAL ATACADISTA LTDA":"THIELIN","PASSARELA":"CRISTIANO","PASSARELA CENTER LTDA":"CRISTIANO","PATRICIA LICZBINSKI":"SILVIA","PATRICIA PALMA MORATES KURZ 99846292015":"MATHEUS","PAULO ROBERTO FORNARI  CIA LTDA":"MATHEUS","PAULO ROBERTO FORNARI CIA LTDA":"MATHEUS","PAULO ROBERTO FORNARI E CIA LTDA":"MATHEUS","PAULO ROBERTO PREZOTTO COSMETICOS":"SUELI","PCJ COMERCIO DE GENEROS ALIMEN":"MATHEUS","PEDRO MACCARI & IRMAOS LTDA":"HEIDI","PETINELI DISTRIBUIDORA DE MATERIAL MEDICO HOSPITALAR LTDA":"GRAZI","PGL DISTRIBUICAO DE ALIMENTOS LTDA":"THIELIN","PINK POT PLANT COSMETICOS LTDA":"THIELIN","PIU BELLA LOJA DE COSMETICOS LTDA - ME":"SUELI","POLANCZYK  JABLONSKI LTDA":"SILVIA","PP COMERCIO DE COSMETICOS LTDA":"MATHEUS","PRO LAR COMERCIO VAREJISTA DE UTILIDADES PARA CASA LTDA":"HEIDI","PRONER SUPERMERCADOS LTDA":"CESAR","PRONTO DOCE SOLUCAO EM DISTRIB":"AHMANDA","PRONTO DOCE SOLUCAO EM DISTRIBUICAO DE ALIMENTOS LTDA.":"AHMANDA","R T B DISTRIBUIÇAO LTDA":"ÂNGELA","RAMOS SARTORI LTDA":"MATHEUS","REDE ALIANCA DE SUPERMERCADOS - RAS":"CESAR","REDE AVILA SUPERMERCADOS LTDA":"AHMANDA","REDE POLO VENANCIO VENANCIO AIRES":"MATHEUS","REDE SUPER LTDA":"EDIMAR","RIGHI COM. DE GENEROS ALIMENTICIOS LTDA.":"EDIMAR","ROS COSMETICOS LTDA ME":"MATHEUS","ROXO - ATACADO E VAREJO LTDA":"THIELIN","RUDINEI BROMBATTI EIRELI EPP":"SUELI","RVB FARMACOS LTDA":"SILVIA","S E B COMERCIO DE MEDICAMENTOS LTDA":"CESAR","S G M INDUSTRIA DE COSMETICOS LTDA":"CRISTIANO","S R COSMETICOS LTDA ME":"SUELI","SA0 JOAO FARMACIAS":"CRISTIANO","SALAO DE BELEZA MARIA CHIC LTDA":"MATHEUS","SANCHO CANOAS LTDA":"HEIDI","SAO JOAO FARMACIAS":"CRISTIANO","SAO LUCAS COMERCIO DE MEDICAMENTOS LTDA":"SUELI","SAWE COSMETICOS":"EDIMAR","SAWE COSMETICOS EIRELI":"EDIMAR","SCARIOT COMERCIO DE COSMETICOS LTDA":"SUELI","SCHEYLLA KARINE MOSER & CIA LTDA":"CESAR","SDB COMERCIO DE ALIMENTOS LTDA":"EDIMAR","SDB COMERCIO DE ALIMENTOS LTDA (FORT)":"EDIMAR","SEGREDOS DA BELEZA COSMETICOS LTDA":"MATHEUS","SENSACAO DA BELEZA LTDA":"MATHEUS","SENSUALE PRODUTOS DE BELEZA LTDA":"SUELI","SGM IND DE COM LTDA":"CRISTIANO","SGM INDUSTRIA DE COSMETICOS LTDA":"CRISTIANO","SILVIA COMERCIO DE COSMETICOS LTDA":"MATHEUS","SIM REDE DE POSTOS LTDA":"SUELI","SINDICATO DOS TRAB. RURAIS DE LAJEADO":"MATHEUS","SINDICATO DOS TRABALH RURAIS DE LAJEADO":"MATHEUS","SKM COSMETICOS E PERFUMARIA LTDA":"CESAR","SOKHNA HANNE NDONGO LTDA":"SUELI","SONIA MARA MARIANI COSTA":"THIELIN","SS COMERCIO DE PRODUTOS DE BELEZA LTDA":"MATHEUS","STREMA COSMETICOS LTDA":"SILVIA","SUELEN NICOLI HOSEL LTDA":"SILVIA","SUPERGLOSS COMERCIO DE COSMETICOS LTDA":"SUELI","SUPERM. GUANABARA":"THIELIN","SUPERM.JEPSEN LTDA":"THIELIN","SUPERMAGO COMERCIO LTDA":"HEIDI","SUPERMERCADO BAKLIZI":"EDIMAR","SUPERMERCADO BAKLIZI LTDA":"EDIMAR","SUPERMERCADO BERGAMA SCHI LTDA":"GRAZI","SUPERMERCADO BERGAMASCHI LTDA":"MATHEUS","SUPERMERCADO BOHLKE  LTDA":"AHMANDA","SUPERMERCADO BOHLKE LTDA":"AHMANDA","SUPERMERCADO BOLAO LTDA":"AHMANDA","SUPERMERCADO CASARAO DA FAMILIA LTDA":"MATHEUS","SUPERMERCADO CONDOR LTDA":"SUELI","SUPERMERCADO COTRIPA":"MATHEUS","SUPERMERCADO FALAVIGNA LTDA":"ÂNGELA","SUPERMERCADO GECEPEL":"HEIDI","SUPERMERCADO GECEPEL LTDA":"HEIDI","SUPERMERCADO GUANABARA S A":"THIELIN","SUPERMERCADO GUANABARA S.A.":"THIELIN","SUPERMERCADO IRANIENSE LTDA":"CESAR","SUPERMERCADO JEPSEN  LTDA":"THIELIN","SUPERMERCADO LANZ LTDA":"AHMANDA","SUPERMERCADO MARCIO LTDA":"CESAR","SUPERMERCADO PORTAPRATA LTDA":"SUELI","SUPERMERCADO RAFANA LTDA":"SILVIA","SUPERMERCADO SANTA MARTA LTDA":"CESAR","SUPERMERCADO SAO MARTINHO LTDA":"SUELI","SUPERMERCADO SJ LTDA":"THIELIN","SUPERMERCADO ZULIAN LTDA":"ÂNGELA","SUPERMERCADOCOTRISAL":"MATHEUS","SUPERMERCADOS BELTRAME LTDA":"EDIMAR","SUPERMERCADOS DALPIAZ LTDA":"AHMANDA","SUPERMERCADOS GUANABARA S/A":"THIELIN","SUPERVIZA SUPERMERCADOS LTDA":"CESAR","SÃO JOAO FARMACIAS":"CRISTIANO","TAIS MARTH BEIER TESSMER LTDA":"THIELIN","TAO NATURAL CAFETERIA LTDA":"MATHEUS","TAVARES COMERCIO DE ALIMENTOS LTDA":"AHMANDA","TCHIKYTA COSMETICOS E TRANSPORTES LTDA":"SUELI","TCHIKYTA COSMETICOS LTDA":"SUELI","THAIS AIRES QUINTAVA":"THIELIN","TIAGO TRESOLDI SARMENTO":"AHMANDA","TIFFANY ACESSORIOS E PRESENTES LTDA":"CESAR","TIFFANY BIJUTERIAS E PRESENTES EIRELI":"CESAR","TISCHLER E CIA LTDA":"MATHEUS","TONDO & CANAL LTDA ME":"SUELI","TOP COMERCIO DE COSMETICOS LTDA":"CESAR","TREICHEL":"THIELIN","TREICHEL MACROMERCADO LTDA":"THIELIN","TREICHEL MACROMERCADO LTDA.":"THIELIN","TROPICAL COSMETICOS E ACESSORIOS LTDA":"MATHEUS","UFFA REDE DE LOJAS DE PROXIMIDADE LTDA":"SILVIA","UINI DISTRIBUIDORA DE PERFUMARIA LTDA":"HEIDI","UM ESPACO DE BELEZA LTDA":"AHMANDA","UNI DISTRIBUIDORA DE PERFUMARIA":"HEIDI","UNIDASUL DISTRIB":"CRISTIANO","UNIDASUL DISTRIB ALIMENTICIA S/A":"CRISTIANO","UNIDASUL DISTRIBUIDORA ALIMENTICIA S A":"CRISTIANO","UNIDASUL DISTRIBUIDORA ALIMENTICIA S.A":"CRISTIANO","UNIDASUL DISTRIBUIDORA ALIMENTICIA S.A.":"CRISTIANO","UNIDASUL DISTRIBUIDORA ALIMENTICIA S/A":"CRISTIANO","UNIMED COOP SERV SAUDE VALES TAQUARI E RIO PARDO LTDA":"GRAZI","UNIMED COOPERATIVA DE SERVICOS DE SAUDE DOS VALES DO TAQUARI":"GRAZI","UNIMED ERECHIM COOP DE SER DE SAUDE LTDA":"GRAZI","UNIMED ERECHIM COOP DE SER DE SAUDE LTDA (B2B)":"GRAZI","UNIMED NORD RS SOC COOP DE SERV MED LTDA":"SUELI","UNIMED SERRA GAUCHA/RS C. DE A. A SAUDE":"SUELI","UNIMED SERRA GAUCHARS COOPERATIVA DE ASSISTENCIA A SAUDE LTDA":"SUELI","UP COMERCIO DE COSMETICOS PERFUMARIA LTDA":"CESAR","V. M. MARQUES":"HEIDI","VERGINIA ALMEIDA DE SOUZA FLORES":"SILVIA","VIEZZER & CIA LTDA":"HEIDI","VIZI DISTRIB DE PROD PARA ANIMAIS LTDA":"SUELI","VOCE COM DE COSMETICOS LTDA":"SUELI","VOCE COMERCIO DE COSMETICOS LTDA":"SUELI","WAGNER RAUL BORTOLINI 01944929070":"SUELI","WBSC - PERFUMARIA E COSMETICOS LTDA":"HEIDI","WEBBER E BORGES LTDA":"HEIDI","WMB SUPERMERCADOS DO BRASIL LTDA":"CRISTIANO","WMS SUPERMERCADOS DO BRASIL":"CRISTIANO","WMS SUPERMERCADOS DO BRASIL LTDA":"CRISTIANO","WS COMERCIO DE ALIMENTOS LTDA":"AHMANDA","WS COSMETICOS LTDA":"THIELIN","ZES SUPERMERCADOS LTDA":"MATHEUS","FARMACIAS SAO JOAO":"CRISTIANO"};
+
+// Retorna vendedor responsável pelo cliente (fonte: banco oficial)
+function getVendedorResponsavel(nome) {
+  if (!nome) return null;
+  const key = nome.toUpperCase().trim();
+  if (BANCO_VENDEDOR[key]) return BANCO_VENDEDOR[key];
+  // Tenta sem sufixos corporativos
+  const sem = key.replace(/\b(LTDA|S\/A|S\.A\.|ME|EIRELI|EPP|EIRELI-EPP|CIA|CIA\.)\b\.?/g,'').replace(/\s+/g,' ').trim();
+  if (BANCO_VENDEDOR[sem]) return BANCO_VENDEDOR[sem];
+  return null;
+}
 
 // Dados calculados em tempo real a partir dos pedidos
 let LIVE_PEDIDOS = null;
@@ -4146,11 +4736,15 @@ function renderPedidosTempoReal(rows, targetMes, targetAno) {
     const pct = obj > 0 ? Math.round(e.total / obj * 100) : 0;
     const cor = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
     const pctTxt = obj > 0 ? `<span style="color:${cor};font-weight:700">${pct}%</span>` : '<span style="color:var(--muted)">—</span>';
-    html += `<tr>
-      <td><strong>${emp}</strong></td>
+    const empId = emp.replace(/[^a-zA-Z0-9]/g,'_');
+    html += `<tr style="cursor:pointer" onclick="toggleEmpresaDrilldown('${emp}',${mesCorrente},${anoCorrente3})" id="row-emp-${empId}">
+      <td><span id="arr-${empId}" style="color:var(--muted);margin-right:6px;font-size:10px">▶</span><strong>${emp}</strong></td>
       <td style="text-align:center">${e.count}</td>
       <td style="text-align:right">${fmt(e.total)}</td>
       <td style="text-align:right">${pctTxt}</td>
+    </tr>
+    <tr id="drilldown-${empId}" style="display:none;background:#f8fafc">
+      <td colspan="4" style="padding:0;border-bottom:2px solid #e2e8f0"></td>
     </tr>`;
   });
   html += `<tr style="border-top:2px solid var(--border)">
@@ -4178,6 +4772,59 @@ function recomputeLiveForMonth(mes) {
   LIVE_PEDIDOS_ANO = ano;
   LIVE_PEDIDOS = computeLiveAggregates(PEDIDOS_RAW_ROWS, mes, ano);
   renderPedidosTempoReal(PEDIDOS_RAW_ROWS, mes, ano);
+}
+
+function toggleEmpresaDrilldown(emp, mes, ano) {
+  const empId = emp.replace(/[^a-zA-Z0-9]/g,'_');
+  const row = document.getElementById('drilldown-' + empId);
+  const arr = document.getElementById('arr-' + empId);
+  if (!row) return;
+  const isOpen = row.style.display !== 'none';
+  if (isOpen) {
+    row.style.display = 'none';
+    if (arr) arr.textContent = '▶';
+    return;
+  }
+  if (arr) arr.textContent = '▼';
+  if (!PEDIDOS_RAW_ROWS) { row.style.display = ''; return; }
+  const clientes = {};
+  PEDIDOS_RAW_ROWS.forEach(function(r) {
+    const parsed = parsePedidoData((r[0]||'').trim());
+    if (parsed && (parsed.mes !== mes || parsed.ano !== ano)) return;
+    const empresa = (r[1]||'').trim().toUpperCase();
+    if (empresa !== emp) return;
+    const cliente = (r[2]||'').trim() || '(sem cliente)';
+    const rawVal = (r[3]||'0').replace(/[R$\s]/g,'');
+    const valor = (function() {
+      if (!rawVal || rawVal === '-') return 0;
+      const lastDot = rawVal.lastIndexOf('.');
+      const lastComma = rawVal.lastIndexOf(',');
+      if (lastComma > lastDot) return parseFloat(rawVal.replace(/\./g,'').replace(',','.')) || 0;
+      return parseFloat(rawVal.replace(/,/g,'')) || 0;
+    })();
+    const vendedorRaw = (r[4]||'').trim().toUpperCase();
+    const vendedor = [...VENDEDORES_VALIDOS].find(function(v){ return vendedorRaw === v || vendedorRaw.startsWith(v + ' '); }) || vendedorRaw || '—';
+    if (!clientes[cliente]) clientes[cliente] = { total: 0, count: 0, vendedor: vendedor };
+    clientes[cliente].total += valor;
+    clientes[cliente].count++;
+  });
+  const fmtV = function(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); };
+  const sorted = Object.entries(clientes).sort(function(a,b){ return b[1].total - a[1].total; });
+  let html = '<table style="width:100%;font-size:12px;border-collapse:collapse">';
+  html += '<thead><tr style="background:#f1f5f9"><th style="text-align:left;padding:6px 20px;font-weight:600;color:#64748b;font-size:11px">CLIENTE</th>';
+  html += '<th style="text-align:left;padding:6px 8px;font-weight:600;color:#64748b;font-size:11px">VENDEDOR</th>';
+  html += '<th style="text-align:center;padding:6px 8px;font-weight:600;color:#64748b;font-size:11px">PED.</th>';
+  html += '<th style="text-align:right;padding:6px 20px;font-weight:600;color:#64748b;font-size:11px">VALOR</th></tr></thead><tbody>';
+  sorted.forEach(function(entry) {
+    const cli = entry[0]; const d = entry[1];
+    html += '<tr style="border-top:1px solid #e2e8f0"><td style="padding:5px 20px">' + cli + '</td>';
+    html += '<td style="padding:5px 8px;color:#64748b;font-size:11px">' + d.vendedor + '</td>';
+    html += '<td style="text-align:center;padding:5px 8px;color:#94a3b8">' + d.count + '</td>';
+    html += '<td style="text-align:right;padding:5px 20px;font-weight:600">' + fmtV(d.total) + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  row.querySelector('td').innerHTML = html;
+  row.style.display = '';
 }
 
 function renderAcompanhamento() {
@@ -4539,8 +5186,17 @@ function abrirDetalheVendedor(nome, mesIdx) {
         const port = totalClientesVendedor(nome);
         const temDadosMes = Object.values(DATA.clientes_detalhado||{}).some(e=>Object.values(e).some(v=>v.some(c=>(c.meses||[])[mesIdx]>0)));
         if (!temDadosMes && port > 0) {
+          // Mostrar referência do mês anterior quando julho ainda não tem comissões importadas
+          const prevIdx = mesIdx > 0 ? mesIdx - 1 : null;
+          const prevCnt = prevIdx !== null ? contarClientesMes(nome, prevIdx) : 0;
+          const _MESES_NM = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+          const prevNome = prevIdx !== null ? _MESES_NM[prevIdx] : '';
+          if (prevCnt > 0) {
+            return `<div class="value" style="font-size:14px">${prevCnt}</div>
+              <div class="delta" style="color:#d97706">⚡ Ref. ${prevNome} — ${mesNome} em processamento</div>`;
+          }
           return `<div class="value" style="font-size:18px;color:var(--muted)">—</div>
-          <div class="delta" style="color:#f59e0b">⏳ Dados de COMISSÕES não importados para ${mesNome}</div>`;
+            <div class="delta" style="color:#94a3b8">${mesNome} em processamento</div>`;
         }
         return `<div class="value" style="font-size:14px">${cnt}</div>
         <div class="delta" style="color:var(--muted)">de ${port} no portfólio</div>`;
@@ -4572,11 +5228,19 @@ function abrirDetalheVendedor(nome, mesIdx) {
     const faltam = v.total_cli - v.positiv_mes;
     const temDadosMesEmp = v.total_cli > 0 && ((DATA.clientes_detalhado||{})[v.emp]||{})
       && Object.values((DATA.clientes_detalhado||{})[v.emp]||{}).some(arr=>arr.some(c=>(c.meses||[])[mesIdx]>0));
+    // Referência do mês anterior quando mês atual não tem dados de comissão
+    const _prevMesEmp = mesIdx > 0 ? mesIdx - 1 : null;
+    const prevPositivEmp = (!temDadosMesEmp && _prevMesEmp !== null && v.total_cli > 0)
+      ? (((DATA.clientes_detalhado||{})[v.emp]||{})[nome]||[]).filter(c => (c.meses||[])[_prevMesEmp] > 0).length : 0;
+    const _MESES_SH = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
     const cliTxt = v.total_cli === 0 ? '—'
-      : !temDadosMesEmp ? `<span style="color:#f59e0b;font-size:11px">⏳ sem dados</span>`
+      : !temDadosMesEmp
+        ? (prevPositivEmp > 0
+          ? `<span style="color:#d97706;font-size:11px" title="Referência de ${_prevMesEmp!==null?_MESES_SH[_prevMesEmp]:''} — ${mesNome} em processamento">⚡ ${prevPositivEmp} (${_prevMesEmp!==null?_MESES_SH[_prevMesEmp]:''})</span>`
+          : `<span style="color:#94a3b8;font-size:11px">—</span>`)
       : `<span style="color:${v.positiv_mes>0?'#22c55e':'#8892b0'}">${v.positiv_mes}✓</span> <span style="color:${faltam>0?'#ef4444':'#8892b0'}">${faltam > 0 ? faltam+'✗' : ''}</span>`;
     tbody.innerHTML += `
-      <tr style="cursor:pointer" onclick="abrirDetalheClientes('${v.emp}', ${mesIdx})" title="Ver clientes de ${v.emp}">
+      <tr style="cursor:pointer" onclick="abrirDetalheClientes('${v.emp}', ${temDadosMesEmp ? mesIdx : (_prevMesEmp !== null ? _prevMesEmp : mesIdx)})" title="${temDadosMesEmp ? 'Ver clientes de ' + v.emp : 'Ver clientes de ' + v.emp + ' (ref. mês anterior)'}">
         <td><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${cor};margin-right:5px"></span><strong style="color:var(--accent)">${v.emp}</strong> <span style="font-size:10px;color:var(--muted)">↗</span></td>
         <td style="color:var(--muted);font-size:12px">${fmt(v.hist)}</td>
         <td style="color:var(--muted);font-size:12px">${fmt(v.obj)}</td>
@@ -4988,6 +5652,16 @@ const SELLOUT_CORES = {
 };
 const SELLOUT_ORDEM = ['GRANADO','PRUDENCE','BELLIZ','CLESS','EVER GREEN','PAYOT'];
 
+// Pareto 80% — calculado a partir dos arquivos de sell out 2026 (Jan–Jun)
+const PARETO_SELLOUT = {
+  "BELLIZ":    {"n_lojas":1257,"pareto50":382,"pareto80":783,"pareto90":971},
+  "CLESS":     {"n_lojas":1254,"pareto50":356,"pareto80":751,"pareto90":944},
+  "EVER GREEN":{"n_lojas":1254,"pareto50":292,"pareto80":667,"pareto90":863},
+  "GRANADO":   {"n_lojas":1255,"pareto50":382,"pareto80":782,"pareto90":970},
+  "PAYOT":     {"n_lojas":1176,"pareto50":346,"pareto80":702,"pareto90":875},
+  "PRUDENCE":  {"n_lojas":1297,"pareto50":355,"pareto80":746,"pareto90":937}
+};
+
 const MESES_SO_KEY  = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 const MESES_SO_NOME = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
@@ -5087,14 +5761,38 @@ function renderSelloutSaoJoao() {
   renderSelloutLojas();
 }
 
+function renderParetoCard(emp) {
+  const p = PARETO_SELLOUT[emp];
+  if (!p) return;
+  const pct80 = (p.pareto80 / p.n_lojas * 100).toFixed(1);
+  const pct90 = (p.pareto90 / p.n_lojas * 100).toFixed(1);
+  const pct50 = (p.pareto50 / p.n_lojas * 100).toFixed(1);
+
+  document.getElementById('pareto-titulo').textContent = 'Concentração de Vendas — ' + emp;
+  document.getElementById('pareto-n-lojas').textContent = p.n_lojas.toLocaleString('pt-BR');
+  document.getElementById('pareto-p80').textContent = p.pareto80.toLocaleString('pt-BR');
+  document.getElementById('pareto-p80-pct').textContent = pct80 + '% das lojas = 80% das vendas';
+  document.getElementById('pareto-p90').textContent = p.pareto90.toLocaleString('pt-BR');
+  document.getElementById('pareto-p90-pct').textContent = pct90 + '% das lojas = 90% das vendas';
+  document.getElementById('pareto-bar-label').textContent = p.pareto80.toLocaleString('pt-BR') + ' lojas (' + pct80 + '%) = 80% do sell out';
+
+  // Barra visual
+  document.getElementById('pareto-bar-50').style.width = pct50 + '%';
+  document.getElementById('pareto-bar-80').style.width = (p.pareto80 - p.pareto50) / p.n_lojas * 100 + '%';
+  document.getElementById('pareto-bar-90').style.width = (p.pareto90 - p.pareto80) / p.n_lojas * 100 + '%';
+}
+
 function renderSelloutLojas() {
   const so = DATA.sellout_sao_joao || {};
   const emp = document.getElementById('sel-sellout-empresa')?.value || 'GRANADO';
   const v = so[emp];
   const tbody = document.getElementById('sellout-lojas-tbody');
   if (!tbody || !v) return;
+  renderParetoCard(emp);
   tbody.innerHTML = '';
-  (v.top_lojas || []).forEach((l, idx) => {
+  const lojas = v.top_lojas || [];
+  let tot26 = 0, tot25 = 0;
+  lojas.forEach((l, idx) => {
     const c = l.val25 > 0 ? ((l.val26/l.val25 - 1)*100) : null;
     const corC = c === null ? '' : (c >= 0 ? 'color:#16a34a' : 'color:#dc2626');
     const row = document.createElement('tr');
@@ -5102,13 +5800,29 @@ function renderSelloutLojas() {
       <td style="padding:6px 8px;color:var(--muted);width:28px">${idx+1}</td>
       <td style="padding:6px 8px;font-weight:600">${l.nome}</td>
       <td style="padding:6px 8px;text-align:right;font-weight:700">${fmt(l.val26)}</td>
-      <td style="padding:6px 8px;text-align:right;color:var(--muted)">${fmt(l.val25)}</td>
+      <td style="padding:6px 8px;text-align:right;color:var(--muted)">${l.val25 > 0 ? fmt(l.val25) : '—'}</td>
       <td style="padding:6px 8px;text-align:right;font-weight:600;${corC}">${c!==null?(c>=0?'+':'')+c.toFixed(1)+'%':'—'}</td>
     `;
     row.addEventListener('mouseover', () => Array.from(row.children).forEach(td => td.style.background='#f8fafc'));
     row.addEventListener('mouseout',  () => Array.from(row.children).forEach(td => td.style.background=''));
     tbody.appendChild(row);
+    tot26 += l.val26 || 0;
+    tot25 += l.val25 || 0;
   });
+  // Linha de totais
+  if (lojas.length > 0) {
+    const cTot = tot25 > 0 ? ((tot26/tot25 - 1)*100) : null;
+    const corTot = cTot === null ? '' : (cTot >= 0 ? 'color:#16a34a' : 'color:#dc2626');
+    const totRow = document.createElement('tr');
+    totRow.innerHTML = `
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;color:#94a3b8;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px"></td>
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;color:#f1f5f9;font-weight:800;font-size:12px">TOTAL — ${lojas.length.toLocaleString('pt-BR')} lojas</td>
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;color:#f1f5f9;text-align:right;font-weight:800;font-size:13px">${fmt(tot26)}</td>
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;color:#94a3b8;text-align:right;font-weight:700">${tot25 > 0 ? fmt(tot25) : '—'}</td>
+      <td style="padding:8px 8px;border-top:2px solid #1e293b;background:#1e293b;text-align:right;font-weight:800;${corTot}">${cTot!==null?(cTot>=0?'+':'')+cTot.toFixed(1)+'%':'—'}</td>
+    `;
+    tbody.appendChild(totRow);
+  }
 }
 
 let _currentSelloutEmpresa = null;
@@ -6027,7 +6741,7 @@ function exportarSellOutProdutosModal() {
   xlsxDownload(wb, 'SellOut_' + emp.replace(/\s+/g,'_') + '_Produtos.xlsx');
 }
 
-// ---- Sell Out — Top 200 Lojas (painel) ----
+// ---- Sell Out — Ranking de Lojas (painel) ----
 function exportarSellOutLojasPanel() {
   const emp = document.getElementById('sel-sellout-empresa').value;
   const so = DATA.sellout_sao_joao || {};
