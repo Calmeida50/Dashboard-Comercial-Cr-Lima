@@ -7066,12 +7066,24 @@ function renderPvEstoque() {
     return {label:'Alto',bg:'#dbeafe',color:'#1e40af'};
   };
 
-  tbody.innerHTML = filtered.map(p => {
+  // Sort by Cob. CD ascending (zeros/no-data go to the end)
+  const sorted = [...filtered].sort((a, b) => {
+    const ca = getCobCd(a);
+    const cb = getCobCd(b);
+    if (ca === 0 && cb === 0) return 0;
+    if (ca === 0) return 1;
+    if (cb === 0) return -1;
+    return ca - cb;
+  });
+
+  tbody.innerHTML = sorted.map(p => {
     const st = getStatus(p);
     const vm = getVendaMed(p);
     const vendaMedStr = vm > 0 ? Math.round(vm).toLocaleString('pt-BR') : '-';
     const cobLojas = getCobLojas(p);
     const cobCd = getCobCd(p);
+    const cobLojasColor = cobLojas > 0 && cobLojas < 15 ? '#dc2626' : cobLojas >= 60 ? '#1e40af' : 'var(--text)';
+    const cobCdColor = cobCd > 0 && cobCd < 30 ? '#dc2626' : cobCd >= 60 ? '#1e40af' : 'var(--text)';
     return `<tr style="border-bottom:1px solid #f1f5f9">
       <td style="padding:6px 8px;text-align:center">
         <span style="background:${st.bg};color:${st.color};padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${st.label}</span>
@@ -7082,9 +7094,9 @@ function renderPvEstoque() {
       <td style="padding:6px 8px;text-align:right;font-size:12px;color:#dc2626">${(p.lojas_rup||0).toLocaleString('pt-BR')}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px;color:#6366f1;font-weight:600">${vendaMedStr}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px">${(p.qtde_lojas||0).toLocaleString('pt-BR')}</td>
-      <td style="padding:6px 8px;text-align:right;font-size:12px;font-weight:600;color:${cobLojas > 0 && cobLojas < 15 ? '#92400e' : cobLojas >= 60 ? '#1e40af' : 'var(--text)'}">${cobLojas ? cobLojas.toFixed(1) : '-'}</td>
+      <td style="padding:6px 8px;text-align:right;font-size:12px;font-weight:600;color:${cobLojasColor}">${cobLojas ? cobLojas.toFixed(1) : '-'}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px">${(p.qtde_cd||0).toLocaleString('pt-BR')}</td>
-      <td style="padding:6px 8px;text-align:right;font-size:12px;font-weight:600;color:${cobCd > 0 && cobCd < 15 ? '#92400e' : cobCd >= 60 ? '#1e40af' : 'var(--text)'}">${cobCd ? cobCd.toFixed(1) : '-'}</td>
+      <td style="padding:6px 8px;text-align:right;font-size:12px;font-weight:700;color:${cobCdColor}">${cobCd ? cobCd.toFixed(1) : '-'}</td>
     </tr>`;
   }).join('');
 }
