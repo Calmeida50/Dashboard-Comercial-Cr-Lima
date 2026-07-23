@@ -6301,9 +6301,8 @@ function renderModalCoberturaLista(lojas) {
   lista.innerHTML = lojas.map((l, i) => {
     const estoque = (typeof l === 'object') ? l.estoque : null;
     const nome    = (typeof l === 'object') ? l.nome    : l;
-    const estoqueStr = (estoque != null)
-      ? `<span style="font-weight:700;color:${estoque===0?'#dc2626':estoque<=5?'#ca8a04':'#16a34a'}">${estoque} un</span>`
-      : `<span style="color:#cbd5e1">—</span>`;
+    const estoqueVal = (estoque != null) ? estoque : 0;
+    const estoqueStr = `<span style="font-weight:700;color:${estoqueVal===0?'#dc2626':estoqueVal<=5?'#ca8a04':'#16a34a'}">${estoqueVal} un</span>`;
     const bg = i % 2 === 0 ? '#fff' : '#f8fafc';
     return `<tr style="background:${bg};border-bottom:1px solid #f1f5f9">
       <td style="padding:9px 20px;color:var(--muted);font-size:12px;width:32px">${i+1}</td>
