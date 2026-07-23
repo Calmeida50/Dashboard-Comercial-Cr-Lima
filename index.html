@@ -1877,6 +1877,7 @@
                   <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Lojas c/<br>Estoque</th>
                   <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Ruptura<br>Lojas</th>
                   <th style="padding:8px 8px;text-align:right;color:#6366f1;font-weight:600;white-space:nowrap" title="Média mensal de sell-out Abr-Mai-Jun 2026 (unidades ao consumidor)">Venda Méd.<br>(un/mês)</th>
+                  <th style="padding:8px 8px;text-align:right;color:#0891b2;font-weight:600;white-space:nowrap" title="Participação no faturamento total Jan-Jun 2026">% Fat.</th>
                   <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Est.<br>Lojas</th>
                   <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Cob. Lojas<br>(dias)</th>
                   <th style="padding:8px 8px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap">Est.<br>CD</th>
@@ -7002,6 +7003,14 @@ function renderPvEstoque() {
     return 0;
   };
 
+  // Revenue participation per product (val26 = Jan-Jun YTD faturamento)
+  const fatMap = {};
+  let totalFat = 0;
+  (d.produtos || []).forEach(sp => {
+    if (sp.cod && sp.val26 > 0) { fatMap[sp.cod] = sp.val26; totalFat += sp.val26; }
+  });
+  const getPctFat = (p) => totalFat > 0 && fatMap[p.cod] ? (fatMap[p.cod] / totalFat) * 100 : 0;
+
   // KPIs: use qtde_lojas + qtde_cd; status based on loja coverage
   let totLojas = 0, totCd = 0, totRup = 0;
   prods.forEach(p => {
@@ -7076,29 +7085,55 @@ function renderPvEstoque() {
     return ca - cb;
   });
 
-  tbody.innerHTML = sorted.map(p => {
+  // Totals for summary row
+  let totVm = 0, totEstLojas = 0, totEstCd = 0, totPctFat = 0;
+  sorted.forEach(p => { totVm += getVendaMed(p); totEstLojas += p.qtde_lojas||0; totEstCd += p.qtde_cd||0; totPctFat += getPctFat(p); });
+  const totCobLojas = totVm > 0 ? (totEstLojas * 30) / totVm : 0;
+  const totCobCd = totVm > 0 ? (totEstCd * 30) / totVm : 0;
+
+  const rows = sorted.map(p => {
     const st = getStatus(p);
     const vm = getVendaMed(p);
     const vendaMedStr = vm > 0 ? Math.round(vm).toLocaleString('pt-BR') : '-';
     const cobLojas = getCobLojas(p);
     const cobCd = getCobCd(p);
+    const pctFat = getPctFat(p);
     const cobLojasColor = cobLojas > 0 && cobLojas < 15 ? '#dc2626' : cobLojas >= 60 ? '#1e40af' : 'var(--text)';
     const cobCdColor = cobCd > 0 && cobCd < 30 ? '#dc2626' : cobCd >= 60 ? '#1e40af' : 'var(--text)';
     return `<tr style="border-bottom:1px solid #f1f5f9">
       <td style="padding:6px 8px;text-align:center">
         <span style="background:${st.bg};color:${st.color};padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${st.label}</span>
       </td>
-      <td style="padding:6px 10px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.nome}">${p.nome}</td>
+      <td style="padding:6px 10px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.nome}">${p.nome}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px">${totalRede.toLocaleString('pt-BR')}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px">${(p.lojas||0).toLocaleString('pt-BR')}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px;color:#dc2626">${(p.lojas_rup||0).toLocaleString('pt-BR')}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px;color:#6366f1;font-weight:600">${vendaMedStr}</td>
+      <td style="padding:6px 8px;text-align:right;font-size:12px;color:#0891b2;font-weight:600">${pctFat > 0 ? pctFat.toFixed(1) + '%' : '-'}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px">${(p.qtde_lojas||0).toLocaleString('pt-BR')}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px;font-weight:600;color:${cobLojasColor}">${cobLojas ? cobLojas.toFixed(1) : '-'}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px">${(p.qtde_cd||0).toLocaleString('pt-BR')}</td>
       <td style="padding:6px 8px;text-align:right;font-size:12px;font-weight:700;color:${cobCdColor}">${cobCd ? cobCd.toFixed(1) : '-'}</td>
     </tr>`;
   }).join('');
+
+  const totCobLojasColor = totCobLojas > 0 && totCobLojas < 15 ? '#dc2626' : totCobLojas >= 60 ? '#1e40af' : 'var(--text)';
+  const totCobCdColor = totCobCd > 0 && totCobCd < 30 ? '#dc2626' : totCobCd >= 60 ? '#1e40af' : 'var(--text)';
+  const summaryRow = `<tr style="border-top:2px solid #1e293b;background:#f8fafc;font-weight:700">
+    <td style="padding:7px 8px;text-align:center;font-size:11px;color:var(--muted)">TOTAL</td>
+    <td style="padding:7px 10px;font-size:12px">${sorted.length} produtos</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px">—</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px">—</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px">—</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px;color:#6366f1">${Math.round(totVm).toLocaleString('pt-BR')}</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px;color:#0891b2">${totPctFat > 0 ? totPctFat.toFixed(1) + '%' : '—'}</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px">${totEstLojas.toLocaleString('pt-BR')}</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px;color:${totCobLojasColor}">${totCobLojas ? totCobLojas.toFixed(1) : '—'}</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px">${totEstCd.toLocaleString('pt-BR')}</td>
+    <td style="padding:7px 8px;text-align:right;font-size:12px;color:${totCobCdColor}">${totCobCd ? totCobCd.toFixed(1) : '—'}</td>
+  </tr>`;
+
+  tbody.innerHTML = rows + summaryRow;
 }
 
 function exportarPvEstoqueExcel() {
@@ -7119,11 +7154,17 @@ function exportarPvEstoqueExcel() {
   const getCobCd = (p) => { const vm = getVendaMed(p); const qc = p.qtde_cd||0; return vm > 0 && qc > 0 ? (qc*30)/vm : 0; };
   const getStatus = (p) => { const c = getCobLojas(p); if ((p.lojas||0)===0||c===0) return 'Ruptura'; if (c<15) return 'Baixo'; if (c<60) return 'Normal'; return 'Alto'; };
 
-  const headers = ['Status','Produto','Código','Total Rede','Lojas c/Estoque','Ruptura Lojas','Venda Méd. (un/mês)','Est. Lojas','Cob. Lojas (dias)','Est. CD','Cob. CD (dias)'];
+  const fatMap2 = {};
+  let totalFat2 = 0;
+  (d.produtos || []).forEach(sp => { if (sp.cod && sp.val26 > 0) { fatMap2[sp.cod] = sp.val26; totalFat2 += sp.val26; } });
+  const getPct2 = (p) => totalFat2 > 0 && fatMap2[p.cod] ? (fatMap2[p.cod] / totalFat2) * 100 : 0;
+
+  const headers = ['Status','Produto','Código','Total Rede','Lojas c/Estoque','Ruptura Lojas','Venda Méd. (un/mês)','% Fat.','Est. Lojas','Cob. Lojas (dias)','Est. CD','Cob. CD (dias)'];
   const rows = prods.map(p => {
     const vm = getVendaMed(p);
     const cobLojas = getCobLojas(p);
     const cobCd = getCobCd(p);
+    const pct = getPct2(p);
     return [
       getStatus(p),
       p.nome || '',
@@ -7132,6 +7173,7 @@ function exportarPvEstoqueExcel() {
       p.lojas || 0,
       p.lojas_rup || 0,
       vm > 0 ? Math.round(vm) : '',
+      pct > 0 ? parseFloat(pct.toFixed(1)) : '',
       p.qtde_lojas || 0,
       cobLojas ? parseFloat(cobLojas.toFixed(1)) : '',
       p.qtde_cd || 0,
