@@ -368,6 +368,29 @@
   .fin-item .fi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
   .fin-item .fi-value { font-size: 20px; font-weight: 700; margin-top: 6px; }
 
+  /* YTD TABLE */
+  .ytd-wrap { overflow-x: auto; }
+  .ytd-table { width: 100%; border-collapse: collapse; font-size: 10px; min-width: 1400px; }
+  .ytd-table thead th {
+    background: #1e293b; color: #e2e8f0; padding: 6px 10px;
+    text-align: right; white-space: nowrap; font-size: 9px; font-weight: 700;
+    border-right: 1px solid #334155; position: sticky; top: 0; z-index: 10;
+  }
+  .ytd-table thead th:first-child { text-align: left; min-width: 110px; position: sticky; left: 0; z-index: 20; }
+  .ytd-table thead th:last-child { border-right: none; background: #0f172a; }
+  .ytd-lbl {
+    font-weight: 700; font-size: 9px; padding: 4px 10px; white-space: nowrap;
+    background: #f8fafc; position: sticky; left: 0; z-index: 5;
+    color: #475569; border-right: 2px solid #e2e8f0; text-transform: uppercase;
+  }
+  .ytd-table td { text-align: right; padding: 4px 10px; white-space: nowrap; border-right: 1px solid #f1f5f9; }
+  .ytd-table td:last-child { border-right: none; font-weight: 700; background: #f0f4ff; border-left: 2px solid #c7d2fe; }
+  .ytd-sec-hdr td { padding: 7px 12px !important; font-size: 11px !important; font-weight: 800 !important; letter-spacing: .8px; color: #fff !important; text-align: left !important; border: none !important; }
+  .ytd-row-hist td:not(.ytd-lbl):not(:last-child) { background: #fafafa; color: #64748b; }
+  .ytd-row-obj td:not(.ytd-lbl):not(:last-child) { background: #eff6ff; color: #3b82f6; }
+  .ytd-row-real td:not(.ytd-lbl):not(:last-child) { background: #f0fdf4; font-weight: 700; color: #1e293b; }
+  .ytd-row-last { border-bottom: 3px solid #cbd5e1; }
+
   /* RESPONSIVE */
   @media (max-width: 900px) {
     #sidebar { width: 60px; }
@@ -404,11 +427,14 @@
     <p>Cr Lima Comércio e Representações</p>
   </div>
   <nav>
+    <a onclick="showPage('acompanhamento')" data-page="acompanhamento">
+      <span class="icon">🎯</span><span>Mês Corrente</span>
+    </a>
     <a class="active" onclick="showPage('visao-geral')" data-page="visao-geral">
       <span class="icon">📊</span><span>Visão Geral</span>
     </a>
-    <a onclick="showPage('acompanhamento')" data-page="acompanhamento">
-      <span class="icon">🎯</span><span>Mês Corrente</span>
+    <a onclick="showPage('ytd')" data-page="ytd">
+      <span class="icon">📅</span><span>YTD</span>
     </a>
     <a onclick="showPage('empresas')" data-page="empresas" style="display:none">
       <span class="icon">🏢</span><span>Por Empresa</span>
@@ -1313,6 +1339,15 @@
         <table id="op-cli-table" style="width:100%;border-collapse:collapse;font-size:12px"></table>
       </div>
     </div>
+  </div>
+
+  <!-- YTD -->
+  <div id="page-ytd" class="page">
+    <div class="page-header">
+      <h1>YTD — Year to Date</h1>
+      <p id="ytd-subtitulo">Comparativo mensal 2025 vs 2026 — Geral, por Empresa e por Vendedor</p>
+    </div>
+    <div id="ytd-container" class="ytd-wrap"></div>
   </div>
 
   <!-- RECEITA LÍQUIDA -->
@@ -2481,6 +2516,7 @@ function showPage(name) {
   if (name === 'comissoes') renderComissoesPage();
   if (name === 'clientes') renderClientesPage();
   if (name === 'sellout') renderSelloutPage();
+  if (name === 'ytd') renderYTD();
   if (name === 'acompanhamento') {
     // Abrir sempre no mês atual do calendário
     const lastMes = new Date().getMonth();
@@ -10245,6 +10281,105 @@ function renderOnePage() {
   }
 }
 
+
+// ── YTD Analysis ──
+function renderYTD() {
+  const container = document.getElementById('ytd-container');
+  if (!container) return;
+  const MESES_FULL = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+  const geralReal = (DATA.empresas['GERAL'] || {}).real || [];
+  let lastIdx = -1;
+  for (let i = 0; i < 12; i++) { if (geralReal[i] > 0) lastIdx = i; }
+  if (lastIdx < 0) { container.innerHTML = '<p style="color:var(--muted);padding:20px">Sem dados disponíveis.</p>'; return; }
+
+  const fmtV = v => v > 0 ? 'R$ ' + Math.round(v).toLocaleString('pt-BR') : '—';
+  const pctColor = p => p >= 100 ? '#16a34a' : p >= 80 ? '#d97706' : '#ef4444';
+  const pctBg   = p => p >= 100 ? '#f0fdf4' : p >= 80 ? '#fffbeb' : '#fef2f2';
+
+  function buildSection(nome, histArr, objArr, realArr, cor) {
+    const ytdHist = histArr.slice(0, lastIdx+1).reduce((s,v)=>s+(v||0),0);
+    const ytdObj  = objArr.slice(0, lastIdx+1).reduce((s,v)=>s+(v||0),0);
+    const ytdReal = realArr.slice(0, lastIdx+1).reduce((s,v)=>s+(v||0),0);
+    const pctObj  = ytdObj  > 0 ? Math.round(ytdReal/ytdObj *100) : 0;
+    const pctHist = ytdHist > 0 ? Math.round(ytdReal/ytdHist*100) : 0;
+
+    let hCols='', oCols='', rCols='', poCols='', phCols='';
+    for (let i = 0; i < 12; i++) {
+      const h=histArr[i]||0, o=objArr[i]||0, r=realArr[i]||0;
+      hCols += `<td>${fmtV(h)}</td>`;
+      oCols += `<td>${fmtV(o)}</td>`;
+      if (i <= lastIdx) {
+        rCols += `<td>${fmtV(r)}</td>`;
+        const po = o>0 ? Math.round(r/o*100) : 0;
+        const ph = h>0 ? Math.round(r/h*100) : 0;
+        poCols += `<td style="color:${pctColor(po)};font-weight:700;background:${pctBg(po)}">${po}%</td>`;
+        phCols += `<td style="color:${pctColor(ph)};font-weight:700;background:${pctBg(ph)}">${ph}%</td>`;
+      } else {
+        rCols += `<td style="color:#cbd5e1">—</td>`;
+        poCols += `<td style="color:#cbd5e1">0%</td>`;
+        phCols += `<td style="color:#cbd5e1">0%</td>`;
+      }
+    }
+    const po_ = pctColor(pctObj), ph_ = pctColor(pctHist);
+    return `
+      <tr class="ytd-sec-hdr"><td colspan="14" style="background:${cor}">${nome}</td></tr>
+      <tr class="ytd-row-hist"><td class="ytd-lbl">Hist. 2025</td>${hCols}<td>${fmtV(ytdHist)}</td></tr>
+      <tr class="ytd-row-obj"><td class="ytd-lbl">Obj. 2026</td>${oCols}<td>${fmtV(ytdObj)}</td></tr>
+      <tr class="ytd-row-real"><td class="ytd-lbl">Realizado</td>${rCols}<td>${fmtV(ytdReal)}</td></tr>
+      <tr><td class="ytd-lbl">% Real/Obj.</td>${poCols}<td style="color:${po_};font-weight:700;background:${pctBg(pctObj)}">${pctObj}%</td></tr>
+      <tr class="ytd-row-last"><td class="ytd-lbl">% Real/2025</td>${phCols}<td style="color:${ph_};font-weight:700;background:${pctBg(pctHist)}">${pctHist}%</td></tr>`;
+  }
+
+  // GERAL
+  const gd = DATA.empresas['GERAL'] || {};
+  let tbody = buildSection('GERAL', gd.hist||[], gd.obj||[], gd.real||[], '#0f172a');
+
+  // Por Empresa
+  const EMPS = (typeof EMPRESAS_ACOMP !== 'undefined' ? EMPRESAS_ACOMP : Object.keys(DATA.empresas||{}).filter(k=>k!=='GERAL'));
+  EMPS.forEach(emp => {
+    const d = DATA.empresas[emp] || {};
+    const cor = (typeof EMPRESA_CORES !== 'undefined' ? EMPRESA_CORES[emp] : null) || '#6366f1';
+    tbody += buildSection(emp, d.hist||[], d.obj||[], d.real||[], cor);
+  });
+
+  // Por Vendedor
+  const vendedores = Object.keys(DATA.acomp_vendas || {}).filter(v=>v!=='VAREJO').sort();
+  vendedores.forEach(vend => {
+    const hist = new Array(12).fill(0);
+    const obj  = new Array(12).fill(0);
+    const real = new Array(12).fill(0);
+    // hist + obj from acomp_vendas
+    MESES_KEYS_UP.forEach((mk, i) => {
+      const mesData = (DATA.acomp_vendas[vend]||{})[mk] || {};
+      EMPS.forEach(emp => {
+        const d = mesData[emp] || {};
+        hist[i] += d.hist||0;
+        obj[i]  += d.obj ||0;
+      });
+    });
+    // real from clientes_detalhado
+    EMPS.forEach(emp => {
+      ((DATA.clientes_detalhado[emp]||{})[vend]||[]).forEach(cli => {
+        for (let i = 0; i <= lastIdx; i++) {
+          real[i] += (cli.meses||[])[i]||0;
+        }
+      });
+    });
+    tbody += buildSection(vend, hist, obj, real, '#7c3aed');
+  });
+
+  container.innerHTML = `
+    <div class="ytd-wrap">
+      <table class="ytd-table">
+        <thead><tr>
+          <th style="text-align:left">ENTIDADE</th>
+          ${MESES_FULL.map(m=>`<th>${m}</th>`).join('')}
+          <th>TOTAL YTD</th>
+        </tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
+    </div>`;
+}
 
 // ── Exportar One Page como PDF ──
 function exportOnePagePDF() {
