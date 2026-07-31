@@ -10314,138 +10314,206 @@ function exportOnePagePDF() {
     {lbl:mesNome+' Cobertura Obj.', val:pct(mesReal,mesObj), sub:'Obj: '+fmtR(mesObj), subColor:'#64748b', valColor:mesObj>0&&mesReal>=mesObj?'#16a34a':'#dc2626'},
   ];
 
+  // helper: mini barra de progresso
+  const bar = (real, obj) => {
+    if (!obj) return '';
+    const w = Math.min(Math.round(real/obj*100), 100);
+    const bc = real>=obj ? '#16a34a' : real/obj>=0.8 ? '#d97706' : '#dc2626';
+    return `<div style="background:#e2e8f0;border-radius:2px;height:5px;width:60px;display:inline-block;vertical-align:middle;margin-left:6px"><div style="background:${bc};height:5px;border-radius:2px;width:${w}%"></div></div>`;
+  };
+  const cobCell = (real, obj) => {
+    const v = obj>0 ? (real/obj*100).toFixed(1)+'%' : '—';
+    const c = obj>0&&real>=obj?'#16a34a':obj>0&&real/obj>=0.8?'#d97706':'#dc2626';
+    return `<span style="color:${c};font-weight:700">${v}</span>${bar(real,obj)}`;
+  };
+
   const ytdRows = ytdSorted.map((emp,i) => {
     const d=empYTD[emp], cor=EMPRESA_CORES[emp]||'#6366f1';
     const part=ytdReal>0?(d.real/ytdReal*100).toFixed(1)+'%':'—';
     const grow=pctGrow(d.real,d.hist), growC=growColor(d.real,d.hist);
-    const cob=pct(d.real,d.obj), cobC=d.obj>0&&d.real>=d.obj?'#16a34a':'#dc2626';
-    return `<tr style="background:${i%2===0?'#f8fafc':'#fff'}">
-      <td style="padding:5px 8px;font-weight:700;color:${cor}">${emp}</td>
-      <td style="text-align:right;padding:5px 8px">${fmtR(d.real)}</td>
-      <td style="text-align:right;padding:5px 8px">${part}</td>
-      <td style="text-align:right;padding:5px 8px;color:${growC};font-weight:600">${grow}</td>
-      <td style="text-align:right;padding:5px 8px;color:${cobC};font-weight:700">${cob}</td>
+    return `<tr style="border-bottom:1px solid #f1f5f9;background:${i%2===0?'#fafbfc':'#fff'}">
+      <td style="padding:5px 10px;font-weight:700;color:${cor};border-left:3px solid ${cor}">${emp}</td>
+      <td style="text-align:right;padding:5px 10px;font-weight:600">${fmtR(d.real)}</td>
+      <td style="text-align:right;padding:5px 10px;color:#64748b">${part}</td>
+      <td style="text-align:right;padding:5px 10px;color:${growC};font-weight:600;white-space:nowrap">${grow}</td>
+      <td style="padding:5px 10px;text-align:right;white-space:nowrap">${cobCell(d.real,d.obj)}</td>
     </tr>`;
-  }).join('') + `<tr style="background:#e2e8f0;font-weight:700">
-    <td style="padding:5px 8px">TOTAL</td>
-    <td style="text-align:right;padding:5px 8px">${fmtR(ytdReal)}</td>
-    <td style="text-align:right;padding:5px 8px">100%</td>
-    <td style="text-align:right;padding:5px 8px;color:${growColor(ytdReal,ytdHist)}">${pctGrow(ytdReal,ytdHist)}</td>
-    <td style="text-align:right;padding:5px 8px;color:${ytdObj>0&&ytdReal>=ytdObj?'#16a34a':'#dc2626'}">${pct(ytdReal,ytdObj)}</td>
+  }).join('') + `<tr style="background:#1e293b;color:#fff;font-weight:700">
+    <td style="padding:5px 10px;letter-spacing:.5px">TOTAL</td>
+    <td style="text-align:right;padding:5px 10px">${fmtR(ytdReal)}</td>
+    <td style="text-align:right;padding:5px 10px">100%</td>
+    <td style="text-align:right;padding:5px 10px;color:${growColor(ytdReal,ytdHist)}">${pctGrow(ytdReal,ytdHist)}</td>
+    <td style="text-align:right;padding:5px 10px;color:${ytdObj>0&&ytdReal>=ytdObj?'#4ade80':ytdReal/ytdObj>=.8?'#fbbf24':'#f87171'}">${pct(ytdReal,ytdObj)}</td>
   </tr>`;
 
   const mesRows = mesSorted.map((emp,i) => {
     const d=empMes[emp], cor=EMPRESA_CORES[emp]||'#6366f1';
     const part=mesReal>0?(d.real/mesReal*100).toFixed(1)+'%':'—';
-    const cob=pct(d.real,d.obj), cobC=d.obj>0&&d.real>=d.obj?'#16a34a':'#dc2626';
-    return `<tr style="background:${i%2===0?'#f8fafc':'#fff'}">
-      <td style="padding:4px 8px;color:#64748b">${i+1}</td>
-      <td style="padding:4px 8px;font-weight:700;color:${cor}">${emp}</td>
-      <td style="text-align:right;padding:4px 8px">${fmtR(d.real)}</td>
-      <td style="text-align:right;padding:4px 8px">${part}</td>
-      <td style="text-align:right;padding:4px 8px;color:${cobC};font-weight:700">${cob}</td>
+    return `<tr style="border-bottom:1px solid #f1f5f9;background:${i%2===0?'#fafbfc':'#fff'}">
+      <td style="padding:4px 8px;color:#94a3b8;font-size:9px">${i+1}</td>
+      <td style="padding:4px 8px;font-weight:700;color:${cor};border-left:3px solid ${cor}">${emp}</td>
+      <td style="text-align:right;padding:4px 8px;font-weight:600">${fmtR(d.real)}</td>
+      <td style="text-align:right;padding:4px 8px;color:#64748b">${part}</td>
+      <td style="padding:4px 8px;white-space:nowrap">${cobCell(d.real,d.obj)}</td>
     </tr>`;
-  }).join('') + `<tr style="background:#e2e8f0;font-weight:700">
-    <td style="padding:4px 8px"></td><td style="padding:4px 8px">TOTAL</td>
+  }).join('') + `<tr style="background:#1e293b;color:#fff;font-weight:700">
+    <td style="padding:4px 8px"></td><td style="padding:4px 8px;letter-spacing:.5px">TOTAL</td>
     <td style="text-align:right;padding:4px 8px">${fmtR(mesReal)}</td>
     <td style="text-align:right;padding:4px 8px">100%</td>
-    <td style="text-align:right;padding:4px 8px;color:${mesObj>0&&mesReal>=mesObj?'#16a34a':'#dc2626'}">${pct(mesReal,mesObj)}</td>
+    <td style="text-align:right;padding:4px 8px;color:${mesObj>0&&mesReal>=mesObj?'#4ade80':mesReal/mesObj>=.8?'#fbbf24':'#f87171'}">${pct(mesReal,mesObj)}</td>
   </tr>`;
 
   const cliRows = cliArr.map((cli,i) => {
     const part=cliTot>0?(cli.real/cliTot*100).toFixed(1)+'%':'—';
     const cor=EMPRESA_CORES[cli.emp]||'#6366f1';
-    const nome=cli.nome.length>30?cli.nome.slice(0,30)+'…':cli.nome;
-    return `<tr style="background:${i%2===0?'#f8fafc':'#fff'}">
-      <td style="padding:4px 8px;color:#64748b">${i+1}</td>
-      <td style="padding:4px 8px">${nome}<br><span style="font-size:9px;color:${cor};font-weight:700">${cli.emp}</span></td>
-      <td style="text-align:right;padding:4px 8px">${fmtR(cli.real)}</td>
-      <td style="text-align:right;padding:4px 8px">${part}</td>
+    const nome=cli.nome.length>32?cli.nome.slice(0,32)+'…':cli.nome;
+    const barW=cliTot>0?Math.round(cli.real/cliArr[0].real*100):0;
+    return `<tr style="border-bottom:1px solid #f1f5f9;background:${i%2===0?'#fafbfc':'#fff'}">
+      <td style="padding:4px 8px;color:#94a3b8;font-size:9px">${i+1}</td>
+      <td style="padding:4px 8px">
+        <div style="font-weight:600;font-size:10px">${nome}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
+          <span style="font-size:9px;color:${cor};font-weight:700;text-transform:uppercase">${cli.emp}</span>
+          <div style="background:#e2e8f0;border-radius:2px;height:3px;flex:1"><div style="background:${cor};height:3px;border-radius:2px;width:${barW}%"></div></div>
+        </div>
+      </td>
+      <td style="text-align:right;padding:4px 8px;font-weight:600">${fmtR(cli.real)}</td>
+      <td style="text-align:right;padding:4px 8px;color:#64748b">${part}</td>
     </tr>`;
   }).join('');
 
   const today = new Date().toLocaleDateString('pt-BR');
+  const ytdCobPct = ytdObj>0 ? Math.round(ytdReal/ytdObj*100) : 0;
+  const mesCobPct = mesObj>0 ? Math.round(mesReal/mesObj*100) : 0;
+  const kpiCards = [
+    { lbl:'YTD REALIZADO', val:fmtR(ytdReal), sub:pctGrow(ytdReal,ytdHist), subC:growColor(ytdReal,ytdHist), border:growColor(ytdReal,ytdHist) },
+    { lbl:'YTD COBERTURA OBJ.', val:ytdCobPct+'%', sub:'Meta: '+fmtR(ytdObj), subC:'#64748b', border:ytdCobPct>=100?'#16a34a':ytdCobPct>=80?'#d97706':'#dc2626', valC:ytdCobPct>=100?'#16a34a':ytdCobPct>=80?'#d97706':'#dc2626' },
+    { lbl:mesNome.toUpperCase()+' REALIZADO', val:fmtR(mesReal), sub:pctGrow(mesReal,mesHist), subC:growColor(mesReal,mesHist), border:growColor(mesReal,mesHist) },
+    { lbl:mesNome.toUpperCase()+' COBERTURA OBJ.', val:mesCobPct+'%', sub:'Meta: '+fmtR(mesObj), subC:'#64748b', border:mesCobPct>=100?'#16a34a':mesCobPct>=80?'#d97706':'#dc2626', valC:mesCobPct>=100?'#16a34a':mesCobPct>=80?'#d97706':'#dc2626' },
+  ];
+
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
   <title>One Page — ${vend} — ${mesNome} 2026</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:Arial,sans-serif;font-size:11px;color:#1e293b;background:#fff;padding:16px}
-    @page{size:A4 landscape;margin:10mm}
-    @media print{body{padding:0}}
-    h1{font-size:20px;font-weight:800;color:#1e293b}
-    .subtitle{font-size:11px;color:#64748b;margin-top:2px}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:10px;border-bottom:3px solid #7c3aed}
-    .badge{background:#7c3aed;color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
-    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-    .kpi{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;text-align:center}
-    .kpi-lbl{font-size:9px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
-    .kpi-val{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:2px}
+    body{font-family:'Arial',sans-serif;font-size:11px;color:#1e293b;background:#fff}
+    @page{size:A4 landscape;margin:8mm 10mm}
+    /* HEADER */
+    .hdr{background:#1e293b;color:#fff;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .hdr-left{}
+    .hdr-vendor{font-size:22px;font-weight:900;letter-spacing:-.5px;color:#fff}
+    .hdr-sub{font-size:9px;color:#94a3b8;margin-top:2px;letter-spacing:.3px}
+    .hdr-right{text-align:right}
+    .hdr-title{font-size:11px;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:1px}
+    .hdr-period{font-size:13px;font-weight:800;color:#fff;margin-top:2px}
+    /* KPIs */
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 10px;margin-bottom:12px}
+    .kpi{border:1px solid #e2e8f0;border-radius:6px;padding:10px 12px;position:relative;overflow:hidden;background:#fff}
+    .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .kpi-lbl{font-size:8px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+    .kpi-val{font-size:17px;font-weight:900;margin-bottom:3px}
+    .kpi-divider{border:none;border-top:1px solid #f1f5f9;margin:5px 0}
     .kpi-sub{font-size:9px;font-weight:600}
-    .section-title{font-size:10px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    /* SECTIONS */
+    .section{border:1px solid #e2e8f0;border-radius:6px;overflow:hidden;margin-bottom:12px;padding:0 10px}
+    .sec-hdr{background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:7px 10px;display:flex;align-items:center;gap:6px;margin:0 -10px}
+    .sec-hdr-dot{width:10px;height:10px;border-radius:2px;background:#7c3aed;flex-shrink:0}
+    .sec-hdr-title{font-size:10px;font-weight:800;color:#1e293b;text-transform:uppercase;letter-spacing:.6px}
+    .sec-hdr-sub{font-size:9px;color:#7c3aed;font-weight:600;margin-left:auto}
+    /* TABLES */
     table{width:100%;border-collapse:collapse;font-size:10px}
-    thead th{background:#7c3aed;color:#fff;padding:5px 8px;font-weight:700;text-align:left}
-    thead th:not(:first-child){text-align:right}
-    .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-    .ytd-block{margin-bottom:14px}
-    .footer{margin-top:10px;font-size:9px;color:#94a3b8;text-align:right}
+    thead th{background:#334155;color:#e2e8f0;padding:6px 10px;font-weight:700;font-size:9px;text-transform:uppercase;letter-spacing:.4px;border-right:1px solid #475569}
+    thead th:last-child{border-right:none}
+    tbody td{border-right:1px solid #f1f5f9}
+    tbody td:last-child{border-right:none}
+    /* BOTTOM COLS */
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 10px;margin-bottom:12px}
+    .col-section{border:1px solid #e2e8f0;border-radius:6px;overflow:hidden}
+    /* FOOTER */
+    .footer{padding:6px 10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;color:#94a3b8;font-size:8px;letter-spacing:.3px}
   </style></head><body>
-  <div class="header">
-    <div>
-      <h1>${vend}</h1>
-      <div class="subtitle">Cr Lima Comércio e Representações &nbsp;·&nbsp; One Page Comercial 2026 &nbsp;·&nbsp; Gerado em ${today}</div>
+
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="hdr-vendor">${vend}</div>
+      <div class="hdr-sub">CR LIMA COMÉRCIO E REPRESENTAÇÕES &nbsp;·&nbsp; ONE PAGE COMERCIAL 2026 &nbsp;·&nbsp; GERADO EM ${today}</div>
     </div>
-    <div class="badge">Janeiro → ${mesNome} 2026</div>
+    <div class="hdr-right">
+      <div class="hdr-title">Período de Análise</div>
+      <div class="hdr-period">Janeiro → ${mesNome} 2026</div>
+    </div>
   </div>
 
   <div class="kpis">
-    ${kpis.map(k=>`<div class="kpi">
+    ${kpiCards.map(k=>`<div class="kpi" style="border-top:3px solid ${k.border}">
       <div class="kpi-lbl">${k.lbl}</div>
-      <div class="kpi-val" style="color:${k.valColor||'#1e293b'}">${k.val}</div>
-      <div class="kpi-sub" style="color:${k.subColor}">${k.sub}</div>
+      <div class="kpi-val" style="color:${k.valC||'#1e293b'}">${k.val}</div>
+      <hr class="kpi-divider">
+      <div class="kpi-sub" style="color:${k.subC}">${k.sub}</div>
     </div>`).join('')}
   </div>
 
-  <div class="ytd-block">
-    <div class="section-title">📊 Desempenho Acumulado YTD por Empresa &nbsp;—&nbsp; Janeiro → ${mesNome}</div>
-    <table>
-      <thead><tr>
-        <th>Empresa</th>
-        <th style="text-align:right">Realizado</th>
-        <th style="text-align:right">Part.%</th>
-        <th style="text-align:right">vs 2025</th>
-        <th style="text-align:right">vs Objetivo</th>
-      </tr></thead>
-      <tbody>${ytdRows}</tbody>
-    </table>
+  <div style="padding:0 10px;margin-bottom:12px">
+    <div class="section" style="margin-bottom:0">
+      <div class="sec-hdr">
+        <div class="sec-hdr-dot"></div>
+        <div class="sec-hdr-title">Desempenho Acumulado YTD por Empresa</div>
+        <div class="sec-hdr-sub">Janeiro → ${mesNome} 2026</div>
+      </div>
+      <table>
+        <thead><tr>
+          <th style="text-align:left;width:18%">Empresa</th>
+          <th style="text-align:right">Realizado 2026</th>
+          <th style="text-align:right">Participação</th>
+          <th style="text-align:right">vs 2025</th>
+          <th style="text-align:left">vs Objetivo</th>
+        </tr></thead>
+        <tbody>${ytdRows}</tbody>
+      </table>
+    </div>
   </div>
 
   <div class="cols">
-    <div>
-      <div class="section-title">🏢 Ranking Empresas &nbsp;—&nbsp; ${mesNome}</div>
+    <div class="col-section">
+      <div class="sec-hdr">
+        <div class="sec-hdr-dot" style="background:#0f766e"></div>
+        <div class="sec-hdr-title">Ranking Empresas</div>
+        <div class="sec-hdr-sub">${mesNome} 2026</div>
+      </div>
       <table>
         <thead><tr>
-          <th>#</th><th>Empresa</th>
+          <th style="width:24px">#</th>
+          <th style="text-align:left">Empresa</th>
           <th style="text-align:right">Realizado</th>
-          <th style="text-align:right">Part.%</th>
-          <th style="text-align:right">vs Obj</th>
+          <th style="text-align:right">Part.</th>
+          <th style="text-align:left">vs Obj.</th>
         </tr></thead>
         <tbody>${mesRows}</tbody>
       </table>
     </div>
-    <div>
-      <div class="section-title">🏆 Top 10 Clientes &nbsp;—&nbsp; ${mesNome}</div>
+    <div class="col-section">
+      <div class="sec-hdr">
+        <div class="sec-hdr-dot" style="background:#b45309"></div>
+        <div class="sec-hdr-title">Top 10 Clientes</div>
+        <div class="sec-hdr-sub">${mesNome} 2026</div>
+      </div>
       <table>
         <thead><tr>
-          <th>#</th><th>Cliente</th>
+          <th style="width:24px">#</th>
+          <th style="text-align:left">Cliente</th>
           <th style="text-align:right">Realizado</th>
-          <th style="text-align:right">Part.%</th>
+          <th style="text-align:right">Part.</th>
         </tr></thead>
         <tbody>${cliRows}</tbody>
       </table>
     </div>
   </div>
 
-  <div class="footer">Comercial 2026 &nbsp;·&nbsp; ${vend} &nbsp;·&nbsp; ${mesNome} 2026</div>
+  <div class="footer">
+    <span>Comercial 2026 &nbsp;·&nbsp; ${vend} &nbsp;·&nbsp; ${mesNome} 2026</span>
+    <span>YTD Realizado: ${fmtR(ytdReal)} &nbsp;|&nbsp; Cobertura Obj.: ${ytdCobPct}% &nbsp;|&nbsp; ${mesNome} Realizado: ${fmtR(mesReal)}</span>
+  </div>
+
   <script>window.onload=function(){window.print()}<\/script>
   </body></html>`;
 
