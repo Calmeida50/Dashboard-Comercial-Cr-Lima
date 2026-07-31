@@ -5548,7 +5548,7 @@ async function fetchPedidosTempoReal() {
       };
       const s = function(cell) { return cell && cell.v != null ? String(cell.v) : ''; };
       const v = function(cell) { return cell && cell.v != null ? String(cell.v) : '0'; };
-      return [ d(c[0]), s(c[1]), s(c[2]), v(c[3]), s(c[4]) ];
+      return [ d(c[0]), s(c[1]), s(c[2]), v(c[3]), s(c[4]), s(c[5]), s(c[6]) ];
     }).filter(function(r) { return r[1] && r[1].trim(); });
   } catch(e) {
     console.error('[Pedidos] Erro ao buscar dados:', e.name, e.message);
@@ -5622,7 +5622,7 @@ function renderPedidosTempoReal(rows, targetMes, targetAno) {
     return !parsed || (parsed.mes === mesCorrente && parsed.ano === anoCorrente3);
   });
   if (!rowsMes.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">Nenhum pedido lançado ainda este mês</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhum pedido lançado ainda este mês</td></tr>';
     badge.textContent = 'Sem pedidos no mês';
     return;
   }
@@ -5711,13 +5711,12 @@ function toggleEmpresaDrilldown(emp, mes, ano) {
   }
   if (arr) arr.textContent = '▼';
   if (!PEDIDOS_RAW_ROWS) { row.style.display = ''; return; }
-  const clientes = {};
+  const pedidos = [];
   PEDIDOS_RAW_ROWS.forEach(function(r) {
     const parsed = parsePedidoData((r[0]||'').trim());
     if (parsed && (parsed.mes !== mes || parsed.ano !== ano)) return;
     const empresa = (r[1]||'').trim().toUpperCase();
     if (empresa !== emp) return;
-    const cliente = (r[2]||'').trim() || '(sem cliente)';
     const rawVal = (r[3]||'0').replace(/[R$\s]/g,'');
     const valor = (function() {
       if (!rawVal || rawVal === '-') return 0;
@@ -5728,24 +5727,41 @@ function toggleEmpresaDrilldown(emp, mes, ano) {
     })();
     const vendedorRaw = (r[4]||'').trim().toUpperCase();
     const vendedor = [...VENDEDORES_VALIDOS].find(function(v){ return vendedorRaw === v || vendedorRaw.startsWith(v + ' '); }) || vendedorRaw || '—';
-    if (!clientes[cliente]) clientes[cliente] = { total: 0, count: 0, vendedor: vendedor };
-    clientes[cliente].total += valor;
-    clientes[cliente].count++;
+    pedidos.push({
+      data: (r[0]||'').trim(),
+      cliente: (r[2]||'').trim() || '(sem cliente)',
+      valor: valor,
+      vendedor: vendedor,
+      oc: (r[5]||'').trim(),
+      numPed: (r[6]||'').trim()
+    });
   });
+  pedidos.sort(function(a,b){ return b.data.localeCompare(a.data); });
   const fmtV = function(v){ return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); };
-  const sorted = Object.entries(clientes).sort(function(a,b){ return b[1].total - a[1].total; });
-  let html = '<table style="width:100%;font-size:12px;border-collapse:collapse">';
-  html += '<thead><tr style="background:#f1f5f9"><th style="text-align:left;padding:6px 20px;font-weight:600;color:#64748b;font-size:11px">CLIENTE</th>';
-  html += '<th style="text-align:left;padding:6px 8px;font-weight:600;color:#64748b;font-size:11px">VENDEDOR</th>';
-  html += '<th style="text-align:center;padding:6px 8px;font-weight:600;color:#64748b;font-size:11px">PED.</th>';
-  html += '<th style="text-align:right;padding:6px 20px;font-weight:600;color:#64748b;font-size:11px">VALOR</th></tr></thead><tbody>';
-  sorted.forEach(function(entry) {
-    const cli = entry[0]; const d = entry[1];
-    html += '<tr style="border-top:1px solid #e2e8f0"><td style="padding:5px 20px">' + cli + '</td>';
-    html += '<td style="padding:5px 8px;color:#64748b;font-size:11px">' + d.vendedor + '</td>';
-    html += '<td style="text-align:center;padding:5px 8px;color:#94a3b8">' + d.count + '</td>';
-    html += '<td style="text-align:right;padding:5px 20px;font-weight:600">' + fmtV(d.total) + '</td></tr>';
+  const totalEmp = pedidos.reduce(function(s,p){ return s+p.valor; },0);
+  let html = '<table style="width:100%;font-size:11px;border-collapse:collapse">';
+  html += '<thead><tr style="background:#f1f5f9">';
+  html += '<th style="text-align:left;padding:6px 12px;font-weight:600;color:#64748b;white-space:nowrap">DATA</th>';
+  html += '<th style="text-align:left;padding:6px 12px;font-weight:600;color:#64748b">CLIENTE</th>';
+  html += '<th style="text-align:left;padding:6px 8px;font-weight:600;color:#64748b;white-space:nowrap">VENDEDOR</th>';
+  html += '<th style="text-align:left;padding:6px 8px;font-weight:600;color:#64748b;white-space:nowrap">O.C. CLIENTE</th>';
+  html += '<th style="text-align:left;padding:6px 8px;font-weight:600;color:#64748b;white-space:nowrap">Nº PED. IND.</th>';
+  html += '<th style="text-align:right;padding:6px 16px;font-weight:600;color:#64748b">VALOR</th>';
+  html += '</tr></thead><tbody>';
+  pedidos.forEach(function(p) {
+    html += '<tr style="border-top:1px solid #e2e8f0">';
+    html += '<td style="padding:5px 12px;color:#64748b;white-space:nowrap">' + p.data + '</td>';
+    html += '<td style="padding:5px 12px">' + p.cliente + '</td>';
+    html += '<td style="padding:5px 8px;color:#64748b">' + p.vendedor + '</td>';
+    html += '<td style="padding:5px 8px;color:#7c3aed;font-weight:600">' + (p.oc || '<span style="color:#cbd5e1">—</span>') + '</td>';
+    html += '<td style="padding:5px 8px;color:#0369a1;font-weight:600">' + (p.numPed || '<span style="color:#cbd5e1">—</span>') + '</td>';
+    html += '<td style="text-align:right;padding:5px 16px;font-weight:600">' + fmtV(p.valor) + '</td>';
+    html += '</tr>';
   });
+  html += '<tr style="border-top:2px solid #94a3b8;background:#f8fafc">';
+  html += '<td colspan="5" style="padding:5px 12px;font-weight:700;color:#374151">TOTAL ' + emp + ' — ' + pedidos.length + ' pedido' + (pedidos.length!==1?'s':'') + '</td>';
+  html += '<td style="text-align:right;padding:5px 16px;font-weight:700;color:#111827">' + fmtV(totalEmp) + '</td>';
+  html += '</tr>';
   html += '</tbody></table>';
   row.querySelector('td').innerHTML = html;
   row.style.display = '';
