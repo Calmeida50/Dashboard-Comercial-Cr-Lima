@@ -6029,23 +6029,27 @@ function toggleEmpVendDrilldown(empId) {
     row.style.display = '';
     return;
   }
-  let html = '<table style="width:100%;font-size:12px;border-collapse:collapse">';
+  const totalReal = vends.reduce((s, v) => s + (v.real || 0), 0);
+  let html = '<table style="width:100%;font-size:11px;border-collapse:collapse">';
   html += '<thead><tr style="background:#ede9fe">';
-  html += '<th style="text-align:left;padding:5px 20px;font-size:11px;font-weight:700;color:#5b21b6">VENDEDOR</th>';
-  html += '<th style="text-align:right;padding:5px 8px;font-size:11px;font-weight:700;color:#5b21b6">HISTÓRICO</th>';
-  html += '<th style="text-align:right;padding:5px 8px;font-size:11px;font-weight:700;color:#5b21b6">OBJETIVO</th>';
-  html += '<th style="text-align:right;padding:5px 8px;font-size:11px;font-weight:700;color:#5b21b6">REALIZADO</th>';
-  html += '<th style="text-align:right;padding:5px 20px;font-size:11px;font-weight:700;color:#5b21b6">COB.</th>';
+  html += '<th style="text-align:left;padding:3px 12px;font-size:10px;font-weight:700;color:#5b21b6">VENDEDOR</th>';
+  html += '<th style="text-align:right;padding:3px 6px;font-size:10px;font-weight:700;color:#5b21b6">HISTÓRICO</th>';
+  html += '<th style="text-align:right;padding:3px 6px;font-size:10px;font-weight:700;color:#5b21b6">OBJETIVO</th>';
+  html += '<th style="text-align:right;padding:3px 6px;font-size:10px;font-weight:700;color:#5b21b6">REALIZADO</th>';
+  html += '<th style="text-align:right;padding:3px 6px;font-size:10px;font-weight:700;color:#5b21b6">PART.</th>';
+  html += '<th style="text-align:right;padding:3px 12px;font-size:10px;font-weight:700;color:#5b21b6">COB.</th>';
   html += '</tr></thead><tbody>';
   vends.forEach(v => {
     const p = v.obj > 0 ? Math.round(v.real / v.obj * 100) : null;
     const cor = p === null ? '#8892b0' : p >= 100 ? '#22c55e' : p >= 80 ? '#f59e0b' : '#ef4444';
+    const part = totalReal > 0 ? (v.real / totalReal * 100).toFixed(1) + '%' : '—';
     html += `<tr style="border-top:1px solid #ddd6fe">
-      <td style="padding:5px 20px;font-weight:700;color:#5b21b6">${v.nome}</td>
-      <td style="text-align:right;padding:5px 8px;color:var(--muted)">${fmtV(v.hist)}</td>
-      <td style="text-align:right;padding:5px 8px;color:var(--muted)">${v.obj > 0 ? fmtV(v.obj) : '—'}</td>
-      <td style="text-align:right;padding:5px 8px;font-weight:700">${fmtV(v.real)}</td>
-      <td style="text-align:right;padding:5px 20px;font-weight:700;color:${cor}">${p !== null ? p + '%' : '—'}</td>
+      <td style="padding:3px 12px;font-weight:700;color:#5b21b6">${v.nome}</td>
+      <td style="text-align:right;padding:3px 6px;color:var(--muted)">${fmtV(v.hist)}</td>
+      <td style="text-align:right;padding:3px 6px;color:var(--muted)">${v.obj > 0 ? fmtV(v.obj) : '—'}</td>
+      <td style="text-align:right;padding:3px 6px;font-weight:700">${fmtV(v.real)}</td>
+      <td style="text-align:right;padding:3px 6px;color:#2563eb;font-weight:600">${part}</td>
+      <td style="text-align:right;padding:3px 12px;font-weight:700;color:${cor}">${p !== null ? p + '%' : '—'}</td>
     </tr>`;
   });
   html += '</tbody></table>';
