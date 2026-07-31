@@ -1294,7 +1294,7 @@
       <div><h1 id="op-title">One Page Vendedor</h1><p id="op-subtitle" style="color:var(--muted);font-size:13px;margin-top:4px">Selecione um vendedor</p></div>
       <div style="display:flex;gap:10px;align-items:center">
         <select id="op-vend-select" onchange="renderOnePage()" style="padding:9px 14px;border-radius:8px;border:1.5px solid var(--border);font-size:14px;font-family:var(--font);cursor:pointer;color:var(--text);background:var(--card);font-weight:600;outline:none"></select>
-    <span class="op-export-btns" style="margin-left:14px;vertical-align:middle"><button id="btn-export-ppt" onclick="exportTodosPPT()" style="padding:6px 14px;background:#7c3aed;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600"> PPT todos os vendedores</button></span>
+    <span class="op-export-btns" style="margin-left:14px;vertical-align:middle"><button id="btn-export-pdf" onclick="exportOnePagePDF()" style="padding:6px 14px;background:#dc2626;color:white;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600">📄 Exportar PDF</button></span>
         
       </div>
     </div>
@@ -10248,16 +10248,210 @@ function renderOnePage() {
 
 // ── Exportar One Page como PDF ──
 function exportOnePagePDF() {
-  var sel = document.getElementById('op-vend-select');
-  var vend = sel ? sel.value : 'Vendedor';
-  var prev = document.title;
-  document.title = 'One Page ' + vend + ' 2026';
-  document.body.classList.add('op-print-mode');
-  window.print();
-  setTimeout(function() {
-    document.body.classList.remove('op-print-mode');
-    document.title = prev;
-  }, 800);
+  const sel = document.getElementById('op-vend-select');
+  const vend = sel ? sel.value : 'Vendedor';
+
+  // Recalcula dados (mesma lógica do renderOnePage)
+  const geralReal = (DATA.empresas['GERAL'] || {}).real || [];
+  let lastIdx = -1;
+  for (let i = 0; i < 12; i++) { if (geralReal[i] > 0) lastIdx = i; }
+  if (lastIdx < 0) return;
+  const mesAtual = MESES_KEYS_UP[lastIdx];
+  const mesNome = mesAtual.charAt(0) + mesAtual.slice(1).toLowerCase();
+  const fmtR = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+  const pct = (a,b) => b > 0 ? (a/b*100).toFixed(1)+'%' : '—';
+  const pctGrow = (a,b) => {
+    if (b <= 0) return '—';
+    const d = (a-b)/b*100;
+    return (d>=0?'▲ +':'▼ ')+d.toFixed(1)+'% vs 2025';
+  };
+  const growColor = (a,b) => b>0&&a>=b?'#16a34a':'#dc2626';
+
+  const empYTD = {}, empMes = {};
+  EMPRESAS_ACOMP.forEach(emp => { empYTD[emp]={real:0,hist:0,obj:0}; empMes[emp]={real:0,hist:0,obj:0}; });
+  EMPRESAS_ACOMP.forEach(emp => {
+    ((DATA.clientes_detalhado[emp]||{})[vend]||[]).forEach(cli => {
+      for (let i = 0; i <= lastIdx; i++) {
+        const val = (cli.meses||[])[i]||0;
+        empYTD[emp].real += val;
+        if (i === lastIdx) empMes[emp].real += val;
+      }
+    });
+  });
+  const vendData = DATA.acomp_vendas[vend] || {};
+  MESES_KEYS_UP.forEach((mk, i) => {
+    if (i > lastIdx) return;
+    const mesData = vendData[mk] || {};
+    EMPRESAS_ACOMP.forEach(emp => {
+      const d = mesData[emp] || {};
+      empYTD[emp].hist += d.hist||0; empYTD[emp].obj += d.obj||0;
+      if (i === lastIdx) { empMes[emp].hist = d.hist||0; empMes[emp].obj = d.obj||0; }
+    });
+  });
+  let ytdReal=0,ytdHist=0,ytdObj=0,mesReal=0,mesHist=0,mesObj=0;
+  EMPRESAS_ACOMP.forEach(emp => {
+    ytdReal+=empYTD[emp].real; ytdHist+=empYTD[emp].hist; ytdObj+=empYTD[emp].obj;
+    mesReal+=empMes[emp].real; mesHist+=empMes[emp].hist; mesObj+=empMes[emp].obj;
+  });
+
+  const ytdSorted = [...EMPRESAS_ACOMP].filter(e=>empYTD[e].real>0||empYTD[e].obj>0).sort((a,b)=>empYTD[b].real-empYTD[a].real);
+  const mesSorted = [...EMPRESAS_ACOMP].filter(e=>empMes[e].real>0||empMes[e].obj>0).sort((a,b)=>empMes[b].real-empMes[a].real);
+  const cliMap = {};
+  EMPRESAS_ACOMP.forEach(emp => {
+    ((DATA.clientes_detalhado[emp]||{})[vend]||[]).forEach(cli => {
+      const val=(cli.meses||[])[lastIdx]||0;
+      if (val>0) { const k=cli.cod||cli.nome; if(!cliMap[k]) cliMap[k]={nome:cli.nome,real:0,emp}; cliMap[k].real+=val; }
+    });
+  });
+  const cliArr = Object.values(cliMap).sort((a,b)=>b.real-a.real).slice(0,10);
+  const cliTot = cliArr.reduce((s,c)=>s+c.real,0);
+
+  // Monta HTML do PDF
+  const kpis = [
+    {lbl:'YTD Realizado', val:fmtR(ytdReal), sub:pctGrow(ytdReal,ytdHist), subColor:growColor(ytdReal,ytdHist)},
+    {lbl:'YTD Cobertura Obj.', val:pct(ytdReal,ytdObj), sub:'Obj: '+fmtR(ytdObj), subColor:'#64748b', valColor:ytdObj>0&&ytdReal>=ytdObj?'#16a34a':'#dc2626'},
+    {lbl:mesNome+' Realizado', val:fmtR(mesReal), sub:pctGrow(mesReal,mesHist), subColor:growColor(mesReal,mesHist)},
+    {lbl:mesNome+' Cobertura Obj.', val:pct(mesReal,mesObj), sub:'Obj: '+fmtR(mesObj), subColor:'#64748b', valColor:mesObj>0&&mesReal>=mesObj?'#16a34a':'#dc2626'},
+  ];
+
+  const ytdRows = ytdSorted.map((emp,i) => {
+    const d=empYTD[emp], cor=EMPRESA_CORES[emp]||'#6366f1';
+    const part=ytdReal>0?(d.real/ytdReal*100).toFixed(1)+'%':'—';
+    const grow=pctGrow(d.real,d.hist), growC=growColor(d.real,d.hist);
+    const cob=pct(d.real,d.obj), cobC=d.obj>0&&d.real>=d.obj?'#16a34a':'#dc2626';
+    return `<tr style="background:${i%2===0?'#f8fafc':'#fff'}">
+      <td style="padding:5px 8px;font-weight:700;color:${cor}">${emp}</td>
+      <td style="text-align:right;padding:5px 8px">${fmtR(d.real)}</td>
+      <td style="text-align:right;padding:5px 8px">${part}</td>
+      <td style="text-align:right;padding:5px 8px;color:${growC};font-weight:600">${grow}</td>
+      <td style="text-align:right;padding:5px 8px;color:${cobC};font-weight:700">${cob}</td>
+    </tr>`;
+  }).join('') + `<tr style="background:#e2e8f0;font-weight:700">
+    <td style="padding:5px 8px">TOTAL</td>
+    <td style="text-align:right;padding:5px 8px">${fmtR(ytdReal)}</td>
+    <td style="text-align:right;padding:5px 8px">100%</td>
+    <td style="text-align:right;padding:5px 8px;color:${growColor(ytdReal,ytdHist)}">${pctGrow(ytdReal,ytdHist)}</td>
+    <td style="text-align:right;padding:5px 8px;color:${ytdObj>0&&ytdReal>=ytdObj?'#16a34a':'#dc2626'}">${pct(ytdReal,ytdObj)}</td>
+  </tr>`;
+
+  const mesRows = mesSorted.map((emp,i) => {
+    const d=empMes[emp], cor=EMPRESA_CORES[emp]||'#6366f1';
+    const part=mesReal>0?(d.real/mesReal*100).toFixed(1)+'%':'—';
+    const cob=pct(d.real,d.obj), cobC=d.obj>0&&d.real>=d.obj?'#16a34a':'#dc2626';
+    return `<tr style="background:${i%2===0?'#f8fafc':'#fff'}">
+      <td style="padding:4px 8px;color:#64748b">${i+1}</td>
+      <td style="padding:4px 8px;font-weight:700;color:${cor}">${emp}</td>
+      <td style="text-align:right;padding:4px 8px">${fmtR(d.real)}</td>
+      <td style="text-align:right;padding:4px 8px">${part}</td>
+      <td style="text-align:right;padding:4px 8px;color:${cobC};font-weight:700">${cob}</td>
+    </tr>`;
+  }).join('') + `<tr style="background:#e2e8f0;font-weight:700">
+    <td style="padding:4px 8px"></td><td style="padding:4px 8px">TOTAL</td>
+    <td style="text-align:right;padding:4px 8px">${fmtR(mesReal)}</td>
+    <td style="text-align:right;padding:4px 8px">100%</td>
+    <td style="text-align:right;padding:4px 8px;color:${mesObj>0&&mesReal>=mesObj?'#16a34a':'#dc2626'}">${pct(mesReal,mesObj)}</td>
+  </tr>`;
+
+  const cliRows = cliArr.map((cli,i) => {
+    const part=cliTot>0?(cli.real/cliTot*100).toFixed(1)+'%':'—';
+    const cor=EMPRESA_CORES[cli.emp]||'#6366f1';
+    const nome=cli.nome.length>30?cli.nome.slice(0,30)+'…':cli.nome;
+    return `<tr style="background:${i%2===0?'#f8fafc':'#fff'}">
+      <td style="padding:4px 8px;color:#64748b">${i+1}</td>
+      <td style="padding:4px 8px">${nome}<br><span style="font-size:9px;color:${cor};font-weight:700">${cli.emp}</span></td>
+      <td style="text-align:right;padding:4px 8px">${fmtR(cli.real)}</td>
+      <td style="text-align:right;padding:4px 8px">${part}</td>
+    </tr>`;
+  }).join('');
+
+  const today = new Date().toLocaleDateString('pt-BR');
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+  <title>One Page — ${vend} — ${mesNome} 2026</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,sans-serif;font-size:11px;color:#1e293b;background:#fff;padding:16px}
+    @page{size:A4 landscape;margin:10mm}
+    @media print{body{padding:0}}
+    h1{font-size:20px;font-weight:800;color:#1e293b}
+    .subtitle{font-size:11px;color:#64748b;margin-top:2px}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;padding-bottom:10px;border-bottom:3px solid #7c3aed}
+    .badge{background:#7c3aed;color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+    .kpi{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:10px 12px;text-align:center}
+    .kpi-lbl{font-size:9px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+    .kpi-val{font-size:16px;font-weight:800;color:#1e293b;margin-bottom:2px}
+    .kpi-sub{font-size:9px;font-weight:600}
+    .section-title{font-size:10px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    table{width:100%;border-collapse:collapse;font-size:10px}
+    thead th{background:#7c3aed;color:#fff;padding:5px 8px;font-weight:700;text-align:left}
+    thead th:not(:first-child){text-align:right}
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+    .ytd-block{margin-bottom:14px}
+    .footer{margin-top:10px;font-size:9px;color:#94a3b8;text-align:right}
+  </style></head><body>
+  <div class="header">
+    <div>
+      <h1>${vend}</h1>
+      <div class="subtitle">Cr Lima Comércio e Representações &nbsp;·&nbsp; One Page Comercial 2026 &nbsp;·&nbsp; Gerado em ${today}</div>
+    </div>
+    <div class="badge">Janeiro → ${mesNome} 2026</div>
+  </div>
+
+  <div class="kpis">
+    ${kpis.map(k=>`<div class="kpi">
+      <div class="kpi-lbl">${k.lbl}</div>
+      <div class="kpi-val" style="color:${k.valColor||'#1e293b'}">${k.val}</div>
+      <div class="kpi-sub" style="color:${k.subColor}">${k.sub}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="ytd-block">
+    <div class="section-title">📊 Desempenho Acumulado YTD por Empresa &nbsp;—&nbsp; Janeiro → ${mesNome}</div>
+    <table>
+      <thead><tr>
+        <th>Empresa</th>
+        <th style="text-align:right">Realizado</th>
+        <th style="text-align:right">Part.%</th>
+        <th style="text-align:right">vs 2025</th>
+        <th style="text-align:right">vs Objetivo</th>
+      </tr></thead>
+      <tbody>${ytdRows}</tbody>
+    </table>
+  </div>
+
+  <div class="cols">
+    <div>
+      <div class="section-title">🏢 Ranking Empresas &nbsp;—&nbsp; ${mesNome}</div>
+      <table>
+        <thead><tr>
+          <th>#</th><th>Empresa</th>
+          <th style="text-align:right">Realizado</th>
+          <th style="text-align:right">Part.%</th>
+          <th style="text-align:right">vs Obj</th>
+        </tr></thead>
+        <tbody>${mesRows}</tbody>
+      </table>
+    </div>
+    <div>
+      <div class="section-title">🏆 Top 10 Clientes &nbsp;—&nbsp; ${mesNome}</div>
+      <table>
+        <thead><tr>
+          <th>#</th><th>Cliente</th>
+          <th style="text-align:right">Realizado</th>
+          <th style="text-align:right">Part.%</th>
+        </tr></thead>
+        <tbody>${cliRows}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">Comercial 2026 &nbsp;·&nbsp; ${vend} &nbsp;·&nbsp; ${mesNome} 2026</div>
+  <script>window.onload=function(){window.print()}<\/script>
+  </body></html>`;
+
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
 }
 
 // ── Exportar todos os vendedores como PPT ──
