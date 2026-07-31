@@ -369,27 +369,34 @@
   .fin-item .fi-value { font-size: 20px; font-weight: 700; margin-top: 6px; }
 
   /* YTD TABLE */
+  .ytd-filter-bar { display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+  .ytd-filter-label { font-size:12px; font-weight:700; color:var(--muted); }
+  .ytd-filter-btn { padding:7px 18px; border-radius:6px; border:1.5px solid #cbd5e1; background:#fff; font-size:12px; font-weight:700; cursor:pointer; color:#475569; transition:all .15s; }
+  .ytd-filter-btn.active { background:#1e293b; color:#fff; border-color:#1e293b; }
+  .ytd-filter-btn:hover:not(.active) { background:#f1f5f9; }
+  .ytd-entity-select { padding:6px 12px; border-radius:6px; border:1.5px solid #7c3aed; font-size:12px; font-weight:600; color:#7c3aed; background:#faf5ff; cursor:pointer; outline:none; }
   .ytd-wrap { overflow-x: auto; }
-  .ytd-table { width: 100%; border-collapse: collapse; font-size: 10px; min-width: 1400px; }
+  .ytd-table { width:100%; border-collapse:collapse; font-size:11px; min-width:1400px; }
   .ytd-table thead th {
-    background: #1e293b; color: #e2e8f0; padding: 6px 10px;
-    text-align: right; white-space: nowrap; font-size: 9px; font-weight: 700;
-    border-right: 1px solid #334155; position: sticky; top: 0; z-index: 10;
+    background:#1e293b; color:#e2e8f0; padding:7px 12px;
+    text-align:right; white-space:nowrap; font-size:10px; font-weight:700;
+    border:1px solid #334155; position:sticky; top:0; z-index:10;
   }
-  .ytd-table thead th:first-child { text-align: left; min-width: 110px; position: sticky; left: 0; z-index: 20; }
-  .ytd-table thead th:last-child { border-right: none; background: #0f172a; }
+  .ytd-table thead th:first-child { text-align:left; min-width:120px; position:sticky; left:0; z-index:20; }
+  .ytd-table thead th:last-child { background:#0f172a; }
   .ytd-lbl {
-    font-weight: 700; font-size: 9px; padding: 4px 10px; white-space: nowrap;
-    background: #f8fafc; position: sticky; left: 0; z-index: 5;
-    color: #475569; border-right: 2px solid #e2e8f0; text-transform: uppercase;
+    font-weight:700; font-size:10px; padding:5px 12px; white-space:nowrap;
+    background:#f1f5f9; position:sticky; left:0; z-index:5;
+    color:#374151; border:1px solid #cbd5e1; text-transform:uppercase; letter-spacing:.3px;
   }
-  .ytd-table td { text-align: right; padding: 4px 10px; white-space: nowrap; border-right: 1px solid #f1f5f9; }
-  .ytd-table td:last-child { border-right: none; font-weight: 700; background: #f0f4ff; border-left: 2px solid #c7d2fe; }
-  .ytd-sec-hdr td { padding: 7px 12px !important; font-size: 11px !important; font-weight: 800 !important; letter-spacing: .8px; color: #fff !important; text-align: left !important; border: none !important; }
-  .ytd-row-hist td:not(.ytd-lbl):not(:last-child) { background: #fafafa; color: #64748b; }
-  .ytd-row-obj td:not(.ytd-lbl):not(:last-child) { background: #eff6ff; color: #3b82f6; }
-  .ytd-row-real td:not(.ytd-lbl):not(:last-child) { background: #f0fdf4; font-weight: 700; color: #1e293b; }
-  .ytd-row-last { border-bottom: 3px solid #cbd5e1; }
+  .ytd-table td { text-align:right; padding:5px 12px; white-space:nowrap; border:1px solid #e2e8f0; }
+  .ytd-table td:last-child { font-weight:700; background:#f0f4ff; border-left:2px solid #c7d2fe; border-color:#c7d2fe; }
+  .ytd-sec-hdr td { padding:7px 14px !important; font-size:11px !important; font-weight:800 !important; letter-spacing:.8px; color:#fff !important; text-align:left !important; background:#1e293b !important; border-color:#334155 !important; }
+  .ytd-row-hist td:not(.ytd-lbl):not(:last-child) { background:#f8fafc; color:#64748b; }
+  .ytd-row-obj td:not(.ytd-lbl):not(:last-child) { background:#eff6ff; color:#2563eb; }
+  .ytd-row-real td:not(.ytd-lbl):not(:last-child) { background:#fff; font-weight:700; color:#111827; }
+  .ytd-row-pct td:not(.ytd-lbl):not(:last-child) { background:#fff; }
+  .ytd-row-last td { border-bottom:3px solid #94a3b8 !important; }
 
   /* RESPONSIVE */
   @media (max-width: 900px) {
@@ -10283,102 +10290,134 @@ function renderOnePage() {
 
 
 // ── YTD Analysis ──
+var _ytdMode = 'geral';
+var _ytdCache = null;
+
 function renderYTD() {
   const container = document.getElementById('ytd-container');
   if (!container) return;
+
   const MESES_FULL = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
-  const geralReal = (DATA.empresas['GERAL'] || {}).real || [];
+  const geralD = DATA.empresas['GERAL'] || {};
   let lastIdx = -1;
-  for (let i = 0; i < 12; i++) { if (geralReal[i] > 0) lastIdx = i; }
+  const gr = geralD.real || [];
+  for (let i = 0; i < 12; i++) { if (gr[i] > 0) lastIdx = i; }
   if (lastIdx < 0) { container.innerHTML = '<p style="color:var(--muted);padding:20px">Sem dados disponíveis.</p>'; return; }
 
+  const EMPS = (typeof EMPRESAS_ACOMP !== 'undefined' ? EMPRESAS_ACOMP : Object.keys(DATA.empresas||{}).filter(k=>k!=='GERAL'));
+  const vendedores = Object.keys(DATA.acomp_vendas||{}).filter(v=>v!=='VAREJO').sort();
+
   const fmtV = v => v > 0 ? 'R$ ' + Math.round(v).toLocaleString('pt-BR') : '—';
-  const pctColor = p => p >= 100 ? '#16a34a' : p >= 80 ? '#d97706' : '#ef4444';
-  const pctBg   = p => p >= 100 ? '#f0fdf4' : p >= 80 ? '#fffbeb' : '#fef2f2';
+  const pctC = p => p >= 100 ? '#16a34a' : p >= 80 ? '#d97706' : '#ef4444';
+  const pctBg = p => p >= 100 ? '#f0fdf4' : p >= 80 ? '#fffbeb' : '#fef2f2';
 
-  function buildSection(nome, histArr, objArr, realArr, cor) {
-    const ytdHist = histArr.slice(0, lastIdx+1).reduce((s,v)=>s+(v||0),0);
-    const ytdObj  = objArr.slice(0, lastIdx+1).reduce((s,v)=>s+(v||0),0);
-    const ytdReal = realArr.slice(0, lastIdx+1).reduce((s,v)=>s+(v||0),0);
-    const pctObj  = ytdObj  > 0 ? Math.round(ytdReal/ytdObj *100) : 0;
-    const pctHist = ytdHist > 0 ? Math.round(ytdReal/ytdHist*100) : 0;
-
-    let hCols='', oCols='', rCols='', poCols='', phCols='';
-    for (let i = 0; i < 12; i++) {
-      const h=histArr[i]||0, o=objArr[i]||0, r=realArr[i]||0;
-      hCols += `<td>${fmtV(h)}</td>`;
-      oCols += `<td>${fmtV(o)}</td>`;
-      if (i <= lastIdx) {
-        rCols += `<td>${fmtV(r)}</td>`;
-        const po = o>0 ? Math.round(r/o*100) : 0;
-        const ph = h>0 ? Math.round(r/h*100) : 0;
-        poCols += `<td style="color:${pctColor(po)};font-weight:700;background:${pctBg(po)}">${po}%</td>`;
-        phCols += `<td style="color:${pctColor(ph)};font-weight:700;background:${pctBg(ph)}">${ph}%</td>`;
+  function buildTable(nome, histArr, objArr, realArr) {
+    const yH = histArr.slice(0,lastIdx+1).reduce((s,v)=>s+(v||0),0);
+    const yO = objArr.slice(0,lastIdx+1).reduce((s,v)=>s+(v||0),0);
+    const yR = realArr.slice(0,lastIdx+1).reduce((s,v)=>s+(v||0),0);
+    const poT = yO>0?Math.round(yR/yO*100):0, phT = yH>0?Math.round(yR/yH*100):0;
+    let hC='',oC='',rC='',poC='',phC='';
+    for (let i=0;i<12;i++) {
+      const h=histArr[i]||0,o=objArr[i]||0,r=realArr[i]||0;
+      hC+=`<td>${fmtV(h)}</td>`;
+      oC+=`<td>${fmtV(o)}</td>`;
+      if (i<=lastIdx) {
+        rC+=`<td>${fmtV(r)}</td>`;
+        const po=o>0?Math.round(r/o*100):0, ph=h>0?Math.round(r/h*100):0;
+        poC+=`<td style="color:${pctC(po)};font-weight:700;background:${pctBg(po)}">${po}%</td>`;
+        phC+=`<td style="color:${pctC(ph)};font-weight:700;background:${pctBg(ph)}">${ph}%</td>`;
       } else {
-        rCols += `<td style="color:#cbd5e1">—</td>`;
-        poCols += `<td style="color:#cbd5e1">0%</td>`;
-        phCols += `<td style="color:#cbd5e1">0%</td>`;
+        rC+=`<td style="color:#cbd5e1">—</td>`;
+        poC+=`<td style="color:#cbd5e1">—</td>`;
+        phC+=`<td style="color:#cbd5e1">—</td>`;
       }
     }
-    const po_ = pctColor(pctObj), ph_ = pctColor(pctHist);
-    return `
-      <tr class="ytd-sec-hdr"><td colspan="14" style="background:${cor}">${nome}</td></tr>
-      <tr class="ytd-row-hist"><td class="ytd-lbl">Hist. 2025</td>${hCols}<td>${fmtV(ytdHist)}</td></tr>
-      <tr class="ytd-row-obj"><td class="ytd-lbl">Obj. 2026</td>${oCols}<td>${fmtV(ytdObj)}</td></tr>
-      <tr class="ytd-row-real"><td class="ytd-lbl">Realizado</td>${rCols}<td>${fmtV(ytdReal)}</td></tr>
-      <tr><td class="ytd-lbl">% Real/Obj.</td>${poCols}<td style="color:${po_};font-weight:700;background:${pctBg(pctObj)}">${pctObj}%</td></tr>
-      <tr class="ytd-row-last"><td class="ytd-lbl">% Real/2025</td>${phCols}<td style="color:${ph_};font-weight:700;background:${pctBg(pctHist)}">${pctHist}%</td></tr>`;
+    const tbody = `
+      <tr class="ytd-sec-hdr"><td colspan="14">${nome}</td></tr>
+      <tr class="ytd-row-hist"><td class="ytd-lbl">Hist. 2025</td>${hC}<td>${fmtV(yH)}</td></tr>
+      <tr class="ytd-row-obj"><td class="ytd-lbl">Obj. 2026</td>${oC}<td>${fmtV(yO)}</td></tr>
+      <tr class="ytd-row-real"><td class="ytd-lbl">Realizado</td>${rC}<td>${fmtV(yR)}</td></tr>
+      <tr class="ytd-row-pct"><td class="ytd-lbl">% Real / Obj.</td>${poC}<td style="color:${pctC(poT)};font-weight:700;background:${pctBg(poT)}">${poT}%</td></tr>
+      <tr class="ytd-row-pct ytd-row-last"><td class="ytd-lbl">% Real / 2025</td>${phC}<td style="color:${pctC(phT)};font-weight:700;background:${pctBg(phT)}">${phT}%</td></tr>`;
+    return `<div class="ytd-wrap"><table class="ytd-table">
+      <thead><tr><th>LINHA</th>${MESES_FULL.map(m=>`<th>${m}</th>`).join('')}<th>TOTAL YTD</th></tr></thead>
+      <tbody>${tbody}</tbody></table></div>`;
   }
 
-  // GERAL
-  const gd = DATA.empresas['GERAL'] || {};
-  let tbody = buildSection('GERAL', gd.hist||[], gd.obj||[], gd.real||[], '#0f172a');
+  function getVendData(vend) {
+    const hist=new Array(12).fill(0),obj=new Array(12).fill(0),real=new Array(12).fill(0);
+    MESES_KEYS_UP.forEach((mk,i)=>{
+      const md=(DATA.acomp_vendas[vend]||{})[mk]||{};
+      EMPS.forEach(emp=>{ const d=md[emp]||{}; hist[i]+=d.hist||0; obj[i]+=d.obj||0; });
+    });
+    EMPS.forEach(emp=>{
+      ((DATA.clientes_detalhado[emp]||{})[vend]||[]).forEach(cli=>{
+        for(let i=0;i<=lastIdx;i++) real[i]+=(cli.meses||[])[i]||0;
+      });
+    });
+    return {hist,obj,real};
+  }
 
-  // Por Empresa
-  const EMPS = (typeof EMPRESAS_ACOMP !== 'undefined' ? EMPRESAS_ACOMP : Object.keys(DATA.empresas||{}).filter(k=>k!=='GERAL'));
+  // Build filter bar HTML
+  const filterBar = `<div class="ytd-filter-bar">
+    <span class="ytd-filter-label">Visualizar:</span>
+    <button class="ytd-filter-btn ${_ytdMode==='geral'?'active':''}" onclick="ytdSetMode('geral',this)">📊 Geral</button>
+    <button class="ytd-filter-btn ${_ytdMode==='empresa'?'active':''}" onclick="ytdSetMode('empresa',this)">🏢 Por Empresa</button>
+    <select id="ytd-emp-sel" class="ytd-entity-select" style="display:${_ytdMode==='empresa'?'inline-block':'none'}" onchange="ytdShowTable()">
+      ${EMPS.map(e=>`<option value="${e}">${e}</option>`).join('')}
+    </select>
+    <button class="ytd-filter-btn ${_ytdMode==='vendedor'?'active':''}" onclick="ytdSetMode('vendedor',this)">👤 Por Vendedor</button>
+    <select id="ytd-vend-sel" class="ytd-entity-select" style="display:${_ytdMode==='vendedor'?'inline-block':'none'}" onchange="ytdShowTable()">
+      ${vendedores.map(v=>`<option value="${v}">${v}</option>`).join('')}
+    </select>
+  </div><div id="ytd-table-area"></div>`;
+
+  container.innerHTML = filterBar;
+
+  // Cache compute functions
+  window._ytdBuildTable = buildTable;
+  window._ytdGetVendData = getVendData;
+  window._ytdGeralData = { hist: geralD.hist||[], obj: geralD.obj||[], real: geralD.real||[] };
+  window._ytdEmpsData = {};
   EMPS.forEach(emp => {
-    const d = DATA.empresas[emp] || {};
-    const cor = (typeof EMPRESA_CORES !== 'undefined' ? EMPRESA_CORES[emp] : null) || '#6366f1';
-    tbody += buildSection(emp, d.hist||[], d.obj||[], d.real||[], cor);
+    const d = DATA.empresas[emp]||{};
+    window._ytdEmpsData[emp] = { hist: d.hist||[], obj: d.obj||[], real: d.real||[] };
   });
+  window._ytdVends = vendedores;
 
-  // Por Vendedor
-  const vendedores = Object.keys(DATA.acomp_vendas || {}).filter(v=>v!=='VAREJO').sort();
-  vendedores.forEach(vend => {
-    const hist = new Array(12).fill(0);
-    const obj  = new Array(12).fill(0);
-    const real = new Array(12).fill(0);
-    // hist + obj from acomp_vendas
-    MESES_KEYS_UP.forEach((mk, i) => {
-      const mesData = (DATA.acomp_vendas[vend]||{})[mk] || {};
-      EMPS.forEach(emp => {
-        const d = mesData[emp] || {};
-        hist[i] += d.hist||0;
-        obj[i]  += d.obj ||0;
-      });
-    });
-    // real from clientes_detalhado
-    EMPS.forEach(emp => {
-      ((DATA.clientes_detalhado[emp]||{})[vend]||[]).forEach(cli => {
-        for (let i = 0; i <= lastIdx; i++) {
-          real[i] += (cli.meses||[])[i]||0;
-        }
-      });
-    });
-    tbody += buildSection(vend, hist, obj, real, '#7c3aed');
-  });
+  ytdShowTable();
+}
 
-  container.innerHTML = `
-    <div class="ytd-wrap">
-      <table class="ytd-table">
-        <thead><tr>
-          <th style="text-align:left">ENTIDADE</th>
-          ${MESES_FULL.map(m=>`<th>${m}</th>`).join('')}
-          <th>TOTAL YTD</th>
-        </tr></thead>
-        <tbody>${tbody}</tbody>
-      </table>
-    </div>`;
+function ytdSetMode(mode, btn) {
+  _ytdMode = mode;
+  document.querySelectorAll('.ytd-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const empSel = document.getElementById('ytd-emp-sel');
+  const vendSel = document.getElementById('ytd-vend-sel');
+  if (empSel) empSel.style.display = mode==='empresa' ? 'inline-block' : 'none';
+  if (vendSel) vendSel.style.display = mode==='vendedor' ? 'inline-block' : 'none';
+  ytdShowTable();
+}
+
+function ytdShowTable() {
+  const area = document.getElementById('ytd-table-area');
+  if (!area || !window._ytdBuildTable) return;
+  const bt = window._ytdBuildTable;
+  if (_ytdMode === 'geral') {
+    const d = window._ytdGeralData;
+    area.innerHTML = bt('GERAL', d.hist, d.obj, d.real);
+  } else if (_ytdMode === 'empresa') {
+    const sel = document.getElementById('ytd-emp-sel');
+    const emp = sel ? sel.value : Object.keys(window._ytdEmpsData||{})[0];
+    const d = (window._ytdEmpsData||{})[emp] || {hist:[],obj:[],real:[]};
+    area.innerHTML = bt(emp, d.hist, d.obj, d.real);
+  } else if (_ytdMode === 'vendedor') {
+    const sel = document.getElementById('ytd-vend-sel');
+    const vend = sel ? sel.value : (window._ytdVends||[])[0];
+    if (!vend) return;
+    const d = window._ytdGetVendData(vend);
+    area.innerHTML = bt(vend, d.hist, d.obj, d.real);
+  }
 }
 
 // ── Exportar One Page como PDF ──
