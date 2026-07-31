@@ -525,8 +525,8 @@
       <!-- Mix por Empresa (donut) + Evolução Mensal lado a lado — layout absoluto -->
       <div id="row-donut-evol" style="position:relative;margin-bottom:10px;height:190px">
 
-        <!-- Donut — posição absoluta, largura fixa 356px -->
-        <div id="card-donut-abs" class="card" style="position:absolute;left:0;top:0;bottom:0;width:356px;padding:12px 18px;box-sizing:border-box;overflow:hidden">
+        <!-- Donut — metade esquerda (50%) -->
+        <div id="card-donut-abs" class="card" style="position:absolute;left:0;top:0;bottom:0;right:calc(50% + 6px);padding:12px 18px;box-sizing:border-box;overflow:hidden">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
             <span style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px">📊 Participação por Empresa</span>
             <span id="mix-emp-periodo" style="font-size:11px;color:var(--muted)">Acumulado YTD</span>
@@ -539,8 +539,8 @@
           </div>
         </div>
 
-        <!-- Evolução Mensal — posição absoluta, ocupa o restante -->
-        <div id="card-evolucao" class="card" style="position:absolute;left:368px;top:0;right:0;bottom:0;padding:12px 18px;box-sizing:border-box">
+        <!-- Evolução Mensal — metade direita (50%) -->
+        <div id="card-evolucao" class="card" style="position:absolute;left:calc(50% + 6px);top:0;right:0;bottom:0;padding:12px 18px;box-sizing:border-box">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <span style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px">📈 Evolução Mensal — Faturamento</span>
             <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
