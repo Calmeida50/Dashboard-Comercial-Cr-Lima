@@ -88,3 +88,43 @@ empresas e notificar o que faltou.
   quando algum cliente nao casar exatamente — avisa sem bloquear.
 - Agendamento: uma vez por dia, 18h.
 - Escopo: sempre o mes corrente.
+
+---
+
+## Percentuais de comissao por empresa (informado em 04/08/2026)
+
+Sao os percentuais **totais pagos pelas empresas** sobre o faturamento.
+
+| Empresa    | %     |
+|------------|-------|
+| GRANADO    | 5,0%  |
+| PRUDENCE   | 5,0%  |
+| BELLIZ     | 5,0%  |
+| KISABOR    | 5,0%  |
+| PAYOT      | 5,0%  |
+| DEPIMIEL   | 5,0%  |
+| EVER GREEN | 3,0%  |
+| FIAT LUX   | 3,0%  |
+| AQUAFAST   | 1,5%  |
+| CLESS      | ???   |
+| BOTANICA   | ???   |
+
+PENDENTE: CLESS e BOTANICA nao foram informadas.
+- CLESS tem faturamento (R$ 2,36 mi YTD 2026) mas nao aparece no bloco
+  `comissoes_empresa` do DADOS_EMBEDDED. Verificar se e intencional.
+- BOTANICA aparece em `comissoes_empresa` mas nao teve % informado.
+  Faturamento irrisorio (R$ 2.735 YTD), pode ser residual.
+
+### Rateio por vendedor
+
+- CRISTIANO e EDIMAR: **100%** do valor
+- Todos os demais vendedores: **60%** do valor
+
+Ja esta codificado no index.html em tres pontos (linhas ~5180, ~12470, ~12560):
+`F100 = ['CRISTIANO','EDIMAR']` -> fator 1; demais -> fator 0.6.
+Confere com a regra informada.
+
+Os percentuais por empresa, porem, NAO existem em lugar nenhum do codigo.
+O bloco `comissoes_empresa` guarda faturamento mensal por empresa, nao a taxa.
+Ao implementar o cenario 1, criar a tabela de taxas como constante unica e
+referencia-la, em vez de espalhar numeros pelo codigo.
