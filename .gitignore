@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+
+# Backups e versoes antigas
+_backups/
+_ARQUIVADO_*/
+*.bak
+*.bak[0-9]
+*.bak_*
+*.novo
+
+# Planilhas de origem (dados brutos, nao versionados)
+*.xlsx
+*.xls
+*.csv
+
+# Documentos
+*.docx
+
+# Pastas de dados operacionais
+FATURAMENTO*/
+FINANCEIRO/
+MES*CORRENTE*/
+NOVOS_DADOS/
+RELATORIOS*/
+
+# Temporarios
+*.tmp
+*.log
+~$*
