@@ -24,7 +24,7 @@ PASTA_PROJETO   = Path("/Users/cristianoalmeida/Desktop/PROJETO COMERCIAL IA")
 INDEX_HTML      = PASTA_PROJETO / "index.html"
 PASTA_NOVOS     = PASTA_PROJETO / "NOVOS_DADOS"      # coloca aqui os xlsx novos
 PASTA_ARQUIVO   = PASTA_PROJETO / "FATURAMENTO DAS EMPRESAS"  # arquivo após processar
-AUTO_PUSH       = True   # False = não publica no GitHub automaticamente
+AUTO_PUSH       = False  # publicacao agora e feita por: bash publicar.sh
 
 # ============================================================
 #  ALIASES DE CLIENTES  (nome no ficheiro → nome no dashboard)
@@ -594,7 +594,8 @@ def main():
                 print("⚠️  Erro no push. Tenta manualmente: git push")
                 print(r2.stderr)
     else:
-        print("ℹ️  AUTO_PUSH=False — publica manualmente com: git push")
+        print("ℹ️  Dados atualizados no index.html, mas AINDA NAO publicados.")
+        print("    Confere no browser e publica com:  bash publicar.sh")
 
     print()
     sep()
