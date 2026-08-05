@@ -129,3 +129,69 @@ Os percentuais por empresa, porem, NAO existem em lugar nenhum do codigo.
 O bloco `comissoes_empresa` guarda faturamento mensal por empresa, nao a taxa.
 Ao implementar o cenario 1, criar a tabela de taxas como constante unica e
 referencia-la, em vez de espalhar numeros pelo codigo.
+
+---
+
+## Regras de extracao do faturamento (VALIDADAS contra o historico em 05/08/2026)
+
+Cada regra abaixo foi testada somando o arquivo de junho/2026 e comparando com o
+valor que ja estava no DADOS_EMBEDDED. Nao sao suposicoes.
+
+### 1. Sempre o valor LIQUIDO
+
+Quando o relatorio traz bruto e liquido, usar o **liquido**. Quando traz um valor
+so, ele **ja e liquido** (confirmado pelo Cristiano em 05/08/2026).
+
+Validacao: FIAT LUX junho/2026
+- arquivo tinha coluna `VALOR LIQ`, soma = 499.893,30
+- dashboard tinha 499.893,30 -> diferenca 0,00
+- em julho o layout mudou para 59 colunas; o equivalente e `Valor total liquido`
+  (nesse mes `Valor total bruto` da o mesmo numero, mas isso e coincidencia —
+  fixar a regra no liquido, nao no que bate hoje)
+
+### 2. Faturamento = somente VENDAS. Bonificacao vai para bloco proprio
+
+Validacao: PRUDENCE junho/2026
+- arquivo de junho NAO tinha coluna `Operacao` (so vendas), soma = 1.453.573,29
+- dashboard tinha 1.453.573,29 -> diferenca 0,00
+- em julho o arquivo passou a separar: Vendas 1.360.740,85 / Bonificacao 132.052,21
+- bonificacao alimenta o bloco `prudence_bonificacao` (coluna BONIF. YTD do ranking)
+
+Mesmo padrao na CLESS: junho sem coluna de tipo, soma 312.619,42 = dashboard.
+Julho passou a ter `Tipo do pedido` com Venda/Bonificacao.
+
+**Ao implementar**: se existir coluna de tipo/operacao com valores textuais
+Venda/Bonificacao, filtrar somente venda. Se nao existir, somar tudo.
+
+### 3. Codigos de operacao numericos = todos venda
+
+A FIAT LUX traz `Operacao` com codigos (610201, 640301, 510202...). Nao sao
+tipos de nota — **todas as notas sao venda** (confirmado pelo Cristiano).
+Nao confundir com a coluna `Operacao` textual da Prudence.
+
+### 4. Devolucoes vem negativas e devem ser somadas como estao
+
+GRANADO julho: 219 linhas positivas, 37 negativas. A soma liquida (6.609.300,64)
+e o faturamento correto. Nao filtrar negativos.
+
+## Layouts por empresa (julho/2026)
+
+| Empresa    | Cabecalho | Coluna de valor        | Observacao                        |
+|------------|-----------|------------------------|-----------------------------------|
+| GRANADO    | linha 1   | VALOR TOTAL LIQUIDO REAL 2 | devolucoes negativas          |
+| PRUDENCE   | linha 1   | Valor                  | texto "R$ 1.623,02"; col Operacao |
+| BELLIZ     | linha 1   | Valor Venda            | traz representante e regional     |
+| EVER GREEN | linha 1   | Valor Total da Nota    |                                   |
+| CLESS      | linha 1   | Valor do pedido        | col `Tipo do pedido` Venda/Bonif. |
+| DEPIMIEL   | linha 1   | VALOR                  | texto "R$ 3 657,00" (espaco como  |
+|            |           |                        | separador de milhar); NOTA com \t |
+| FIAT LUX   | linha 2   | Valor total liquido    | 59 colunas, vazias intercaladas   |
+| KISABOR    | ?         | ?                      | a mapear                          |
+| PAYOT      | ?         | ?                      | a mapear                          |
+| AQUAFAST   | ?         | ?                      | ainda nao enviado em julho        |
+| BOTANICA   | ?         | ?                      | ainda nao enviado em julho        |
+
+O layout MUDA de um mes para o outro na mesma empresa (FIAT LUX foi de 3 para 59
+colunas entre junho e julho; PRUDENCE e CLESS ganharam coluna de tipo).
+O parser precisa achar a coluna por palavra-chave a cada execucao, nunca por
+posicao fixa nem por memoria do mes anterior.
