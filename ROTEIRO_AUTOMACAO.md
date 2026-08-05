@@ -106,14 +106,15 @@ Sao os percentuais **totais pagos pelas empresas** sobre o faturamento.
 | EVER GREEN | 3,0%  |
 | FIAT LUX   | 3,0%  |
 | AQUAFAST   | 1,5%  |
-| CLESS      | ???   |
-| BOTANICA   | ???   |
+| CLESS      | sem comissao |
+| BOTANICA   | sem comissao |
 
-PENDENTE: CLESS e BOTANICA nao foram informadas.
-- CLESS tem faturamento (R$ 2,36 mi YTD 2026) mas nao aparece no bloco
-  `comissoes_empresa` do DADOS_EMBEDDED. Verificar se e intencional.
-- BOTANICA aparece em `comissoes_empresa` mas nao teve % informado.
-  Faturamento irrisorio (R$ 2.735 YTD), pode ser residual.
+CLESS e BOTANICA **nao pagam comissao para a equipe** (confirmado em 04/08/2026).
+Ficam de fora de todo o calculo de comissao, mas **continuam nas demais analises**
+— faturamento, ranking, participacao, YTD, sell out. Nao remover das outras telas.
+
+Isso explica a ausencia da CLESS no bloco `comissoes_empresa`. A BOTANICA, porem,
+ESTA nesse bloco — verificar ao implementar se e residuo de cadastro e deve sair.
 
 ### Rateio por vendedor
 
