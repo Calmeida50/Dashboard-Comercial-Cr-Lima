@@ -220,3 +220,66 @@ Nao tocar em `comissoes_empresa`.
 Validado tambem que fechar o faturamento de um mes altera exatamente um bloco:
 o commit 73950c7 ("Atualiza faturamento real junho 2026 todas as empresas")
 mudou `empresas` e mais nada — os outros 21 blocos ficaram intactos.
+
+---
+
+# ETAPA 1 — CONCLUIDA em 05/08/2026
+
+Rotina diaria de faturamento funcionando de ponta a ponta.
+
+## Arquivos criados
+
+    coletar_faturamento.py    le o Drive e totaliza por empresa
+    conferir.py               compara o coletor com o dashboard num mes fechado
+    atualizar_faturamento.py  grava no index.html (so o bloco `empresas`)
+    rotina_diaria.sh          encadeia tudo e publica
+    ~/Library/LaunchAgents/com.crlima.dashboard.diaria.plist   agenda 18h
+
+## Como opera
+
+Todo dia as 18h (ou ao ligar o Mac, se estava desligado no horario):
+
+1. confere se o Drive esta acessivel
+2. reprocessa JUNHO/2026 e compara com o dashboard — **se divergir, aborta**
+3. processa mes anterior + mes corrente (cobre a semana de coleta)
+4. grava so o que mudou; se nada mudou, sai sem commit
+5. publica via publicar.sh e notifica no Mac
+
+## Validacao registrada
+
+Junho/2026 fecha **8 de 8 empresas sem divergencia** (maior diferenca: 1 centavo
+de arredondamento na GRANADO). Oito layouts diferentes, mesmo resultado.
+
+Julho/2026 gravado em 05/08: R$ 10.226.020,33 em 9 empresas. Alterou exatamente
+um bloco (`empresas`) e um indice (6 = julho). Nada mais no arquivo mudou.
+
+## Pre-requisito de sistema
+
+`/bin/bash` precisa de **Acesso Total ao Disco** (Ajustes > Privacidade e
+Seguranca). Sem isso o launchd falha com `Operation not permitted`, porque o
+projeto vive na Area de Trabalho e le o Google Drive — ambas pastas protegidas
+pelo macOS. Se um dia a rotina parar sem erro aparente, conferir isso primeiro.
+
+## Comandos uteis
+
+    bash rotina_diaria.sh                      # roda na hora
+    python3 conferir.py JUNHO 2026             # so confere, nao grava
+    python3 atualizar_faturamento.py --simular
+    tail -40 _backups/rotina_diaria.log        # o que aconteceu
+    launchctl unload ~/Library/LaunchAgents/com.crlima.dashboard.diaria.plist
+
+## Pendencias desta etapa
+
+- AQUAFAST e BOTANICA ainda sem arquivo em julho/2026. Quando chegarem, a
+  rotina deve pegar sozinha — esse e o primeiro teste real do automatico.
+- Extensao dupla em dois arquivos de julho (`.docx.xlsx`). O parser tolera,
+  mas vale renomear no Drive.
+- Pastas do Drive com espaco no fim (`FATURAMENTO DAS EMPRESAS `,
+  `RELATORIOS DE COMISSAO `). O coletor usa glob e tolera, mas continua sendo
+  armadilha para quem salva arquivo manualmente.
+
+## Proximo: ETAPA 2 — sell out
+
+Seis formatos independentes (sao_joao, nilo_tozzo, dartora, imec, unidasul,
+zaffari), um bloco por cliente no DADOS_EMBEDDED. Fazer **um cliente por vez**,
+sempre validando contra o historico antes de automatizar, como foi feito aqui.
