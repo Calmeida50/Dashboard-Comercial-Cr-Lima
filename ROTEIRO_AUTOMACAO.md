@@ -195,3 +195,28 @@ O layout MUDA de um mes para o outro na mesma empresa (FIAT LUX foi de 3 para 59
 colunas entre junho e julho; PRUDENCE e CLESS ganharam coluna de tipo).
 O parser precisa achar a coluna por palavra-chave a cada execucao, nunca por
 posicao fixa nem por memoria do mes anterior.
+
+---
+
+## empresas vs comissoes_empresa — NAO sao a mesma coisa
+
+Confirmado pelo Cristiano em 05/08/2026.
+
+**`empresas`** = faturamento vindo da pasta `FATURAMENTO DAS EMPRESAS`.
+Alimenta **todas as analises** do dashboard (visao geral, YTD, ranking,
+participacao, clientes). E o bloco que a rotina diaria deve atualizar.
+
+**`comissoes_empresa`** = exercicio de **conferencia**, hoje focado na EVER GREEN.
+Compara quanto de comissao **deveria** ter vindo (com base no faturamento) contra
+quanto foi **efetivamente pago**, para o Cristiano discutir a diferenca com a
+empresa. Nao e faturamento e nao deve ser sobrescrito pela rotina.
+
+Por isso os dois blocos divergem em 32 casos entre janeiro e maio/2026 — nao e
+erro. Junho coincide, mas e coincidencia de tratamento, nao regra.
+
+**REGRA PARA A ROTINA: atualizar apenas o bloco `empresas`.**
+Nao tocar em `comissoes_empresa`.
+
+Validado tambem que fechar o faturamento de um mes altera exatamente um bloco:
+o commit 73950c7 ("Atualiza faturamento real junho 2026 todas as empresas")
+mudou `empresas` e mais nada — os outros 21 blocos ficaram intactos.
