@@ -348,3 +348,73 @@ vem da pasta ESTOQUE DOS PRINCIPAIS CLIENTES.
 **Escopo:** derivar val/qtd/mensal/top_lojas/produtos do arquivo de sell out e
 direto. `cobertura_mensal` com estoque exige cruzar com a pasta de estoque —
 tratar como sub-etapa separada.
+
+## ARMADILHA: acentos em nome de arquivo (Unicode NFD)
+
+O macOS grava nomes de arquivo em forma **decomposta** (NFD): o "Ç" e armazenado
+como "C" + cedilha combinante, dois caracteres. Comparar com "MARÇO" escrito
+normalmente (forma NFC, um caractere) **falha**, mesmo o nome sendo visualmente
+identico na tela.
+
+Aconteceu em 06/08/2026: a busca reportou "MARÇO/2026 sem arquivo da GRANADO"
+quando o arquivo estava la. Foi preciso o Cristiano mandar um print da pasta
+para perceber.
+
+    'MARÇO' in nome.upper()                 -> False   (errado)
+    'MARÇO' in norm(nome)                   -> True    (certo)
+
+**Sempre passar nome de arquivo por `norm()`** (que faz NFKD e remove os
+acentos) antes de comparar. Vale para MARÇO e qualquer nome com acento.
+O `coletar_faturamento.py` ja faz isso; o risco esta em testes escritos as
+pressas fora dele.
+
+Com a correcao, MARÇO/2026 da GRANADO fecha exato: 1.757.699,13 = dashboard.
+Sao **seis meses seguidos sem divergencia** (jan a jun/2026).
+
+## REGRAS DEFINITIVAS DO SELL OUT (validadas 06/08/2026)
+
+### Regra 1 — descartar TODAS as linhas de totalizacao
+
+Sao dois tipos, e o segundo so aparece em alguns arquivos:
+
+- **total geral**: linha sem `Desc_Filial` (ex: GRANADO)
+- **subtotal por loja**: linha COM filial e SEM `Desc_Produto` (ex: BELLIZ)
+
+Filtrar exigindo filial E produto preenchidos. Filtrar so pela filial deixa
+passar os subtotais e **dobra** o valor.
+
+### Regra 2 — devolucoes sao EXCLUIDAS, nao subtraidas
+
+Linhas com valor negativo sao ignoradas. **Oposto do faturamento**, onde a
+devolucao entra negativa. Sell out mede saida ao consumidor; devolucao de loja
+e ajuste de estoque.
+
+### Regra 3 — SEMPRE o valor liquido, tambem no sell out
+
+Confirmado pelo Cristiano em 06/08/2026: *"Estavamos colocando o valor bruto.
+Precisamos considerar sempre o valor liquido tambem no sell out."*
+
+Alguns arquivos trazem `Vl Bruto` e `Vl Líquido`; usar sempre o liquido.
+Quando so existe uma coluna de valor, ela ja e liquida.
+
+## ERRO ENCONTRADO NO DASHBOARD (a corrigir)
+
+Os dados atuais de BELLIZ e PAYOT foram carregados com o **valor bruto**.
+Batem na casa dos centavos com a coluna `Vl Bruto`, entao nao ha duvida.
+
+    BELLIZ jan-jun/2025   correto 5.728.037,20   atual 6.196.475,82    -7,6%
+    BELLIZ jan-jun/2026   correto 5.579.161,84   atual 6.348.837,26   -12,1%
+    PAYOT  abr-jun/2026   correto 2.488.813,88   atual 2.628.510,79    -5,3%
+
+Como a distorcao e maior em 2026 (-12,1%) que em 2025 (-7,6%), o **crescimento
+aparente da BELLIZ esta inflado** — corrigir muda a leitura do comparativo.
+
+A PAYOT so diverge de abril/2026 em diante: ate marco os arquivos tinham
+apenas `Vl Líquido`, entao o numero estava certo por construcao. Foi a Sao Joao
+que passou a enviar as duas colunas a partir de abril.
+
+CLESS, EVER GREEN, GRANADO e PRUDENCE conferem nos 12 meses — seus arquivos
+nunca tiveram coluna bruta.
+
+Conferencia completa: **57 de 72 pontos conferem**; os 15 que divergem sao
+exatamente os afetados pelo bruto.
