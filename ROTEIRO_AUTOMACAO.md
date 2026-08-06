@@ -283,3 +283,68 @@ pelo macOS. Se um dia a rotina parar sem erro aparente, conferir isso primeiro.
 Seis formatos independentes (sao_joao, nilo_tozzo, dartora, imec, unidasul,
 zaffari), um bloco por cliente no DADOS_EMBEDDED. Fazer **um cliente por vez**,
 sempre validando contra o historico antes de automatizar, como foi feito aqui.
+
+---
+
+# ETAPA 2 — SELL OUT SAO JOAO (em andamento, 06/08/2026)
+
+## Fonte
+
+`SELL OUT PRINCIPAIS CLIENTES/<ano>/<MES AA>/SELL OUT SAO JOAO <EMPRESA> <MES> <AA>.xlsx`
+
+113 arquivos, nomenclatura **consistente** (bem melhor que o faturamento).
+Seis empresas por mes: BELLIZ, CLESS, EVER GREEN, GRANADO, PAYOT, PRUDENCE.
+
+Layout do arquivo (5 colunas, ~33 mil linhas = produto x loja):
+
+    Cod Barras | Desc_Produto | Desc_Filial | Vl Líquido | Qt Giro
+
+## REGRAS VALIDADAS (GRANADO 2026, 5 meses, diferenca ZERO em todos)
+
+### 1. Descartar a linha de totalizacao
+
+Cada arquivo tem **exatamente uma** linha sem `Desc_Filial`, que e o total geral.
+Somar tudo da o dobro. Filtrar por `Desc_Filial` preenchido.
+
+### 2. Devolucoes sao EXCLUIDAS, nao subtraidas
+
+**Esta regra e o OPOSTO da do faturamento.** No faturamento a devolucao entra
+negativa e reduz o total (regra 4 da etapa 1). No sell out, linhas com
+`Vl Líquido` negativo sao **ignoradas**.
+
+Conceitualmente: sell out mede saida para o consumidor final. Devolucao de loja
+e ajuste de estoque, nao venda negativa ao consumidor.
+
+Validacao (GRANADO 2026, so positivos vs dashboard):
+
+    mes         so positivos      dashboard      dif
+    JANEIRO     1.739.122,35   1.739.122,35     0,00
+    FEVEREIRO   1.631.506,81   1.631.506,81     0,00
+    ABRIL       1.720.384,78   1.720.384,78     0,00
+    MAIO        1.642.883,44   1.642.883,44     0,00
+    JUNHO       1.541.752,50   1.541.752,50     0,00
+
+Em junho eram apenas 4 linhas negativas somando -68,06.
+
+MARCO/2026 nao tem arquivo da GRANADO na pasta — o dashboard tem 1.757.699,13.
+Verificar se o arquivo existe em outro lugar ou se o mes foi carregado de outra
+fonte.
+
+## Estrutura do bloco `sellout_sao_joao` no DADOS_EMBEDDED
+
+Por empresa (BELLIZ, CLESS, EVER GREEN, GRANADO, PAYOT, PRUDENCE):
+
+    val26, val25_ytd, qtd26, qtd25_ytd, n_meses
+    mensal_2025 {jan..jun}    mensal_2026 {jan..jun}
+    top_lojas   [{nome, val26, val25}]        ~1.257 lojas
+    produtos    [{nome, val26, val25, qtd26, qtd25, cobertura_mensal?}]
+    avg3m       {produto: media de qtd dos ultimos 3 meses}
+
+`cobertura_mensal` (so nos produtos principais): por mes, `qtd_zero`,
+`qtd_venda` e a lista de lojas que zeraram. Em junho a lista de lojas vira
+objeto com `estoque` por loja — dado que NAO esta no arquivo de sell out,
+vem da pasta ESTOQUE DOS PRINCIPAIS CLIENTES.
+
+**Escopo:** derivar val/qtd/mensal/top_lojas/produtos do arquivo de sell out e
+direto. `cobertura_mensal` com estoque exige cruzar com a pasta de estoque —
+tratar como sub-etapa separada.
