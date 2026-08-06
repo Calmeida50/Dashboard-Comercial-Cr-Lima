@@ -463,3 +463,78 @@ Exigiria gravar o valor de cada loja mes a mes (~1.300 lojas x 12 meses x 6
 empresas, perto de 1 MB a mais num index.html que ja tem 3,9 MB) e um seletor
 de mes na interface. **Cristiano decidiu manter como esta** — o ganho nao paga
 o custo.
+
+---
+
+# ETAPA 2 — DARTORA (em investigacao, parou em 06/08/2026)
+
+Status: **conferidor escrito, ainda NAO valida. Nada foi gravado.**
+Arquivo: `conferir_dartora.py`
+
+## Estrutura no dashboard
+
+`sellout_dartora` tem 5 empresas (BELLIZ, CLESS, EVER GREEN, GRANADO, PRUDENCE
+— **sem PAYOT**), cada uma com:
+
+    por_produto, por_vendedor, mensal_2025 (12 meses), mensal_2026
+
+Bem mais simples que a Sao Joao: nao tem top_lojas nem cobertura.
+
+## Dois tipos de arquivo
+
+    SELL OUT DARTORA <EMP> <MES> <AA>.xlsx                -> por produto (89 arq)
+    SELL OUT DARTORA <EMP> <MES> <AA> POR VENDEDOR.xlsx   -> por vendedor (35 arq)
+
+Layout do regular: `Mês | Descrição | Cod item | Quantidade | Valor líq | Qtd clientes`
+Layout do vendedor: `Mes | Apelido vendedor | Valor total`
+
+Ja vem LIQUIDO, sem coluna bruta. Traz `Qtd clientes`, que a Sao Joao nao tem.
+
+## PROBLEMAS ENCONTRADOS (resolver antes de gravar)
+
+### 1. O NOME DO ARQUIVO MENTE o mes — usar a coluna `Mês`
+
+`SELL OUT DARTORA BELLIZ ABRIL 26.xlsx` contem `Mês = 2026-05-01`, ou seja,
+dados de MAIO. Confirmado tambem na PRUDENCE.
+
+Por isso o conferidor acusou BELLIZ abr com -7.205 e PRUDENCE abr com +5.051:
+o valor do arquivo "ABRIL" e exatamente o que o dashboard registra em MAIO.
+
+**Regra: sempre ler o mes de dentro do arquivo, nunca do nome.**
+(Na Sao Joao o nome era confiavel; aqui nao e.)
+
+### 2. Linha de totalizacao dobrando 2025
+
+Em todos os meses de 2025 o arquivo da exatamente o DOBRO do dashboard
+(ex: PRUDENCE ago 152.542,06 vs 76.271,03). O filtro por "descricao preenchida"
+nao pegou a linha de total desses arquivos — investigar como ela e marcada.
+
+### 3. Cabecalho fora da primeira linha
+
+Varios arquivos comecam com o titulo "Relatorio das vendas por item" e o
+cabecalho real vem la pela linha 7. Ja tratado no `ler_produto()` por busca.
+
+### 4. Layout diferente em alguns meses de 2025
+
+AGOSTO/25 da PRUDENCE quebrou a leitura da coluna `Mês` (KeyError). Ha mais de
+um layout dentro do proprio historico da Dartora.
+
+### 5. Meses no dashboard SEM arquivo de produto (13 casos)
+
+jan, fev e jun/2026 de varias empresas so tem o arquivo POR VENDEDOR.
+**O total por vendedor NAO bate com o mensal do dashboard** (BELLIZ jan:
+29.137,32 vs 25.047,50). Entao esses meses vieram de uma terceira fonte que
+ainda nao identifiquei. Perguntar ao Cristiano de onde saiu.
+
+### 6. JULHO/2026 tem arquivo para as 5 empresas mas NAO esta no dashboard
+
+    BELLIZ 31.188,10 | CLESS 17.472,85 | EVER GREEN 203.296,80
+    GRANADO 54.404,95 | PRUDENCE 89.226,84
+
+Idem PRUDENCE fev/25 (227.603,90), que tem arquivo e nao esta na serie.
+
+## Placar atual
+
+17 conferem, 59 divergem — mas as divergencias sao explicadas pelos itens 1 e 2
+acima, nao por regra de negocio desconhecida. Corrigindo os dois, a expectativa
+e fechar quase tudo.
