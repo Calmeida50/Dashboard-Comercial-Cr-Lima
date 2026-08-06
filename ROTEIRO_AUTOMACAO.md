@@ -418,3 +418,48 @@ nunca tiveram coluna bruta.
 
 Conferencia completa: **57 de 72 pontos conferem**; os 15 que divergem sao
 exatamente os afetados pelo bruto.
+
+## Regra 4 — a coluna de filial: CUIDADO com Cod. Filial
+
+Varios arquivos tem **duas** colunas de loja: `Cod. Filial` e `Desc_Filial`.
+Pegar a primeira que contem "FILIAL" traz o **codigo**, e o ranking de lojas sai
+quebrado — a mesma loja aparece como "1614.0" em um mes e "Caxias 27" em outro,
+sem interseccao entre os meses.
+
+Foi o que aconteceu em 06/08/2026: a PAYOT apareceu com 3.582 lojas em vez de
+1.256. Sempre excluir colunas com "COD" ao procurar filial e produto.
+
+Nao afeta valores nem totais — so o agrupamento por loja.
+
+## Regra 5 — linhas rotuladas "Total" na propria filial
+
+Alem do total sem filial e dos subtotais sem produto, alguns arquivos (BELLIZ)
+trazem a palavra "Total" dentro de `Desc_Filial`. Filtrar tambem por isso.
+
+## Cobertura de arquivos (06/08/2026)
+
+Jan a julho existem nos DOIS anos para as 6 empresas. Unica ausencia:
+**julho/2026 da PAYOT**. Por isso ela fica com n_meses=6 enquanto as outras
+estao com 7 — e o YTD de 2025 dela acompanha, comparando 6 contra 6.
+
+O script monta o YTD de 2025 sempre com o MESMO numero de meses que existir em
+2026, entao a comparacao nunca fica desbalanceada.
+
+## Rotulos de periodo agora sao dinamicos
+
+Os textos "Jan–Mai" e "Jan–Jun" estavam escritos a mao em ~8 pontos do HTML e
+desatualizavam a cada mes. Passaram a ser derivados do `n_meses`:
+
+- card "Total 2025 (...)" usa `periodoLbl`
+- um TreeWalker percorre `#page-sellout` e troca qualquer "Jan–<mes>" pelo
+  periodo corrente (dentro de try/catch: rotulo e cosmetico, nunca derruba a tela)
+- o modal de produtos usa o `n_meses` DA EMPRESA, entao a PAYOT mostra Jan–Jun
+  enquanto as outras mostram Jan–Jul
+
+## Decisao: ranking de lojas continua ACUMULADO
+
+Avaliado em 06/08/2026 fazer o ranking seguir o toggle Acumulado/Mensal.
+Exigiria gravar o valor de cada loja mes a mes (~1.300 lojas x 12 meses x 6
+empresas, perto de 1 MB a mais num index.html que ja tem 3,9 MB) e um seletor
+de mes na interface. **Cristiano decidiu manter como esta** — o ganho nao paga
+o custo.

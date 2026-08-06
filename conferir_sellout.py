@@ -43,7 +43,8 @@ def achar(empresa, mes, ano2):
 def ler(path):
     """devolve (valor, quantidade) aplicando as regras 1, 2 e 3"""
     d = pd.read_excel(path)
-    col_fil = next((c for c in d.columns if "FILIAL" in C.norm(c)), None)
+    col_fil = next((c for c in d.columns if "FILIAL" in C.norm(c)
+                    and "COD" not in C.norm(c)), None)
     col_prod = next((c for c in d.columns if "PRODUTO" in C.norm(c)
                      and "COD" not in C.norm(c)), None)
     # regra 3: SEMPRE liquido. Alguns arquivos trazem Vl Bruto junto — ignorar.
