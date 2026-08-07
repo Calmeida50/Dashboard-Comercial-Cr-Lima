@@ -74,6 +74,12 @@ def coletar_empresa(emp):
                 "lojas": df.groupby("_loja")["_v"].sum().to_dict(),
                 "prod_v": df.groupby("_prod")["_v"].sum().to_dict(),
                 "prod_q": df.groupby("_prod")["_q"].sum().to_dict(),
+                # POSITIVACAO CALCULADA: quantas LOJAS distintas venderam o SKU
+                # no mes. A Sao Joao nao manda esse dado; aqui ele e derivado do
+                # detalhe por loja. NAO e o mesmo que a positivacao da Dartora,
+                # que conta CLIENTES. Rotular sempre como "lojas".
+                "prod_lojas": df.groupby("_prod")["_loja"].nunique().to_dict(),
+                "lojas_ativas": int(df["_loja"].nunique()),
             }
     return dados
 
@@ -97,6 +103,10 @@ def montar(emp, dados, antigo):
     novo["qtd26"] = int(sum(m26[a]["qtd"] for a in meses26))
     novo["qtd25_ytd"] = int(sum(m25[a]["qtd"] for a in meses25))
     novo["n_meses"] = n
+    # lojas ativas por mes (quantas venderam algo). Metrica de capilaridade,
+    # equivalente da Sao Joao a positivacao da Dartora — mas conta LOJAS.
+    novo["lojas_ativas_2026"] = {a: m26[a]["lojas_ativas"] for a in meses26}
+    novo["lojas_ativas_2025"] = {a: m25[a]["lojas_ativas"] for a in meses25}
 
     # lojas: uniao dos dois anos
     lj26, lj25 = {}, {}
@@ -133,7 +143,12 @@ def montar_produtos(antigo, m26, m25, meses26, meses25):
                 "val26": round(pv26.get(nome, 0.0), 2),
                 "val25": round(pv25.get(nome, 0.0), 2),
                 "qtd26": int(pq26.get(nome, 0)),
-                "qtd25": int(pq25.get(nome, 0))}
+                "qtd25": int(pq25.get(nome, 0)),
+                # lojas distintas que venderam o SKU em cada mes
+                "lojas_2026": {a: int(m26[a]["prod_lojas"].get(nome, 0))
+                               for a in meses26 if m26[a]["prod_lojas"].get(nome)},
+                "lojas_2025": {a: int(m25[a]["prod_lojas"].get(nome, 0))
+                               for a in meses25 if m25[a]["prod_lojas"].get(nome)}}
         if nome in cob:
             item["cobertura_mensal"] = cob[nome]     # preservado
         saida.append(item)
@@ -191,7 +206,7 @@ def main():
         print("            lojas %d | produtos %d | cobertura preservada em %d"
               % (len(novo["top_lojas"]), len(novo["produtos"]),
                  sum(1 for p in novo["produtos"] if "cobertura_mensal" in p)))
-        if abs(dif) >= 0.05:
+        if abs(dif) >= 0.05 or novo != antigo:
             mudou = True
         sj[emp] = novo
 
