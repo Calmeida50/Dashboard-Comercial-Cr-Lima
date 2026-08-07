@@ -92,11 +92,23 @@ def ler_txt(path):
 
 
 def mes_do_arquivo(path):
-    """devolve (mes, ano) lido de DENTRO do arquivo, ou None"""
+    """devolve (mes, ano) lido de DENTRO do arquivo, ou None.
+    Tres fontes, nessa ordem:
+      1. coluna `Mês` (sistema novo, xlsx 2026)
+      2. linha `Mês: MM/AAAA` (relatorios .txt)
+      3. cabecalho `Dt./hr.fatur: 01/04/2025 a 30/04/2025` (sistema antigo)
+    O nome do arquivo NUNCA e fonte — ja provou nao ser confiavel."""
     if path.lower().endswith(".txt"):
         _, meses = ler_txt(path)
         return sorted(meses)[0] if meses else None
     try:
+        # 3. cabecalho do sistema antigo: varrer as primeiras linhas cruas
+        cru = pd.read_excel(path, header=None, nrows=10)
+        texto = " ".join(str(x) for x in cru.values.flatten() if str(x) != "nan")
+        m = re.search(r"fatur[:\s]*(\d{2})/(\d{2})/(\d{4})", texto, re.I)
+        if m:
+            return (int(m.group(2)), int(m.group(3)))
+        # 1. coluna Mês do sistema novo
         hdr = _achar_hdr(path)
         if hdr is None:
             return None

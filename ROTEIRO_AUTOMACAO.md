@@ -538,3 +538,36 @@ Idem PRUDENCE fev/25 (227.603,90), que tem arquivo e nao esta na serie.
 17 conferem, 59 divergem — mas as divergencias sao explicadas pelos itens 1 e 2
 acima, nao por regra de negocio desconhecida. Corrigindo os dois, a expectativa
 e fechar quase tudo.
+
+## Dartora — o rotulo "bruto" de 2025 era ERRO DE DESCRICAO
+
+Em 06/08/2026 o conferidor acusou 58 arquivos de 2025 com a coluna
+`Vlr.tot.item bruto`. **Nao era valor bruto.** O sistema antigo da Dartora
+rotulava errado; o valor sempre foi liquido.
+
+Cristiano renomeou os cabecalhos para `Vlr Liquido` e os valores **nao mudaram**
+(BELLIZ jan/25 continua 29.248,58). Confirmado por ele: *"so renomeei. O valor
+esta liquido, so a descricao que estava errada."*
+
+**Nao confundir com o caso da Sao Joao**, onde o rotulo estava certo e o
+carregamento e que pegou a coluna errada. Aqui: rotulo errado, dado certo.
+La: rotulo certo, dado errado.
+
+Licao: divergencia de rotulo nao prova erro de dado. Sempre confirmar com quem
+conhece a origem antes de "corrigir" numero.
+
+Sobram 5 arquivos com rotulo bruto (ABRIL/25 das 5 empresas) — provavelmente a
+mesma situacao, a renomear.
+
+## Placar da Dartora: 88 conferem, 0 divergem
+
+As regras estao validadas. Falta escrever o gravador.
+
+### Pendencias de dados
+
+- **JULHO/2026 nao esta no dashboard** e tem arquivo para as 5 empresas:
+  BELLIZ 31.188,10 | CLESS 17.472,85 | EVER GREEN 203.296,80 |
+  GRANADO 54.404,95 | PRUDENCE 89.226,84  (~R$ 395 mil)
+- **PRUDENCE fev/25** tem arquivo (113.801,95) e nao esta na serie
+- **BELLIZ ABRIL 26.xlsx ainda contem dados de MAIO** — o da Prudence ja foi
+  corrigido, esse nao
