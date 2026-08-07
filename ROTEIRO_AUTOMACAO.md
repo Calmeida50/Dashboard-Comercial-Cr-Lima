@@ -571,3 +571,74 @@ As regras estao validadas. Falta escrever o gravador.
 - **PRUDENCE fev/25** tem arquivo (113.801,95) e nao esta na serie
 - **BELLIZ ABRIL 26.xlsx ainda contem dados de MAIO** — o da Prudence ja foi
   corrigido, esse nao
+
+## ETAPA 2 — DARTORA CONCLUIDA (07/08/2026)
+
+Conferidor fecha **89/89 sem divergencia**. Gravador rodado e publicado.
+
+### Arquivos
+
+    conferir_dartora.py    valida contra o historico, nao grava
+    atualizar_dartora.py   recalcula e grava o bloco sellout_dartora
+
+### Regras validadas
+
+1. **O mes vem de DENTRO do arquivo, nunca do nome.** Tres fontes, nessa ordem:
+   coluna `Mês` (sistema novo), linha `Mês: MM/AAAA` (.txt), e o cabecalho
+   `Dt./hr.fatur: 01/04/2025 a 30/04/2025` (sistema antigo).
+   Motivo: `SELL OUT DARTORA BELLIZ ABRIL 26.xlsx` continha MAIO. Ja corrigido,
+   mas a regra fica.
+2. **Linha de total: dois criterios juntos** — celula com "TOTAL" OU coluna de
+   descricao vazia. Um so nao basta; usar apenas um dobrava o mes.
+3. Le `.xlsx` e `.txt` (largura fixa, Latin-1, CRLF).
+4. Mes sem arquivo **preserva** o valor do dashboard, nunca zera.
+
+### O rotulo "bruto" de 2025 era erro de descricao
+
+58 arquivos traziam `Vlr.tot.item bruto`. O valor sempre foi liquido; o sistema
+antigo rotulava errado. Cristiano renomeou e os valores NAO mudaram.
+Nao confundir com o caso da Sao Joao (rotulo certo, dado errado).
+
+### OS .txt DO SISTEMA ANTIGO ESTAVAM TRUNCADOS
+
+Descoberto em 07/08/2026, e o achado mais importante da Dartora.
+
+Jan e fev/2026 vinham de `.txt` e mostravam valores muito abaixo do patamar:
+
+    EVER GREEN  jan: 43.886 (txt)  ->  187.617 (xlsx correto)
+    EVER GREEN  fev: 44.665 (txt)  ->  188.952 (xlsx correto)
+    BELLIZ      fev: 12.433 (txt)  ->   19.300 (xlsx correto)
+
+Contexto que denunciou: a EVER GREEN roda entre 150 e 250 mil TODOS os meses
+de 2025 e 2026. Aparecer com 44 mil em dois meses seguidos nao tinha explicacao
+de negocio. So ficou visivel quando a serie ganhou meses para contraste.
+
+Correcao: +R$ 288 mil na EVER GREEN, +R$ 11,6 mil na BELLIZ.
+
+**SUSPEITAR DE QUALQUER .txt REMANESCENTE**, em qualquer cliente ou periodo.
+
+### Positivacao por SKU (novo)
+
+Coluna `Positivação` (2025) / `Qtd clientes` (2026) = para quantos clientes o
+item foi vendido naquele mes. Gravada em `por_produto[].pos_2025` e
+`pos_2026`, mais o total por mes em `positivacoes_2025/2026`.
+
+**CUIDADO AO SOMAR**: positivacao somada entre SKUs NAO da clientes unicos — da
+pares item-cliente. Rotular como "positivacoes", nunca como "clientes".
+
+Cobertura em 07/08: BELLIZ e EVER GREEN com os 7 meses de 2026; CLESS, GRANADO
+e PRUDENCE a partir de fevereiro (janeiro sendo reexportado pelo Cristiano).
+2025 completo (12 meses) nas cinco.
+
+### Sinal a acompanhar
+
+BELLIZ fev/2026: positivacao 481 contra 798 em jan e 781 em mar, com o valor
+tambem caindo. Mes isolado entre dois normais sugere ruptura de fornecimento ou
+falha de cobertura comercial, nao oscilacao de demanda.
+
+### Pendente
+
+- 5 arquivos de ABRIL/25 ainda com rotulo `bruto` (mesma situacao, so descricao)
+- Tela de positivacao ainda NAO construida. Desenho combinado:
+  comparativo por SKU vs mesmo mes do ano anterior (ordenado pela maior queda),
+  evolucao mensal de 2026, e resumo separando ganhou / perdeu / manteve.
