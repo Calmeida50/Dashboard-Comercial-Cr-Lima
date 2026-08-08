@@ -69,6 +69,12 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- xlsx-js-style: fork da SheetJS que GRAVA formatacao (a 0.18.5 comunidade
+     descarta os estilos). Exposto como XLSXS para nao afetar as exportacoes
+     existentes, que continuam usando XLSX. -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script>window.XLSXS = window.XLSX;</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root {
     --bg: #f0f2f5;
@@ -1469,6 +1475,42 @@
           style="padding:9px 24px;border:none;border-bottom:3px solid #2563eb;background:transparent;color:#2563eb;font-weight:700;cursor:pointer;font-size:13px;margin-bottom:-2px">📊 Sell Out</button>
         <button id="sj-info-tab-estoque" onclick="selectSjInfoTab('estoque')"
           style="padding:9px 24px;border:none;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font-weight:600;cursor:pointer;font-size:13px;margin-bottom:-2px">📦 Estoque</button>
+        <button id="sj-info-tab-positiv" onclick="selectSjInfoTab('positiv')"
+          style="padding:9px 24px;border:none;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font-weight:600;cursor:pointer;font-size:13px;margin-bottom:-2px">🎯 Cobertura</button>
+      </div>
+
+      <!-- ── PAINEL COBERTURA / POSITIVACAO (Sao Joao) ── -->
+      <div id="sj-panel-positiv" style="display:none">
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:16px">
+          <div style="font-size:12px;color:var(--muted);line-height:1.5">
+            <strong style="color:var(--text)">Cobertura = em quantas lojas o item foi vendido no mês.</strong>
+            Na São João a cobertura é alta e estável, então o que interessa não é o total —
+            é <strong style="color:var(--text)">quais lojas deixaram de vender</strong> um item que vendia antes.
+            Cada loja perdida aqui é uma visita comercial com destino certo.
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+          <select id="sj-pos-empresa" onchange="renderSjPositivacao()"
+            style="padding:7px 12px;border-radius:8px;border:2px solid #e2e8f0;font-size:13px;font-weight:600"></select>
+          <select id="sj-pos-mes" onchange="renderSjPositivacao()"
+            style="padding:7px 12px;border-radius:8px;border:2px solid #e2e8f0;font-size:13px"></select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer;user-select:none">
+            <input type="checkbox" id="sj-pos-ativos" checked onchange="renderSjPositivacao()"
+              style="width:15px;height:15px;cursor:pointer">
+            Apenas itens ativos
+          </label>
+          <span id="sj-pos-aviso-mix" style="font-size:11px;color:#b45309"></span>
+          <button onclick="exportarSjCoberturaExcel()" title="Exporta a empresa e o mês selecionados"
+            style="margin-left:auto;padding:7px 16px;border-radius:8px;border:none;background:#16a34a;color:#fff;font-weight:700;cursor:pointer;font-size:12px">⬇ Excel</button>
+        </div>
+        <div id="sj-pos-kpis" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px"></div>
+        <div class="card" style="padding:16px 18px">
+          <div class="card-header" style="margin-bottom:10px">
+            <h3 style="margin:0;font-size:14px">Itens que perderam lojas</h3>
+            <span style="font-size:11px;color:var(--muted)">vs mês anterior · maiores quedas primeiro</span>
+          </div>
+          <div class="table-wrap"><table class="table-compact" id="sj-pos-tabela"></table></div>
+        </div>
       </div>
 
       <!-- ── PAINEL SELL OUT (existente) ── -->
@@ -2686,6 +2728,11 @@ async function loadData() {
           DATA.sellout_sao_joao[emp].produtos = emb.produtos;
         }
         if (emb.avg3m) DATA.sellout_sao_joao[emp].avg3m = emb.avg3m;
+        // campos de cobertura: sempre vem do arquivo, nunca do cache antigo
+        ['lojas_ativas_2026','lojas_ativas_2025','mensal_2026','mensal_2025',
+         'val26','val25_ytd','qtd26','qtd25_ytd','n_meses','top_lojas'].forEach(k => {
+          if (emb[k] !== undefined) DATA.sellout_sao_joao[emp][k] = emb[k];
+        });
       }
     });
   }
@@ -7327,7 +7374,7 @@ let _sjFiltroApenasAtivos = false;
 
 function selectSjInfoTab(tab) {
   _sjInfoTab = tab;
-  const tabs = ['sellout','estoque'];
+  const tabs = ['sellout','estoque','positiv'];
   tabs.forEach(t => {
     const btn = document.getElementById('sj-info-tab-' + t);
     if (!btn) return;
@@ -7340,7 +7387,193 @@ function selectSjInfoTab(tab) {
   const pe = document.getElementById('sj-panel-estoque');
   if (ps) ps.style.display = tab === 'sellout' ? '' : 'none';
   if (pe) pe.style.display = tab === 'estoque' ? '' : 'none';
+  const pp = document.getElementById('sj-panel-positiv');
+  if (pp) pp.style.display = tab === 'positiv' ? '' : 'none';
   if (tab === 'estoque') renderEstoqueSaoJoao();
+  if (tab === 'positiv') initSjPositivacao();
+}
+
+function initSjPositivacao() {
+  const so = DATA.sellout_sao_joao || {};
+  const selE = document.getElementById('sj-pos-empresa');
+  if (selE && !selE.options.length) {
+    selE.innerHTML = Object.keys(so).sort()
+      .map(e => `<option value="${e}">${e}</option>`).join('');
+  }
+  const emp = selE ? selE.value : null;
+  const v = so[emp] || {};
+  const meses = Object.keys(v.lojas_ativas_2026 || {});
+  const selM = document.getElementById('sj-pos-mes');
+  if (selM) {
+    const atual = selM.value;
+    const nomes = {jan:'Janeiro',fev:'Fevereiro',mar:'Março',abr:'Abril',mai:'Maio',
+                   jun:'Junho',jul:'Julho',ago:'Agosto',set:'Setembro',out:'Outubro',
+                   nov:'Novembro',dez:'Dezembro'};
+    selM.innerHTML = meses.map(m => `<option value="${m}">${nomes[m]} 2026</option>`).join('');
+    if (meses.includes(atual)) selM.value = atual;
+    else if (meses.length) selM.value = meses[meses.length - 1];
+  }
+  renderSjPositivacao();
+}
+
+function renderSjPositivacao() {
+  const so = DATA.sellout_sao_joao || {};
+  const emp = document.getElementById('sj-pos-empresa').value;
+  const mes = document.getElementById('sj-pos-mes').value;
+  const v = so[emp] || {};
+  const meses = Object.keys(v.lojas_ativas_2026 || {});
+  const i = meses.indexOf(mes);
+  const ant = i > 0 ? meses[i - 1] : null;
+
+  const ativas = (v.lojas_ativas_2026 || {})[mes] || 0;
+  const ativasAnt = ant ? (v.lojas_ativas_2026 || {})[ant] : null;
+  const ativas25 = (v.lojas_ativas_2025 || {})[mes] || 0;
+
+  // por SKU: cobertura no mes, no mes anterior e no mesmo mes de 2025
+  const soAtivos = document.getElementById('sj-pos-ativos').checked;
+  const temMix = !!MIX_ATIVO_SAO_JOAO[emp];
+  const avisoEl = document.getElementById('sj-pos-aviso-mix');
+  if (avisoEl) avisoEl.textContent = temMix ? ''
+    : '⚠ sem lista de mix ativo para ' + emp + ' — mostrando todos os itens';
+
+  const linhas = (v.produtos || []).map(p => {
+    const a = (p.lojas_2026 || {})[mes] || 0;
+    const b = ant ? ((p.lojas_2026 || {})[ant] || 0) : null;
+    const c = (p.lojas_2025 || {})[mes] || 0;
+    return {nome: p.nome, atual: a, ant: b, ano: c, ativo: isSjAtivo(emp, p),
+            dMes: b === null ? null : a - b, dAno: a - c, val: p.val26 || 0};
+  }).filter(r => (r.atual > 0 || (r.ant || 0) > 0)
+                 && (!soAtivos || !temMix || r.ativo));
+
+  const perderam = linhas.filter(r => r.dMes !== null && r.dMes < 0).length;
+  const ganharam = linhas.filter(r => r.dMes !== null && r.dMes > 0).length;
+
+  document.getElementById('sj-pos-kpis').innerHTML = `
+    <div class="kpi-card" style="flex:1;min-width:150px">
+      <div class="label">Lojas ativas</div>
+      <div class="value" style="font-size:20px">${ativas.toLocaleString('pt-BR')}</div>
+      <div class="delta ${ativas>=ativas25?'up':'down'}">${ativas>=ativas25?'▲':'▼'} ${Math.abs(ativas-ativas25)} vs 2025</div>
+    </div>
+    <div class="kpi-card" style="flex:1;min-width:150px">
+      <div class="label">Itens que perderam loja</div>
+      <div class="value" style="font-size:20px;color:#dc2626">${perderam}</div>
+      <div class="delta">${ant ? 'vs mês anterior' : 'sem mês anterior'}</div>
+    </div>
+    <div class="kpi-card" style="flex:1;min-width:150px">
+      <div class="label">Itens que ganharam loja</div>
+      <div class="value" style="font-size:20px;color:#16a34a">${ganharam}</div>
+      <div class="delta">${ant ? 'vs mês anterior' : '—'}</div>
+    </div>
+    <div class="kpi-card" style="flex:1;min-width:150px">
+      <div class="label">SKUs vendidos</div>
+      <div class="value" style="font-size:20px">${linhas.length}</div>
+      <div class="delta">no mês</div>
+    </div>`;
+
+  linhas.sort((a, b) => (a.dMes ?? 0) - (b.dMes ?? 0));
+  const fmtD = d => d === null ? '—' :
+    `<span style="color:${d<0?'#dc2626':(d>0?'#16a34a':'var(--muted)')};font-weight:${d?700:400}">${d>0?'+':''}${d}</span>`;
+  document.getElementById('sj-pos-tabela').innerHTML = `
+    <thead><tr>
+      <th style="text-align:left">Produto</th>
+      <th>Lojas<br>no mês</th><th>Mês<br>anterior</th><th>Δ mês</th>
+      <th>Mesmo mês<br>2025</th><th>Δ ano</th>
+    </tr></thead><tbody>` +
+    linhas.map(r => `<tr>
+      <td style="text-align:left;max-width:340px;overflow:hidden;text-overflow:ellipsis">${r.nome}</td>
+      <td style="text-align:center;font-weight:700">${r.atual}</td>
+      <td style="text-align:center;color:var(--muted)">${r.ant === null ? '—' : r.ant}</td>
+      <td style="text-align:center">${fmtD(r.dMes)}</td>
+      <td style="text-align:center;color:var(--muted)">${r.ano || '—'}</td>
+      <td style="text-align:center">${fmtD(r.ano ? r.dAno : null)}</td>
+    </tr>`).join('') + '</tbody>';
+}
+
+function exportarSjCoberturaExcel() {
+  const so = DATA.sellout_sao_joao || {};
+  const empSel = document.getElementById('sj-pos-empresa').value;
+  const mes = document.getElementById('sj-pos-mes').value;
+  const soAtivos = document.getElementById('sj-pos-ativos').checked;
+  const nomes = {jan:'Janeiro',fev:'Fevereiro',mar:'Março',abr:'Abril',mai:'Maio',
+                 jun:'Junho',jul:'Julho',ago:'Agosto',set:'Setembro',out:'Outubro',
+                 nov:'Novembro',dez:'Dezembro'};
+  const wb = XLSXS.utils.book_new();
+  // paleta identica a da tela
+  const AZUL='1E293B', VERM='DC2626', VERDE='16A34A', CINZA='64748B', BORDA='E2E8F0';
+  const bordaFina = {style:'thin', color:{rgb:BORDA}};
+  const grade = {top:bordaFina,bottom:bordaFina,left:bordaFina,right:bordaFina};
+  const stHeader = {font:{bold:true,color:{rgb:'FFFFFF'},sz:10},
+                    fill:{fgColor:{rgb:AZUL}},
+                    alignment:{horizontal:'center',vertical:'center',wrapText:true},
+                    border:grade};
+  const stNome   = {font:{sz:10}, alignment:{horizontal:'left'}, border:grade};
+  const stNum    = {font:{bold:true,sz:10}, alignment:{horizontal:'center'}, border:grade};
+  const stCinza  = {font:{color:{rgb:CINZA},sz:10}, alignment:{horizontal:'center'}, border:grade};
+  const stDelta  = v => ({font:{bold:v!==0, sz:10,
+                                color:{rgb: v<0?VERM : (v>0?VERDE:CINZA)}},
+                          alignment:{horizontal:'center'}, border:grade});
+  const stMix    = a => ({font:{sz:9, bold:true, color:{rgb: a?VERDE:CINZA}},
+                          alignment:{horizontal:'center'}, border:grade});
+  let total = 0;
+
+  Object.keys(so).sort().filter(e => e === empSel).forEach(emp => {
+    const v = so[emp] || {};
+    const meses = Object.keys(v.lojas_ativas_2026 || {});
+    if (!meses.includes(mes)) return;
+    const i = meses.indexOf(mes);
+    const ant = i > 0 ? meses[i - 1] : null;
+    const temMix = !!MIX_ATIVO_SAO_JOAO[emp];
+
+    const linhas = (v.produtos || []).map(p => {
+      const a = (p.lojas_2026 || {})[mes] || 0;
+      const b = ant ? ((p.lojas_2026 || {})[ant] || 0) : null;
+      const c = (p.lojas_2025 || {})[mes] || 0;
+      return {nome:p.nome, atual:a, ant:b, ano:c, ativo:isSjAtivo(emp, p),
+              dMes: b === null ? null : a - b, dAno: a - c};
+    }).filter(r => (r.atual > 0 || (r.ant || 0) > 0)
+                   && (!soAtivos || !temMix || r.ativo));
+    if (!linhas.length) return;
+    linhas.sort((x, y) => (x.dMes ?? 0) - (y.dMes ?? 0));
+
+    const header = ['Produto','Mix','Lojas no mês','Mês anterior','Δ mês',
+                    'Mesmo mês 2025','Δ ano'];
+    const rows = [header];
+    linhas.forEach(r => rows.push([
+      r.nome, r.ativo ? 'ATIVO' : 'INATIVO', r.atual,
+      r.ant === null ? '' : r.ant, r.dMes === null ? '' : r.dMes,
+      r.ano || '', r.ano ? r.dAno : ''
+    ]));
+    const ws = XLSXS.utils.aoa_to_sheet(rows);
+
+    // aplica os estilos celula a celula, espelhando as cores da tela
+    header.forEach((_, c) => {
+      const cel = ws[XLSXS.utils.encode_cell({r:0, c})];
+      if (cel) cel.s = stHeader;
+    });
+    linhas.forEach((r, idx) => {
+      const lin = idx + 1;
+      const pos = c => ws[XLSXS.utils.encode_cell({r:lin, c})];
+      if (pos(0)) pos(0).s = stNome;
+      if (pos(1)) pos(1).s = stMix(r.ativo);
+      if (pos(2)) pos(2).s = stNum;
+      if (pos(3)) pos(3).s = stCinza;
+      if (pos(4)) pos(4).s = stDelta(r.dMes === null ? 0 : r.dMes);
+      if (pos(5)) pos(5).s = stCinza;
+      if (pos(6)) pos(6).s = stDelta(r.ano ? r.dAno : 0);
+    });
+    ws['!cols'] = [{wch:46},{wch:9},{wch:12},{wch:12},{wch:9},{wch:14},{wch:9}];
+    ws['!rows'] = [{hpt:30}];              // cabecalho mais alto, como na tela
+    ws['!freeze'] = {xSplit:'1', ySplit:'1'};
+    ws['!autofilter'] = {ref: XLSXS.utils.encode_range(
+      {s:{r:0,c:0}, e:{r:linhas.length, c:header.length-1}})};
+    XLSXS.utils.book_append_sheet(wb, ws, emp.substring(0, 31));
+    total += linhas.length;
+  });
+
+  if (!total) { alert('Nada a exportar para ' + empSel + ' em ' + (nomes[mes] || mes)); return; }
+  const suf = soAtivos ? '_apenas_ativos' : '_todos';
+  const empArq = empSel.replace(/[^A-Za-z0-9]+/g, '_');
+  XLSXS.writeFile(wb, `Cobertura_SaoJoao_${empArq}_${nomes[mes] || mes}_2026${suf}.xlsx`);
 }
 
 function selectSjEstoqueEmpresa(emp) {
