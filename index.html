@@ -1889,6 +1889,8 @@
           style="padding:6px 18px;border-radius:8px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;cursor:pointer;font-size:12px">Por Vendedor</button>
         <button id="dt-view-mensal" onclick="selectDartoraView('mensal')"
           style="padding:6px 18px;border-radius:8px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;cursor:pointer;font-size:12px">Mensal</button>
+        <button id="dt-view-positiv" onclick="selectDartoraView('positiv')"
+          style="padding:6px 18px;border-radius:8px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;cursor:pointer;font-size:12px">🎯 Positivação</button>
         <span style="color:#e2e8f0;font-size:18px;margin:0 4px">|</span>
         <button id="dt-tab-GRANADO" onclick="selectDartoraEmpresa('GRANADO')"
           style="padding:5px 14px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-weight:700;cursor:pointer;font-size:11px">GRANADO</button>
@@ -1900,6 +1902,20 @@
           style="padding:5px 14px;border-radius:8px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;cursor:pointer;font-size:11px">CLESS</button>
         <button id="dt-tab-BELLIZ" onclick="selectDartoraEmpresa('BELLIZ')"
           style="padding:5px 14px;border-radius:8px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;cursor:pointer;font-size:11px">BELLIZ</button>
+      </div>
+
+      <!-- Serie de positivacao (so aparece na visao Positivacao) -->
+      <div id="dt-positiv-card" class="card" style="display:none;padding:14px 18px;margin-bottom:14px">
+        <div id="dt-positiv-empresas" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #e2e8f0"></div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px">
+          <h3 style="margin:0;font-size:14px">Evolução da positivação</h3>
+          <span style="font-size:11px;color:var(--muted)">
+            <span style="display:inline-block;width:10px;height:10px;background:#cbd5e1;border-radius:2px"></span> 2025
+            &nbsp;<span style="display:inline-block;width:10px;height:10px;background:#2563eb;border-radius:2px"></span> 2026
+            · pares item-cliente, não clientes únicos
+          </span>
+        </div>
+        <div id="dt-positiv-serie" style="display:flex;gap:6px;align-items:flex-end"></div>
       </div>
 
       <!-- Tabela Dartora -->
@@ -9716,6 +9732,17 @@ function renderSelloutDartora() {
 
 function selectDartoraView(view) {
   _dartoraView = view;
+  const btnPos = document.getElementById('dt-view-positiv');
+  if (btnPos) {
+    btnPos.style.background = view === 'positiv' ? '#1e293b' : '#fff';
+    btnPos.style.color      = view === 'positiv' ? '#fff'    : 'var(--text)';
+    btnPos.style.border     = view === 'positiv' ? 'none'    : '2px solid #e2e8f0';
+    btnPos.style.fontWeight = view === 'positiv' ? '700'     : '600';
+  }
+  const cardPos = document.getElementById('dt-positiv-card');
+  if (cardPos) cardPos.style.display = view === 'positiv' ? '' : 'none';
+  const barraPos = document.getElementById('dt-positiv-empresas');
+  if (barraPos) barraPos.style.display = view === 'positiv' ? 'flex' : 'none';
   const btnP = document.getElementById('dt-view-produto');
   const btnV = document.getElementById('dt-view-vendedor');
   const btnM = document.getElementById('dt-view-mensal');
@@ -9791,11 +9818,107 @@ function selectDartoraEmpresa(empresa) {
   renderDartoraContent();
 }
 
+function dtPositivEmpresa(emp) {
+  _dartoraEmpresa = emp;
+  renderDartoraContent();
+}
+
 function renderDartoraContent() {
   const dt  = (DATA.sellout_dartora || {})[_dartoraEmpresa] || {};
   const cor = SELLOUT_CORES[_dartoraEmpresa] || '#2563eb';
   const thead = document.getElementById('dt-table-thead');
   const tbody = document.getElementById('dt-table-tbody');
+
+  if (_dartoraView === 'positiv') {
+    // barra propria de empresas (os botoes originais sao ocultados por outro script)
+    const barra = document.getElementById('dt-positiv-empresas');
+    if (barra) {
+      barra.style.display = 'flex';
+      barra.innerHTML = Object.keys(DATA.sellout_dartora || {}).sort().map(e => {
+        const on = e === _dartoraEmpresa;
+        // ATENCAO ao id: o script Dartora V7 esconde TODO botao cujo texto seja
+        // o nome de uma marca, exceto os que comecam com 'dt-v7-'. Sem esse
+        // prefixo os botoes somem sozinhos poucos milissegundos depois.
+        return `<button id="dt-v7-pos-${e.replace(/\s+/g,'_')}"
+          onclick="dtPositivEmpresa('${e.replace(/'/g,"\\'")}')"
+          style="padding:6px 16px;border-radius:8px;border:${on?'none':'2px solid #e2e8f0'};
+          background:${on?(SELLOUT_CORES[e]||'#2563eb'):'#fff'};color:${on?'#fff':'var(--text)'};
+          font-weight:${on?700:600};cursor:pointer;font-size:12px">${e}</button>`;
+      }).join('');
+    }
+
+    // POSITIVACAO: para quantos CLIENTES o item foi vendido no mes.
+    // Diferente da Sao Joao, que conta LOJAS. Aqui a base oscila muito,
+    // entao a leitura util e de TENDENCIA, nao de exceção.
+    const MK = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    const MN = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const pos26 = dt.positivacoes_2026 || {};
+    const pos25 = dt.positivacoes_2025 || {};
+    const meses = MK.filter(k => pos26[k] != null);
+    const ult = meses[meses.length - 1];
+
+    document.getElementById('dt-table-title').textContent =
+      _dartoraEmpresa + ' — Positivação por Produto';
+    document.getElementById('dt-table-sub').textContent =
+      'Para quantos clientes cada item foi vendido · ' +
+      (ult ? MN[MK.indexOf(ult)] + '/2026 vs mês anterior e vs 2025' : '');
+
+    if (!meses.length) {
+      thead.innerHTML = '';
+      tbody.innerHTML = `<tr><td style="padding:20px;text-align:center;color:var(--muted)">Sem dados de positivação para ${_dartoraEmpresa}.</td></tr>`;
+      return;
+    }
+    const ant = meses.length > 1 ? meses[meses.length - 2] : null;
+
+    // faixa da empresa: total de positivacoes mes a mes
+    const barras = meses.map(k => {
+      const v = pos26[k] || 0;
+      const v25 = pos25[k] || 0;
+      return {k, nome: MN[MK.indexOf(k)], v, v25};
+    });
+    const maxB = Math.max(...barras.map(b => Math.max(b.v, b.v25)), 1);
+    document.getElementById('dt-positiv-serie').innerHTML = barras.map(b => {
+      const d = b.v25 ? (b.v / b.v25 - 1) * 100 : null;
+      return `<div style="flex:1;min-width:64px;text-align:center">
+        <div style="height:90px;display:flex;align-items:flex-end;justify-content:center;gap:3px">
+          <div title="2025: ${b.v25}" style="width:14px;height:${Math.round((b.v25/maxB)*88)}px;background:#cbd5e1;border-radius:3px 3px 0 0"></div>
+          <div title="2026: ${b.v}" style="width:14px;height:${Math.round((b.v/maxB)*88)}px;background:${cor};border-radius:3px 3px 0 0"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;margin-top:4px">${b.v}</div>
+        <div style="font-size:10px;color:var(--muted)">${b.nome}</div>
+        ${d === null ? '' : `<div style="font-size:10px;font-weight:700;color:${d>=0?'#16a34a':'#dc2626'}">${d>=0?'+':''}${d.toFixed(0)}%</div>`}
+      </div>`;
+    }).join('');
+
+    thead.innerHTML = `<tr>
+      <th style="padding:8px 16px;text-align:left;color:var(--muted);font-weight:600">Produto</th>
+      <th style="padding:8px 10px;text-align:center;color:var(--muted);font-weight:600">Clientes<br>${MN[MK.indexOf(ult)]}</th>
+      <th style="padding:8px 10px;text-align:center;color:var(--muted);font-weight:600">Mês<br>anterior</th>
+      <th style="padding:8px 10px;text-align:center;color:var(--muted);font-weight:600">Δ mês</th>
+      <th style="padding:8px 10px;text-align:center;color:var(--muted);font-weight:600">Mesmo mês<br>2025</th>
+      <th style="padding:8px 10px;text-align:center;color:var(--muted);font-weight:600">Δ ano</th>
+    </tr>`;
+
+    const linhas = (dt.por_produto || []).map(p => {
+      const a = (p.pos_2026 || {})[ult] || 0;
+      const b = ant ? ((p.pos_2026 || {})[ant] || 0) : null;
+      const c = (p.pos_2025 || {})[ult] || 0;
+      return {nome: p.nome, a, b, c, dM: b === null ? null : a - b, dA: a - c};
+    }).filter(r => r.a > 0 || (r.b || 0) > 0)
+      .sort((x, y) => (x.dM ?? 0) - (y.dM ?? 0));
+
+    const pinta = v => v === null ? '<span style="color:var(--muted)">—</span>'
+      : `<span style="color:${v<0?'#dc2626':(v>0?'#16a34a':'var(--muted)')};font-weight:${v?700:400}">${v>0?'+':''}${v}</span>`;
+    tbody.innerHTML = linhas.map((r, i) => `<tr style="${i%2?'background:#f8fafc':''}">
+      <td style="padding:7px 16px;text-align:left">${r.nome}</td>
+      <td style="padding:7px 10px;text-align:center;font-weight:700">${r.a}</td>
+      <td style="padding:7px 10px;text-align:center;color:var(--muted)">${r.b === null ? '—' : r.b}</td>
+      <td style="padding:7px 10px;text-align:center">${pinta(r.dM)}</td>
+      <td style="padding:7px 10px;text-align:center;color:var(--muted)">${r.c || '—'}</td>
+      <td style="padding:7px 10px;text-align:center">${pinta(r.c ? r.dA : null)}</td>
+    </tr>`).join('');
+    return;
+  }
 
   if (_dartoraView === 'mensal') {
     document.getElementById('dt-table-title').textContent = _dartoraEmpresa + ' — Comparativo Mensal 2025 vs 2026';
