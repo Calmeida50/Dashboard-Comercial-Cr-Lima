@@ -727,3 +727,114 @@ esta silenciosamente morta. Investigar.
 
 Tambem ha mojibake no card de variacao da Dartora ("Janâ€ Jun 2026"), embora o
 arquivo esteja em UTF-8 valido. Texto corrompido em algum ponto especifico.
+
+---
+
+# APELIDOS E EQUIVALENCIAS DE CLIENTE
+
+**DIMED = PANVEL.** Mesmo cliente. Em julho/2026 o arquivo foi salvo como
+"DIMED" e por isso nao foi encontrado na busca por "PANVEL". O Cristiano
+renomeou, mas **se aparecer DIMED no futuro, tratar como PANVEL**.
+
+# ESTOQUE — o que existe e o que nao existe
+
+Pasta: `ESTOQUE DOS PRINCIPAIS CLIENTES/2026/<MES>/`  (89 arquivos)
+
+| Cliente     | Envia estoque? | Arquivos |
+|-------------|----------------|----------|
+| SAO JOAO    | sim            | 37       |
+| DARTORA     | sim            | 33       |
+| NILO TOZZO  | sim            | 14       |
+| PANVEL      | sim            | 5        |
+| UNIDASUL    | **NAO**        | 0        |
+| ZAFFARI     | **NAO**        | 0        |
+| IMEC        | **NAO**        | 0        |
+
+Confirmado pelo Cristiano em 08/08/2026: Unidasul, Zaffari e Imec **nao passam
+informacao de estoque** — nao teremos essa visao para eles. Nao e lacuna a
+preencher, e limitacao da origem.
+
+## Estoque SEMANAL para PANVEL e SAO JOAO
+
+Sao os dois clientes mais complexos e sensiveis a ruptura. O Cristiano vai
+solicitar estoque **semanal** deles (os demais seguem mensais).
+
+**PEDIDO: o dashboard deve atualizar sempre que entrar planilha nova de estoque
+desses dois clientes** — sem esperar a rotina das 18h.
+
+Caminho tecnico: launchd suporta `WatchPaths`, que dispara quando a pasta muda.
+RISCO A TESTAR: o Google Drive em modo streaming nem sempre emite o evento de
+filesystem que o WatchPaths espera. Se falhar, alternativa e poll a cada 30 min
+comparando mtime dos arquivos — na pratica o efeito e quase o mesmo.
+
+## ORDEM ACORDADA (08/08/2026)
+
+1. publicar o sell out validado (FEITO: IMEC, Nilo Tozzo, AQUAFAST)
+2. construir o COLETOR DE ESTOQUE, comecando por SAO JOAO e PANVEL
+3. so depois ligar o gatilho automatico
+
+Motivo da ordem: hoje NAO existe coletor de estoque — os blocos
+`estoque_sao_joao` e o estoque dentro de `DADOS_PANVEL` foram preenchidos por
+outro caminho. Automatizar antes de validar repetiria os erros que a semana
+inteira foi gasta corrigindo.
+
+## Pendencias de arquivos (08/08/2026)
+
+- ESTOQUE SAO JOAO EVER GREEN JULHO 26 **(1).xlsx** — arquivo DUPLICADO na
+  pasta de julho. Decidir qual vale antes de processar.
+- Estoque de julho da SAO JOAO nao tem PAYOT.
+- Sell out: falta julho da PANVEL, da UNIDASUL atacado e da PAYOT/Sao Joao.
+
+---
+
+# ETAPA 3 — ESTOQUE (iniciada 08/08/2026)
+
+## SAO JOAO — regra DESCOBERTA E VALIDADA
+
+Arquivo: `ESTOQUE SAO JOAO <EMPRESA> <MES> 26.xlsx`
+Layout (4 colunas, ~67 mil linhas = produto x loja):
+
+    Cod Ean | Desc_Produto | Desc_Filial | Estoque Qtde
+
+Regras:
+1. descartar a linha de totalizacao (primeira linha, "Total" no Cod Ean,
+   sem produto e sem filial)
+2. **considerar SOMENTE os itens do MIX ATIVO** (`MIX_ATIVO_SAO_JOAO`)
+
+Validacao GRANADO junho/2026 — os TRES indicadores com diferenca ZERO:
+
+    quantidade  320.998  = dashboard
+    produtos         71  = dashboard (= exatamente o tamanho do mix ativo)
+    lojas         1.250  = dashboard
+
+Sem o filtro de mix ativo daria 105 produtos e 321.520 de quantidade.
+Faz sentido de negocio: estoque de item descontinuado nao e ruptura, e residuo.
+
+## Estrutura do bloco `estoque_sao_joao`
+
+Por empresa: `tem_giro`, `total_lojas`, `total_produtos`, `total_qtde`,
+`n_ruptura`, `n_baixo`, `n_normal`, `n_alto`, e `produtos`.
+
+Cada produto: `ean`, `nome`, `lojas` (com estoque), **`lojas_rup`** (em
+ruptura), `qtde`, `st` (status), `giro`, `cob` (cobertura em dias).
+
+O bloco tem `periodo` no topo (hoje "2026-06-30") — e uma FOTOGRAFIA, nao uma
+serie mensal. Com o estoque semanal da Panvel e Sao Joao isso passa a ser
+atualizado com frequencia.
+
+## O que isso destrava
+
+A tela de Cobertura (construida em 08/08) mostra em quantas LOJAS o item foi
+vendido. O estoque mostra em quantas lojas ele ESTAVA DISPONIVEL. Cruzando:
+
+- loja COM estoque e SEM venda  -> problema de gondola/exposicao (acao comercial)
+- loja SEM estoque e SEM venda  -> ruptura de abastecimento (acao de reposicao)
+
+Sao acoes opostas, e hoje a tela nao distingue. Esse cruzamento e a analise de
+ruptura sugerida em 08/08.
+
+## Proximo passo
+
+Escrever `conferir_estoque.py` cobrindo SAO JOAO (6 empresas) e PANVEL,
+validando contra o historico antes de qualquer gravacao. Depois o gatilho
+automatico por WatchPaths.
