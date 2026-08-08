@@ -642,3 +642,88 @@ falha de cobertura comercial, nao oscilacao de demanda.
 - Tela de positivacao ainda NAO construida. Desenho combinado:
   comparativo por SKU vs mesmo mes do ano anterior (ordenado pela maior queda),
   evolucao mensal de 2026, e resumo separando ganhou / perdeu / manteve.
+
+---
+
+# TELAS DE POSITIVACAO / COBERTURA (08/08/2026)
+
+Duas telas, metricas parecidas mas NAO iguais. Nunca compare os numeros entre
+elas sem qualificar.
+
+## Sao Joao — aba "🎯 Cobertura"
+
+Mede **em quantas LOJAS** o item foi vendido no mes. Calculado por nos, contando
+`Desc_Filial` distintas com venda > 0 (a Sao Joao nao envia esse dado).
+
+Caracteristica: cobertura ALTA e ESTAVEL (~1.240 lojas, variacao de 1% no ano).
+Por isso a tela e de EXCECAO — o que importa e quais lojas pararam de vender,
+nao o total. Ordenada pela maior perda.
+
+Filtro "Apenas itens ativos" ligado por padrao, usando `MIX_ATIVO_SAO_JOAO`
+(GRANADO 71, BELLIZ 61, CLESS 43, PRUDENCE 23, PAYOT 23 itens).
+**EVER GREEN nao tem lista de mix** — a tela avisa em laranja e mostra tudo.
+O casamento e por NOME EXATO: se a Sao Joao mudar a descricao, o item some da
+lista de ativos.
+
+Exporta para Excel a empresa e o mes selecionados, com a formatacao da tela.
+
+## Dartora — visao "🎯 Positivação"
+
+Mede **para quantos CLIENTES** o item foi vendido. Vem pronto do relatorio deles
+(coluna `Positivação` em 2025, `Qtd clientes` em 2026).
+
+Caracteristica: OSCILA MUITO. Por isso a tela e de TENDENCIA — grafico de barras
+2025 vs 2026 mes a mes, mais o detalhe por SKU.
+
+Leitura ja observada: a GRANADO esta NEGATIVA nos 7 meses de 2026 (-4% a -22%),
+com o faturamento subindo — ou seja, menos clientes comprando mais, concentracao
+crescente. A BELLIZ so oscila (fev -38%, mas mar/abr/jun positivos).
+
+## ARMADILHA: somar positivacao NAO da clientes unicos
+
+Somar a positivacao de varios SKUs conta o mesmo cliente varias vezes. O numero
+correto e "pares item-cliente". A tela diz isso explicitamente na legenda.
+Nunca rotular como "clientes unicos".
+
+## LICOES DE IMPLEMENTACAO (custaram tempo)
+
+### 1. O merge do localStorage descarta campos novos
+
+`loadData()` mescla o cache do navegador com o DADOS_EMBEDDED, mas copiava
+apenas `produtos` e `avg3m`. Qualquer campo novo ficava invisivel na tela mesmo
+estando correto no arquivo. Corrigido com uma lista explicita de campos.
+**Se um dado gravado nao aparecer na tela, olhar aqui primeiro.**
+
+### 2. A variavel global e `DATA`, nao `DADOS`
+
+### 3. Ids duplicados
+
+Cheguei a ter dois elementos com `id="dt-positiv-empresas"`. O `getElementById`
+devolve o primeiro, entao o codigo preenchia o elemento errado (invisivel).
+
+### 4. O script "Dartora V7" sequestra a tela
+
+Em `escondeBtnsOriginais()` ele varre TODOS os botoes da pagina e esconde
+qualquer um cujo texto seja GRANADO/PRUDENCE/EVER GREEN/CLESS/BELLIZ, exceto os
+com id iniciado em `dt-v7-`. E roda um vigia em ciclo (100/500/800/1200ms).
+
+**Qualquer botao novo com nome de marca na tela da Dartora PRECISA ter id
+comecando com `dt-v7-`**, senao desaparece sozinho em milissegundos.
+
+Ha pelo menos 3 camadas de scripts sobrepostos mexendo nos mesmos elementos da
+Dartora (Tabs V2, V7 e o codigo original). Vale consolidar algum dia.
+
+### 5. A SheetJS 0.18.5 (comunidade) DESCARTA formatacao
+
+Os `ws[cell].s = estilo` espalhados pelo codigo nunca produziram efeito.
+Para exportar com cor foi preciso carregar `xlsx-js-style` em paralelo,
+exposto como `window.XLSXS`. As exportacoes antigas seguem usando `XLSX`.
+
+## ERRO PENDENTE (nao relacionado, mas ativo)
+
+Console acusa `Uncaught ReferenceError: addProfTotal is not defined` na linha
+~12650. Funcao chamada e nunca definida — provavelmente alguma funcionalidade
+esta silenciosamente morta. Investigar.
+
+Tambem ha mojibake no card de variacao da Dartora ("Janâ€ Jun 2026"), embora o
+arquivo esteja em UTF-8 valido. Texto corrompido em algum ponto especifico.
