@@ -35,6 +35,7 @@ CATEGORIAS = {
     "sellout_nt":   (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_nilo.py"]),
     "sellout_imec": (["SELL OUT PRINCIPAIS CLIENTES"], ["conferir_imec.py"]),
     "sellout_aqua": (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_unidasul_aquafast.py"]),
+    "sellout_pv":   (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_panvel.py"]),
     "estoque":      (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque.py"]),
     "estoque_pv":   (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque_panvel.py"]),
 }
@@ -45,6 +46,7 @@ FILTRO = {
     "sellout_nt":   "NILO",
     "sellout_imec": "IMEC",
     "sellout_aqua": "AQUAFAST",
+    "sellout_pv":   "PANVEL",
     "estoque":      "SAO JOAO",
     "estoque_pv":   "PANVEL",
 }
