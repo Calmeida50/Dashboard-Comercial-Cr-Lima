@@ -12749,7 +12749,7 @@ function renderDartora_Geral() {
   function escondeBtnsOriginais() {
     document.querySelectorAll('button').forEach(function(b) {
       var t = b.textContent.trim();
-      if (MARCAS.indexOf(t) >= 0 && !b.id.startsWith('dt-v7-') && !b.id.startsWith('imec-emp-') && !b.id.startsWith('uni-emp-')) {
+      if (MARCAS.indexOf(t) >= 0 && !b.id.startsWith('dt-v7-') && !b.id.startsWith('imec-emp-') && !b.id.startsWith('uni-emp-') && !b.id.startsWith('pv-')) {
         b.style.cssText = 'display:none!important';
       }
     });
