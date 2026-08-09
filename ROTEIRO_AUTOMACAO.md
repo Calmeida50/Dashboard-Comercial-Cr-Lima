@@ -838,3 +838,85 @@ ruptura sugerida em 08/08.
 Escrever `conferir_estoque.py` cobrindo SAO JOAO (6 empresas) e PANVEL,
 validando contra o historico antes de qualquer gravacao. Depois o gatilho
 automatico por WatchPaths.
+
+---
+
+# SINCRONIZACAO AUTOMATICA COMPLETA (08/08/2026)
+
+Decisao do Cristiano: **"precisa ser automatico, isso diminui o retrabalho"**.
+A rotina publica sozinha, sem conferencia previa.
+
+A protecao que resta e a **trava de conferencia dentro de cada coletor**: se o
+parser deixar de reproduzir o historico, ele aborta ANTES de gravar e a rotina
+notifica em vez de publicar.
+
+## Como funciona
+
+`rotina_diaria.sh` (18h, launchd) -> `sincronizar.py` -> coletores -> `publicar.sh`
+
+`sincronizar.py` calcula uma impressao digital de cada pasta (nome + tamanho +
+data de cada arquivo) e compara com `_backups/estado_arquivos.json`. So roda os
+coletores das categorias que mudaram.
+
+    faturamento  -> atualizar_faturamento.py
+    sellout_sj   -> atualizar_sellout.py
+    sellout_dt   -> atualizar_dartora.py
+    sellout_nt   -> atualizar_nilo.py
+    sellout_imec -> conferir_imec.py
+    sellout_aqua -> atualizar_unidasul_aquafast.py
+    estoque      -> atualizar_estoque.py
+
+Sem mudanca, a execucao leva segundos. Com tudo mudando, ~10 minutos.
+
+Codigos de retorno: 0 = ok | 1 = nada a processar (mes sem arquivo, NAO e
+falha) | 2 = ABORTOU pela trava.
+
+Comandos:
+
+    python3 sincronizar.py --verificar   # so mostra o que mudou
+    python3 sincronizar.py --forcar      # reprocessa tudo
+    bash rotina_diaria.sh                # ciclo completo na hora
+
+# ESTOQUE — regras finais
+
+## Ativos E inativos, marcados
+
+Decisao do Cristiano: manter os dois. O inativo **impacta o dia de estoque
+geral do cliente**, entao esconder distorceria o numero. Cada produto leva
+`ativo: true/false`.
+
+Descoberta relevante: a **PAYOT tem 23 itens ativos e 91 inativos** na Sao Joao
+— 38% do estoque dela (60 mil de 157 mil unidades) e produto fora de mix.
+Estava invisivel antes.
+
+## ARMADILHAS do arquivo de estoque
+
+1. **`Estoque a Custo` nao e quantidade.** Alguns arquivos tem 9 colunas
+   (Custo, Dias Estoque, Giro 030 dias, Transito CD-LJ). Pegar a primeira
+   coluna com "ESTOQUE" traz DINHEIRO e multiplica a quantidade por ~10
+   (BELLIZ: 2,2 milhoes em vez de 237 mil). Procurar QTDE explicitamente.
+
+2. **Sufixo de copia `(1)` vira empresa fantasma.** Limpar `(\d+)`, ano e
+   extensao ANTES de usar o nome como chave.
+
+3. **O giro vem SEMPRE do sell out**, nunca do arquivo de estoque. O giro
+   nativo so existe em alguns layouts; usa-lo tornaria a cobertura
+   incomparavel entre empresas e meses.
+
+4. Formula: `cob = qtde / giro * 30` (dias). Status (index.html ~8548):
+   sem loja com estoque -> ruptura | <30 baixo | 30-40 normal | >40 alto.
+
+## Empresa sem arquivo no mes: PRESERVA
+
+Mantem a fotografia anterior em vez de sumir da tela, e grava
+`periodo_proprio` com a data REAL daquele dado. Hoje a PAYOT esta com
+30/06/2026 enquanto as demais estao em 31/07/2026 — a tela nao deve mostrar
+julho para um dado de junho.
+
+## Pendencias
+
+- **estoque da PANVEL ainda nao esta no ciclo.** Estrutura separada, dentro de
+  `DADOS_PANVEL`, precisa de coletor proprio. E o 2o cliente que o Cristiano
+  quer com estoque SEMANAL (o outro, Sao Joao, ja esta).
+- Sell out: falta julho da PANVEL, da UNIDASUL atacado e da PAYOT/Sao Joao.
+- Estoque de julho da PAYOT nao chegou.
