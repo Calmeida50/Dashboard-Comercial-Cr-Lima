@@ -3150,6 +3150,23 @@ function renderGeralCharts() {
   tbodyEmp.appendChild(trTot);
 
   // ---- Ranking Vendedores ----
+  // Soma o historico de 2025 apenas nos meses FECHADOS de 2026, para o
+  // comparativo ser do mesmo periodo. Devolve null se nao houver acomp_vendas.
+  function _histPeriodoVend(nome) {
+    const av = (DATA.acomp_vendas || {})[nome];
+    if (!av) return null;
+    let h = 0, achou = false;
+    // ultimo mes com realizado > 0 define o periodo fechado
+    let ultimo = -1;
+    for (let i = 0; i < 12; i++) if (((geral.real||[])[i]||0) > 0) ultimo = i;
+    if (ultimo < 0) return null;
+    for (let i = 0; i <= ultimo; i++) {
+      const t = ((av[MESES_KEYS_UP[i]] || {}).TOTAL) || {};
+      if (t.hist !== undefined) { h += t.hist || 0; achou = true; }
+    }
+    return achou ? h : null;
+  }
+
   const tbodyVend = document.getElementById('table-geral-vendedores');
   tbodyVend.innerHTML = '';
 
@@ -3187,7 +3204,14 @@ function renderGeralCharts() {
             real += (LIVE_PEDIDOS_MULTI[i].porVendedor||{})[nome] || 0;
           }
         }
-        return { nome, real, hist: d.hist||0, obj: d.obj||0 };
+        // O `hist` do bloco vendedores e o ano de 2025 INTEIRO (12 meses).
+        // Comparado com um realizado de 7 meses, todo vendedor aparecia
+        // caindo ~50% — aritmetica de periodos diferentes, nao desempenho.
+        // Aqui somamos so os meses FECHADOS de 2025, pelo acomp_vendas.
+        // (decisao do Cristiano 09/08: os dois rankings mostram periodo
+        //  fechado, sem o mes estimado — este entra so nos cards de cima)
+        const hp = _histPeriodoVend(nome);
+        return { nome, real, hist: (hp !== null ? hp : (d.hist||0)), obj: d.obj||0 };
       })
       .filter(v => v.real > 0)
       .sort((a,b) => b.real - a.real);
