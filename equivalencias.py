@@ -154,6 +154,8 @@ VENDEDOR = {
 VENDEDOR_GERAL = {
     "ATACADÃO S/A": "EDIMAR",          # WMS/WMB -> Atacadao, desde jan/2025
     "IRMAOS ANDREAZZA LTDA": "ÂNGELA",  # O Vantajao
+    # DARTORA = SGM (mesmo cliente). Vendedor: CRISTIANO, em qualquer empresa.
+    "SGM INDUSTRIA DE COSMETICOS LTDA": "CRISTIANO",
 }
 
 # --- 4. LIXO: rotulos que NAO sao cliente -----------------------------------
