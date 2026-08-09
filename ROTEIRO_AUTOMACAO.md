@@ -920,3 +920,58 @@ julho para um dado de junho.
   quer com estoque SEMANAL (o outro, Sao Joao, ja esta).
 - Sell out: falta julho da PANVEL, da UNIDASUL atacado e da PAYOT/Sao Joao.
 - Estoque de julho da PAYOT nao chegou.
+
+---
+
+# ESTOQUE PANVEL (09/08/2026) — no ciclo automatico
+
+`atualizar_estoque_panvel.py`. Estrutura PROPRIA, dentro de `DADOS_PANVEL`
+(fora do DADOS_EMBEDDED). Arquivo mais rico do projeto, 19 colunas:
+
+    Periodo | Item-Codigo | Item-Nomenclatura Varejo | EAN |
+    Filial-Uf | Filial-Codigo | Filial-Cidade | CNPJ |
+    Qtd Est Loja | Qtd Est Cd EDS | Qtd Est Cd PRN |
+    Marca | Grupo | Categoria | OTC | Reposicao Automatica |
+    Est - Dias Sem Venda
+
+## ARMADILHA GRAVE: o estoque de CD vem REPETIDO
+
+O arquivo tem uma linha por produto X loja. O estoque dos CDs (EDS e PRN) e da
+REDE, nao da loja — e aparece **replicado nas 664 linhas** daquele produto.
+
+    somando  -> 41.200.150 unidades  (errado, 664x)
+    max()    ->     74.029 unidades  (certo)
+
+O estoque de LOJA pode somar (e especifico de cada uma); o de CD tem que ser
+pego UMA vez por produto.
+
+## "Sem venda +60 dias" e por PRODUTO
+
+Contar cada combinacao produto x loja da ~15 mil registros; o correto sao ~100.
+Agrupar por produto e guardar quantas lojas, dias maximo e medio.
+
+## Resultado (julho/2026)
+
+    CLESS      17 SKUs | 642 lojas | loja  15.564 | CD  3.311   << EMPRESA NOVA
+    GRANADO   180 SKUs | 666 lojas | loja 162.521 | CD 90.335
+    PRUDENCE   40 SKUs | 665 lojas | loja  50.258 | CD 24.667
+
+A CLESS nao existia no bloco da Panvel — entrou agora.
+
+## Filtro por cliente no sincronizar.py
+
+Cada categoria agora monitora apenas os arquivos do SEU cliente. Antes,
+qualquer mudanca na pasta de estoque reprocessava Sao Joao e Panvel juntas.
+
+    estoque     -> filtro "SAO JOAO"  (37 arquivos, era 89)
+    estoque_pv  -> filtro "PANVEL"    (5 arquivos)
+
+## Estado da automacao (09/08/2026)
+
+Oito categorias no ciclo diario das 18h:
+
+    faturamento | sellout_sj | sellout_dt | sellout_nt | sellout_imec |
+    sellout_aqua | estoque (Sao Joao) | estoque_pv (Panvel)
+
+Os DOIS clientes com estoque semanal pedidos pelo Cristiano — SAO JOAO e
+PANVEL — estao cobertos. Basta salvar a planilha no Drive.
