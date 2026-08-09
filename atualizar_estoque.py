@@ -236,6 +236,24 @@ def main():
         for x in avisos:
             print("  ! %s" % x)
 
+    # PRESERVACAO: empresa que existe no dashboard mas nao tem arquivo neste mes
+    # mantem a fotografia anterior, em vez de sumir da tela.
+    # (decisao do Cristiano, 08/08/2026 — mesma regra do faturamento)
+    preservadas = []
+    for emp, bloco in antigo.items():
+        if emp == "periodo" or emp in novo:
+            continue
+        novo[emp] = bloco
+        # guarda o periodo REAL do dado dela (se ja tinha um proprio, mantem),
+        # senao a tela mostraria julho para um estoque que e de junho
+        if not bloco.get("periodo_proprio"):
+            bloco["periodo_proprio"] = antigo.get("periodo")
+        preservadas.append("%s (dado de %s)" % (emp, bloco["periodo_proprio"]))
+    if preservadas:
+        print("\nPRESERVADAS — sem arquivo neste mes, mantido o anterior:")
+        for e in preservadas:
+            print("  = %s" % e)
+
     if simular:
         print("\nSIMULACAO — nada foi gravado.")
         return 0
