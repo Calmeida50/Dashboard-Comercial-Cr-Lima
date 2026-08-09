@@ -32,9 +32,13 @@ FUSOES = {
     "O VANTAJAO": "IRMAOS ANDREAZZA LTDA",
     # Fort Atacadista e o mesmo grupo SDB
     "FORT ATACADISTA": "SDB COMERCIO DE ALIMENTOS LTDA",
-    # SGM e Dartora sao o mesmo cliente — consolidar em DARTORA
-    "SGM IND DE COM": "DARTORA",
-    "SGM INDUSTRIA DE COSMETICOS": "DARTORA",
+    # SGM e Dartora sao o mesmo cliente — consolidar sob o nome ja cadastrado
+    # (SGM INDUSTRIA DE COSMETICOS LTDA existe em BELLIZ, EVER GREEN, GRANADO
+    #  e PRUDENCE, sempre com o CRISTIANO). Sem isso a DARTORA ficava sem
+    #  vendedor, com R$ 432 mil soltos entre GRANADO e EVER GREEN.
+    "SGM IND DE COM": "SGM INDUSTRIA DE COSMETICOS LTDA",
+    "S G M INDUSTRIA DE COSMETICOS": "SGM INDUSTRIA DE COSMETICOS LTDA",
+    "DARTORA": "SGM INDUSTRIA DE COSMETICOS LTDA",
     # Crisan
     "CRISAN": "C&A COMERCIO DE ALIMENTOS LTDA",
 }
@@ -131,6 +135,19 @@ VENDEDOR = {
     ("BELLIZ",     "ANA LIDIA"): "CESAR",
     ("GRANADO",    "UNIMED SERRA GAUCHA"): "SUELI",
     ("KISABOR",    "C&A COMERCIO DE ALIMENTOS LTDA"): "SUELI",
+    # ultimos 11 casos sem casamento no cadastro (revisao de 09/08/2026)
+    ("PRUDENCE",   "PETINELI & PETINELI COMERCIO LTDA."): "GRAZI",
+    ("PRUDENCE",   "PETINELI & PETINELI COMERCIO LTDA"): "GRAZI",
+    ("GRANADO",    "IMPERIAL SUPERMERCADOS"): "CESAR",
+    ("BELLIZ",     "IMAGINE STORE MODA E PERFUMARIA LTDA"): "THIELIN",
+    ("FIAT LUX",   "COMERCIAL FARROUPILHA RS LTDA"): "HEIDI",
+    ("CLESS",      "DINES DISTRIBUIDORA DE COSMETICOS LTDA."): "SUELI",
+    ("BELLIZ",     "HOSPITAL SÃO JOÃO BOSCO"): "SUELI",
+    ("PRUDENCE",   "SUPERMERCADO AMERICA LTDA"): "THIELIN",
+    ("BELLIZ",     "L. T. BORBA OLIVEIRA E CIA LTDA"): "THIELIN",
+    ("CLESS",      "JAVIL COMERCIO DE COSMETICOS LTDA ME"): "SUELI",
+    ("PAYOT",      "59768204 DHONATAN KOSLOWSKI TEJADA"): "THIELIN",
+    ("GRANADO",    "DROGARIA GLICOFARMA LTDA"): "SUELI",
 }
 
 # vendedor do cliente independente da empresa (fusoes com regra unica)
