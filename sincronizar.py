@@ -36,6 +36,7 @@ CATEGORIAS = {
     "sellout_imec": (["SELL OUT PRINCIPAIS CLIENTES"], ["conferir_imec.py"]),
     "sellout_aqua": (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_unidasul_aquafast.py"]),
     "estoque":      (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque.py"]),
+    "estoque_pv":   (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque_panvel.py"]),
 }
 # filtro por nome de arquivo, para cada categoria so olhar o que lhe interessa
 FILTRO = {
@@ -44,6 +45,8 @@ FILTRO = {
     "sellout_nt":   "NILO",
     "sellout_imec": "IMEC",
     "sellout_aqua": "AQUAFAST",
+    "estoque":      "SAO JOAO",
+    "estoque_pv":   "PANVEL",
 }
 
 
