@@ -1945,10 +1945,8 @@
             style="padding:9px 24px;border:none;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font-weight:600;cursor:pointer;font-size:13px;margin-bottom:-2px">📦 Estoque</button>
         </div>
         <div id="pv-empresa-selector" style="display:flex;gap:8px;padding-bottom:6px">
-          <button id="pv-btn-gr" onclick="pvEmpClick(0)"
-            style="padding:8px 20px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-weight:700;cursor:pointer;font-size:13px">GRANADO</button>
-          <button id="pv-btn-pr" onclick="pvEmpClick(1)"
-            style="padding:8px 20px;border-radius:8px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;cursor:pointer;font-size:13px">PRUDENCE</button>
+          <!-- preenchido por pvRenderEmpresas(): as empresas vem do
+               DADOS_PANVEL, entao uma empresa nova (ex: CLESS) aparece sozinha -->
         </div>
       </div>
 
@@ -1964,7 +1962,7 @@
             <!-- Card produtos da empresa -->
             <div class="card" style="padding:0;overflow:hidden">
               <div style="padding:14px 20px 10px;border-bottom:1px solid #e2e8f0">
-                <h3 id="pv-card-h3" style="margin:0;font-size:14px;color:var(--text)">Consolidado <span id="pv-empresa-title">GRANADO</span> — Jan a Jun/26</h3>
+                <h3 id="pv-card-h3" style="margin:0;font-size:14px;color:var(--text)">Consolidado <span id="pv-empresa-title">GRANADO</span></h3>
                 <p id="pv-card-subtitle" style="margin:4px 0 0;font-size:12px;color:var(--muted)">Clique para ver produtos detalhados</p>
               </div>
               <div id="pv-empresa-summary" style="padding:12px 20px;border-bottom:1px solid #f1f5f9"></div>
@@ -8027,6 +8025,33 @@ function selectPvInfoTab(tab) {
 
 // Helpers: neutral onclick so analytics scripts don't hide buttons by attribute content
 const _pvEmpList = ['GRANADO','PRUDENCE'];
+function pvRenderEmpresas() {
+  // Os botoes eram fixos (GRANADO/PRUDENCE), entao empresa nova no
+  // DADOS_PANVEL — como a CLESS — nunca aparecia. Agora vem dos dados.
+  const emps = Object.keys(DADOS_PANVEL || {});
+  if (!emps.length) return;
+  if (typeof _pvEmpList !== 'undefined') _pvEmpList.length = 0;
+  emps.forEach(e => { if (typeof _pvEmpList !== 'undefined') _pvEmpList.push(e); });
+  if (!emps.includes(_pvEmpresa)) _pvEmpresa = emps[0];
+
+  const abrev = {GRANADO:'gr', PRUDENCE:'pr'};
+  const monta = (containerId, ativa, prefixo, onclick) => {
+    const box = document.getElementById(containerId);
+    if (!box) return;
+    box.innerHTML = emps.map((e, i) => {
+      const on = e === ativa;
+      const id = prefixo + (abrev[e] || e.toLowerCase().replace(/\s+/g, ''));
+      return `<button id="${id}" onclick="${onclick}(${i})"
+        style="padding:8px 20px;border-radius:8px;border:${on ? 'none' : '2px solid #e2e8f0'};
+        background:${on ? '#2563eb' : '#fff'};color:${on ? '#fff' : 'var(--text)'};
+        font-weight:${on ? 700 : 600};cursor:pointer;font-size:13px">${e}</button>`;
+    }).join('');
+  };
+  monta('pv-empresa-selector', _pvEmpresa, 'pv-btn-', 'pvEmpClick');
+  monta('pv-est-empresa-selector', (typeof _pvEstEmpresa !== 'undefined' ? _pvEstEmpresa : _pvEmpresa),
+        'pv-est-btn-', 'pvEstEmpClick');
+}
+
 function pvEmpClick(idx)    { selectPvEmpresa(_pvEmpList[idx]); }
 function pvEstEmpClick(idx) { selectPvEstEmpresa(_pvEmpList[idx]); }
 
@@ -8053,10 +8078,20 @@ function pvEstEmpClick(idx) { selectPvEstEmpresa(_pvEmpList[idx]); }
   else { _attach(); setTimeout(_forceShow,800); setTimeout(_forceShow,2000); }
 })();
 
+// rotulo do periodo derivado dos dados — antes era fixo em "Jan a Jun/26"
+// e nao acompanhava a entrada de um mes novo
+function _pvPeriodo(d) {
+  const m = (d && d.monthly) || [];
+  if (!m.length) return '';
+  const ini = m[0].mes, fim = m[m.length-1].mes;
+  return ini === fim ? (ini + '/26') : ('Jan a ' + fim + '/26');
+}
+
 function selectPvEmpresa(emp) {
   _pvEmpresa = emp;
   _pvMes = null;
-  ['GRANADO','PRUDENCE'].forEach((e, i) => {
+  pvRenderEmpresas();          // redesenha os botoes a partir dos dados
+  [].forEach((e, i) => {
     const btn = document.getElementById(i === 0 ? 'pv-btn-gr' : 'pv-btn-pr');
     if (!btn) return;
     btn.style.background = e === emp ? '#2563eb' : '#fff';
@@ -8079,7 +8114,7 @@ function selectPvEmpresa(emp) {
     summaryEl.innerHTML = `
       <div style="display:flex;gap:20px;font-size:13px">
         <div>
-          <div style="color:var(--muted);font-size:11px">Total Acumulado Jan–Jun/26</div>
+          <div style="color:var(--muted);font-size:11px">Total Acumulado ${_pvPeriodo(d)}</div>
           <div style="font-size:18px;font-weight:700;color:#1e293b">${fmt(d.ytd_total)}</div>
           ${cresc !== null ? `<div style="font-size:11px;color:${cresc>=0?'#16a34a':'#dc2626'}">${cresc>=0?'▲':'▼'} ${Math.abs(cresc).toFixed(1)}% vs 2025</div>` : '<div style="font-size:11px;color:var(--muted)">Sell-out Jan–Jun 2026</div>'}
         </div>
@@ -8099,7 +8134,7 @@ function selectPvEmpresa(emp) {
   // Show product table for both GRANADO and PRUDENCE
   {
     const h3 = document.getElementById('pv-card-h3');
-    if (h3) h3.innerHTML = `Consolidado <span id="pv-empresa-title">${emp}</span> — Jan a Jun/26`;
+    if (h3) h3.innerHTML = `Consolidado <span id="pv-empresa-title">${emp}</span> — ${_pvPeriodo(d)}`;
     const sub = document.getElementById('pv-card-subtitle');
     if (sub) sub.textContent = 'Clique para ver produtos detalhados';
     _pvRestoreGranadoThead();
@@ -8144,7 +8179,7 @@ function renderPvMesesList() {
   const d = DADOS_PANVEL['PRUDENCE'];
   // Update card header
   const h3 = document.getElementById('pv-card-h3');
-  if (h3) h3.innerHTML = 'Consolidado <span id="pv-empresa-title">PRUDENCE</span> — Jan a Jun/26';
+  if (h3) h3.innerHTML = `Consolidado <span id="pv-empresa-title">${_pvEmpresa}</span> — ${_pvPeriodo(DADOS_PANVEL[_pvEmpresa])}`;
   const sub = document.getElementById('pv-card-subtitle');
   if (sub) sub.textContent = 'Selecione o mês para ver os produtos';
   // Update thead
