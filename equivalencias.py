@@ -146,9 +146,20 @@ LIXO = {"SUM", "AVERAGE", "TOTAL", "COUNT", "SUBTOTAL", "MEDIA", "VAREJO",
 
 # --- 5. Colunas que ja trazem o vendedor na origem --------------------------
 # Tem prioridade sobre tudo: vem do sistema do fabricante.
-# PRUDENCE: 'Vendedor' — usada em julho/2026 para separar BRAIR e DIMED entre
-# CRISTIANO e GRAZI (cada um atende uma linha de produtos nesses 2 clientes).
-COLUNAS_VENDEDOR = ["VENDEDOR", "REPRESENTANTE"]
+#
+# ATENCAO: so vale para a PRUDENCE. BELLIZ, FIAT LUX e KISABOR tambem tem uma
+# coluna 'Representante', mas ela traz o CODIGO DA REPRESENTACAO (a propria
+# Cr Lima: '155', 'V00229 (CR LIMA (V00229)-737)', '255-CR LIMA COMERCIO E
+# REPRESENTACOES LTDA'), nao o vendedor. Usa-la criava vendedores fantasma e
+# derrubava a cobertura dessas empresas para 62%, 74% e 91% sem atribuicao.
+COLUNAS_VENDEDOR = ["VENDEDOR"]
+EMPRESAS_COM_VENDEDOR_NA_ORIGEM = {"PRUDENCE"}
+
+# nomes validos de vendedor — barreira contra codigo de representacao
+VENDEDORES_VALIDOS = {
+    "CRISTIANO", "EDIMAR", "MATHEUS", "HEIDI", "THIELIN", "CESAR", "ÂNGELA",
+    "ANGELA", "SUELI", "GRAZI", "AHMANDA", "SILVIA", "JEFERSON", "VAREJO",
+}
 
 
 def canonico(nome):
