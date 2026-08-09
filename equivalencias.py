@@ -173,17 +173,26 @@ COLUNAS_VENDEDOR = ["VENDEDOR"]
 EMPRESAS_COM_VENDEDOR_NA_ORIGEM = {"PRUDENCE"}
 
 # nomes validos de vendedor — barreira contra codigo de representacao
-# VAREJO NAO entra: e uma OPERACAO, nao uma pessoa. Tem bloco proprio
-# (`varejo`) e card na Visao Geral. Estar na lista de vendedores fazia o
-# acomp_vendas somar quase o DOBRO do faturamento real (FIAT LUX jan/2026:
-# R$ 2,01 mi contra R$ 1,03 mi de verdade).
+# VAREJO NAO entra: e um TOTAL DERIVADO, nao uma pessoa.
+#   VAREJO = soma de TODOS os vendedores MENOS o CRISTIANO
+# O Cristiano atende os clientes ponderados; o Edimar responde pelo varejo
+# (supervisiona e tambem atende clientes). Por isso o Edimar aparece nas DUAS
+# visoes — e somar VAREJO junto com as pessoas conta em dobro.
 VENDEDORES_VALIDOS = {
     "CRISTIANO", "EDIMAR", "MATHEUS", "HEIDI", "THIELIN", "CESAR", "ÂNGELA",
     "ANGELA", "SUELI", "GRAZI", "AHMANDA", "SILVIA", "JEFERSON",
 }
 
-# a operacao de varejo e contabilizada em separado, nunca no ranking de pessoas
+# totais derivados: calcular, nunca ler de fonte separada
 OPERACOES_NAO_PESSOA = {"VAREJO"}
+
+
+def calcular_varejo(por_vendedor):
+    """VAREJO = soma de todos menos CRISTIANO.
+    Calcular sempre — quando era lido de fonte propria, divergia
+    (abr/2026 em R$ 8.156 e jun/2026 em R$ 159.900)."""
+    return sum(v for nome, v in por_vendedor.items()
+               if nome != "CRISTIANO" and nome not in OPERACOES_NAO_PESSOA)
 
 
 def canonico(nome):

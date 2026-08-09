@@ -1212,3 +1212,46 @@ Descoberto em 09/08/2026 ao remover o VAREJO da lista de vendedores:
 
 Sao tres contabilizacoes da mesma operacao. **Reconciliar antes de escrever o
 gravador dos blocos por vendedor** — hoje nao da para saber qual reproduzir.
+
+## VAREJO: o que e de verdade (Cristiano, 09/08/2026)
+
+**VAREJO = a soma de TODOS os vendedores, MENOS o Cristiano.**
+
+    faturamento total = CRISTIANO (clientes ponderados) + VAREJO (todos os demais)
+
+Motivo da separacao: o **Cristiano atende os clientes ponderados** (as grandes
+redes) e o **Edimar e o responsavel pelo varejo** — atua como supervisor e
+tambem atende alguns clientes.
+
+**Corrigindo o que eu tinha escrito antes:** VAREJO nao e uma operacao paralela
+nem uma terceira contabilizacao. E um TOTAL DERIVADO. Por isso ele nao pode
+entrar no ranking ao lado das pessoas — nao porque seja "outra coisa", mas
+porque **contaria em dobro** (o Edimar, por exemplo, aparece nas duas visoes).
+
+Verificado nos dados — bate ao centavo:
+
+    JAN  outros 3.329.241,12  VAREJO 3.329.241,12   dif 0,00
+    FEV  outros 2.868.731,51  VAREJO 2.868.731,51   dif 0,00
+    MAR  outros 4.157.739,33  VAREJO 4.157.739,33   dif 0,00
+    MAI  outros 3.079.538,84  VAREJO 3.079.538,84   dif 0,00
+
+### 3 problemas que esse teste revelou
+
+1. **ABR diverge R$ 8.156,45 e JUN diverge R$ 159.899,88.** Nesses meses o
+   VAREJO gravado NAO bate com a soma dos vendedores — um dos dois foi
+   atualizado sem o outro. Investigar qual esta certo.
+
+2. **JULHO nao existe em nenhum dos dois** (acomp_vendas parou em junho).
+
+3. **CRISTIANO + VAREJO = R$ 58,3 mi, mas o faturamento real jan-jul e
+   R$ 70,0 mi.** Faltam **R$ 11,7 milhoes** — o faturamento sem vendedor
+   atribuido, agora medido pela otica correta (antes eu estimava R$ 5,8 mi
+   olhando so o clientes_detalhado).
+
+### Consequencia para o gravador
+
+O VAREJO deve ser **calculado**, nunca lido de uma fonte separada:
+
+    VAREJO[mes] = soma(vendedores[mes]) - CRISTIANO[mes]
+
+Assim ele nunca mais diverge, e os problemas 1 e 2 desaparecem por construcao.
