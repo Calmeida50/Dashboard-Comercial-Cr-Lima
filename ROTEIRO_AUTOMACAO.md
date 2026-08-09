@@ -1046,3 +1046,80 @@ qualquer mudanca de interface nessas duas telas custa o triplo do que deveria.
 
 'Jan a Jun/26' (3 pontos) e 'Ranking de Lojas — Junho/26' agora derivam dos
 dados (`_pvPeriodo()` e `lojas_mes`).
+
+---
+
+# REGRAS DE CLIENTE E ATRIBUICAO (revisao do Cristiano, 09/08/2026)
+
+Arquivo: `equivalencias.py`. Construido a partir da revisao manual das 76
+pendencias em `pendencias_atribuicao_vendedor.xlsx`.
+
+## PRIORIDADE DE ATRIBUICAO
+
+1. **coluna do proprio arquivo** — 'Vendedor' (PRUDENCE) ou 'Representante'
+   (BELLIZ, FIAT LUX, KISABOR). Vem do sistema do fabricante, e a mais confiavel.
+2. **equivalencias.py**
+3. **Base_Clientes_Vendedores.xlsx**
+
+## PRUDENCE: BRAIR e DIMED sao divididos entre CRISTIANO e GRAZI
+
+Nesses DOIS clientes, e SO na PRUDENCE, cada vendedor atende uma **linha de
+produtos diferente**. Por isso a divisao e por NOTA, nao por cliente.
+
+O Cristiano passou a marcar a coluna `Vendedor` no relatorio a partir de
+**julho/2026**. Em julho todas as notas de BRAIR e DIMED estao marcadas
+"Cristiano" (R$ 920.183,20) — a Grazi nao teve venda nesses dois no mes.
+
+Meses anteriores **foram corrigidos manualmente e nao devem ser reprocessados**.
+
+Regra geral: coluna preenchida manda; vazia cai para o cadastro.
+
+## FUSOES — clientes que devem ser SOMADOS
+
+| No arquivo | Vira | Vendedor |
+|---|---|---|
+| WMS / WMB SUPERMERCADOS DO BRASIL | ATACADÃO S/A | EDIMAR |
+| O VANTAJAO (todas as razoes) | IRMAOS ANDREAZZA LTDA | ÂNGELA |
+| FORT ATACADISTA | SDB COMERCIO DE ALIMENTOS | EDIMAR |
+| SGM IND DE COM | DARTORA | (cadastro) |
+| CRISAN | C&A COMERCIO DE ALIMENTOS | SUELI |
+
+**WMS virou Atacadao** porque o Atacadao comprou a rede — vale **desde
+janeiro de 2025**.
+
+**SGM e DARTORA sao o mesmo cliente.** Sugestao do Cristiano: consolidar sob
+DARTORA. Atencao: a DARTORA tambem e cliente de SELL OUT, entao o mesmo nome
+aparece nos dois contextos.
+
+## O MESMO CLIENTE MUDA DE VENDEDOR CONFORME A EMPRESA
+
+Por isso a chave de `VENDEDOR` e o par (empresa, cliente). Exemplo real:
+
+    IMEC / Importadora e Exportadora de Cereais:
+       EVER GREEN -> CRISTIANO
+       KISABOR    -> MATHEUS
+       FIAT LUX   -> MATHEUS
+
+Nunca atribuir vendedor so pelo nome do cliente.
+
+## LIXO — rotulos que NAO sao cliente
+
+'Sum', 'Average', 'Total', 'VAREJO' e afins. A KISABOR fecha a planilha com
+estatistica do Excel; 'VAREJO' e agrupamento interno.
+
+## ERRO GRAVE ENCONTRADO NO CAMINHO (ja corrigido)
+
+Investigar essas pendencias revelou que o coletor lia **'Peso Líquido Kisabor'
+como se fosse a coluna de valor** — porque casava com "LIQUIDO", a prioridade
+maxima. KISABOR marco/2026 dava R$ 12.502,84 em vez de R$ 97.634,82.
+
+O dashboard estava certo porque o dado veio do carregamento antigo. **Se a
+rotina reprocessasse marco, publicaria o valor errado sozinha.**
+
+O script emitia `aviso: mais de uma coluna com mesma prioridade`, mas a rotina
+so trata `erro` como bloqueio. **PENDENCIA: aviso do coletor precisa virar
+bloqueio, ou ao menos aparecer na notificacao.**
+
+Correcao: VETO agora cobre PESO, KG, CX FD, CAIXA, VOLUME, CUBAGEM; linhas com
+rotulo de estatistica sao descartadas; 'R$' virou nome de coluna valido.
+Conferencia apos a correcao: 33 pontos batem, 0 divergem.
