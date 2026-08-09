@@ -86,7 +86,11 @@ def to_num(v):
 VETO = ["IPI", "ICMS", "FRETE", "MEDIO", "MEDIA", "BASE", "COMISSAO", "DESCONTO",
         "PRECO", "UNITARIO", "QTDE", "QUANTIDADE", "PARCELA", "TITULO", "SALDO",
         # datas: 'DATA DE FATURAMENTO' nao e valor. o veto vence a preferencia.
-        "DATA", "EMISSAO", "VENCIMENTO"]
+        "DATA", "EMISSAO", "VENCIMENTO",
+        # PESO/KG nao e dinheiro. 'Peso Líquido Kisabor' casava com LIQUIDO e
+        # ganhava prioridade maxima: marco/2026 da KISABOR virava R$ 12.502,84
+        # em vez de R$ 97.634,82 — silenciosamente.
+        "PESO", "KG", "CX FD", "CAIXA", "VOLUME", "CUBAGEM"]
 # ordem de preferencia: liquido ganha de tudo (regra 1)
 PREF = [
     (100, ["LIQUIDO"]),
@@ -100,6 +104,7 @@ PREF = [
     (50,  ["VALOR DO PEDIDO"]),
     (45,  ["VALOR PRODUTOS"]),
     (40,  ["FATURAMENTO"]),
+    (35,  ["R$"]),          # KISABOR usa so 'R$' como cabecalho da coluna
     (30,  ["BRUTO"]),
     (20,  ["VALOR"]),
 ]
@@ -107,6 +112,11 @@ PREF = [
 
 def score_col(nome):
     n = norm(nome)
+    # 'R$' normaliza para vazio (o cifrao some), mas E a coluna de valor da
+    # KISABOR. Tratar antes do teste de vazio.
+    bruto = str(nome or "").strip().upper().replace(" ", "")
+    if bruto.startswith("R$"):
+        return 35
     if not n:
         return -1
     for v in VETO:
@@ -167,9 +177,18 @@ def ler_arquivo(path):
             if pd.to_numeric(df[c], errors="coerce").notna().sum() < len(df) * 0.5]
     if desc:
         vazias = df[desc].isna().all(axis=1)
-        if vazias.any():
-            out["totais_descartados"] = int(vazias.sum())
-            df = df[~vazias]
+        # Alem da linha totalmente vazia, alguns arquivos fecham com estatistica
+        # do Excel rotulada: 'Sum', 'Average', 'Total', 'Count'. A KISABOR faz
+        # isso — e como o rotulo cai numa coluna descritiva, a linha NAO fica
+        # vazia e escapava do filtro acima.
+        ROTULOS = {"SUM", "AVERAGE", "TOTAL", "TOTAL GERAL", "COUNT",
+                   "SUBTOTAL", "MEDIA", "SOMA", "CONTAGEM", "MAX", "MIN"}
+        rotulada = df[desc].apply(
+            lambda linha: any(norm(x) in ROTULOS for x in linha.tolist()), axis=1)
+        fora = vazias | rotulada
+        if fora.any():
+            out["totais_descartados"] = int(fora.sum())
+            df = df[~fora]
     if df.empty:
         out["erro"] = "planilha so tinha linha de total"
         return out
