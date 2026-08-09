@@ -1123,3 +1123,62 @@ bloqueio, ou ao menos aparecer na notificacao.**
 Correcao: VETO agora cobre PESO, KG, CX FD, CAIXA, VOLUME, CUBAGEM; linhas com
 rotulo de estatistica sao descartadas; 'R$' virou nome de coluna valido.
 Conferencia apos a correcao: 33 pontos batem, 0 divergem.
+
+---
+
+# POR QUE O GRAVADOR POR VENDEDOR NAO PODE RECONSTRUIR O ANO (09/08/2026)
+
+Descoberto depois de perseguir uma "cobertura de 39%" que parecia erro de
+atribuicao. **Nao era.** Os arquivos de faturamento de JANEIRO A MAIO nao
+estao no Drive para a maioria das empresas:
+
+    EMPRESA     JAN FEV MAR ABR MAI JUN JUL
+    AQUAFAST     X   X   X   X   X   X   .
+    CLESS        X   X   X   X   X   X   X
+    GRANADO      X   X   X   X   X   X   X
+    BELLIZ       .   .   .   .   .   X   X
+    EVER GREEN   .   .   .   .   .   X   X
+    FIAT LUX     .   .   .   .   .   X   X
+    PAYOT        .   .   .   .   .   X   X
+    PRUDENCE     .   .   .   .   .   X   X
+    DEPIMIEL     .   .   .   .   .   .   X
+    KISABOR      .   .   X   .   .   .   X
+    BOTÂNICA     .   .   .   .   .   .   .
+
+Arquivos somam R$ 42,8 mi; o dashboard tem R$ 70,0 mi. A diferenca de
+R$ 27,2 mi e dado que **existe no dashboard e nao existe mais na pasta** —
+foi carregado quando os arquivos estavam la.
+
+## Consequencia para o desenho
+
+O gravador **NAO pode reconstruir o ano inteiro**. Ele deve:
+  - PRESERVAR os meses sem arquivo, exatamente como estao
+  - reconstruir SOMENTE os meses cujo arquivo existe
+
+Mesma protecao ja usada no faturamento e no estoque.
+
+## O que JA foi resolvido nesta investigacao
+
+- leitura: `ler_notas` bate CENTAVO A CENTAVO com o coletor validado em
+  todos os 17 arquivos disponiveis
+- atribuicao: com `buscar_cadastro` (casamento por prefixo/conteudo), os
+  clientes sem vendedor cairam de 58 para 13, e de R$ 2,64 mi para R$ 472 mil
+
+O casamento exato falhava porque arquivo e cadastro truncam o nome em pontos
+diferentes:
+    arquivo  'UNIDASUL DISTRIB'          cadastro 'UNIDASUL DISTRIB ALIMENTICIA S/A'
+    arquivo  'PRONTO DOCE ... ALIMENT'   cadastro 'PRONTO DOCE SOLUCAO EM DISTRIB'
+
+## Os 13 que sobraram (R$ 472 mil)
+
+DARTORA e R$ 432 mil desses (GRANADO R$ 217.725 + EVER GREEN R$ 214.411) e
+**nao existe no clientes_detalhado** — lembrando que SGM = DARTORA, entao
+provavelmente deve entrar sob o nome ja cadastrado.
+
+Os outros 11 sao pequenos (< R$ 12 mil cada) e ja tem vendedor definido na
+revisao do Cristiano — falta so o nome canonico casar com o cadastro.
+
+## PENDENTE
+
+1. gravador com preservacao de mes sem arquivo (a fazer)
+2. `aviso` do coletor precisa virar bloqueio na rotina — hoje so `erro` bloqueia

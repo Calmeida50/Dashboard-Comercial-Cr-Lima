@@ -78,6 +78,45 @@ def cadastro_atual(D):
     return cad
 
 
+def buscar_cadastro(cad_emp, ch):
+    """acha o cliente no cadastro tolerando nome truncado.
+
+    O arquivo e o cadastro cortam o nome em pontos diferentes:
+        arquivo  'UNIDASUL DISTRIB'
+        cadastro 'UNIDASUL DISTRIB ALIMENTICIA S/A'
+        arquivo  'PRONTO DOCE SOLUCAO EM DISTRIBUICAO DE ALIMENT'
+        cadastro 'PRONTO DOCE SOLUCAO EM DISTRIB'
+    Exigir igualdade exata deixava 42% do faturamento sem vendedor, embora o
+    cliente ESTIVESSE cadastrado."""
+    if not ch:
+        return None
+    reg = cad_emp.get(ch)
+    if reg:
+        return reg
+    # um contem o outro (nome truncado dos dois lados)
+    melhor, tam = None, 0
+    for k, v in cad_emp.items():
+        if not k or len(k) < 6:
+            continue
+        if k.startswith(ch) or ch.startswith(k) or k in ch or ch in k:
+            # fica com o casamento de maior sobreposicao
+            n = min(len(k), len(ch))
+            if n > tam:
+                melhor, tam = v, n
+    if melhor:
+        return melhor
+    # ultimo recurso: similaridade alta
+    from difflib import SequenceMatcher
+    melhor, sc = None, 0.0
+    for k, v in cad_emp.items():
+        if not k or len(k) < 6:
+            continue
+        r = SequenceMatcher(None, ch, k).ratio()
+        if r > sc:
+            melhor, sc = v, r
+    return melhor if sc >= 0.90 else None
+
+
 def ler_notas(path, empresa):
     """devolve [(cliente, valor, vendedor_do_arquivo|None)] ja sem bonificacao
     e sem linha de total. Reaproveita a deteccao validada do coletor."""
@@ -184,16 +223,14 @@ def coletar(D, ate_mes=12):
                     vend = vend_arq
                 if not vend:                                   # 2. equivalencias
                     vend = E.vendedor_de(empk, canon)
-                if not vend:                                   # 3. cadastro
-                    reg = cad.get(empk, {}).get(ch)
-                    if reg:
-                        vend = reg[0]
+                reg = buscar_cadastro(cad.get(empk, {}), ch)
+                if not vend and reg:                           # 3. cadastro
+                    vend = reg[0]
                 if not vend:
                     a = sem_vend.setdefault((empk, canon), 0.0)
                     sem_vend[(empk, canon)] = a + val
                     continue
                 vend = vend.upper()
-                reg = cad.get(empk, {}).get(ch)
                 exib = reg[1] if reg else canon
                 cod = reg[2] if reg else ""
                 d = acc.setdefault((empk, vend, ch),
