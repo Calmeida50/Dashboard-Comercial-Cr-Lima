@@ -1182,3 +1182,33 @@ revisao do Cristiano — falta so o nome canonico casar com o cadastro.
 
 1. gravador com preservacao de mes sem arquivo (a fazer)
 2. `aviso` do coletor precisa virar bloqueio na rotina — hoje so `erro` bloqueia
+
+## Por que so a PRUDENCE tem marcacao manual de vendedor
+
+Confirmado pelo Cristiano (09/08/2026): *"Apenas Prudence fiz isso em funcao
+de ter 2 vendedores atendendo o mesmo cliente."*
+
+Regra geral: **um cliente = um vendedor**, resolvido pelo cadastro
+(`Base_Clientes_Vendedores.xlsx` + `equivalencias.py`).
+
+Excecao: na PRUDENCE, os clientes BRAIR e DIMED sao atendidos por CRISTIANO e
+GRAZI ao mesmo tempo — cada um com uma **linha de produtos diferente**. Nenhum
+cadastro por cliente resolve isso; a divisao tem que ser por NOTA.
+
+Por isso o Cristiano preenche a coluna `Vendedor` no relatorio da PRUDENCE a
+partir de julho/2026.
+
+**Se no futuro outro cliente passar a ter dois vendedores**, o caminho e o
+mesmo: marcar no relatorio de faturamento e incluir a empresa em
+`EMPRESAS_COM_VENDEDOR_NA_ORIGEM`. O codigo le sozinho.
+
+## PENDENCIA: o VAREJO tem TRES numeros diferentes
+
+Descoberto em 09/08/2026 ao remover o VAREJO da lista de vendedores:
+
+    bloco `varejo`            R$ 17,2 mi   (para em maio)
+    VAREJO dentro do acomp_vendas  R$ 19,8 mi
+    card 'Volume Varejo' da Visao Geral  R$ 22,3 mi
+
+Sao tres contabilizacoes da mesma operacao. **Reconciliar antes de escrever o
+gravador dos blocos por vendedor** — hoje nao da para saber qual reproduzir.
