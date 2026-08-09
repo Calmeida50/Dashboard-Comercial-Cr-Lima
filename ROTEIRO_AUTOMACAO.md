@@ -975,3 +975,74 @@ Oito categorias no ciclo diario das 18h:
 
 Os DOIS clientes com estoque semanal pedidos pelo Cristiano — SAO JOAO e
 PANVEL — estao cobertos. Basta salvar a planilha no Drive.
+
+---
+
+# PANVEL COMPLETA (09/08/2026)
+
+Tres coletores, todos no ciclo automatico:
+
+    atualizar_panvel.py         sell out por produto (loja vs C.Dig)
+    atualizar_panvel_lojas.py   ranking de lojas + distribuicao
+    atualizar_estoque_panvel.py estoque (loja + 2 CDs + dias sem venda)
+
+## O sell out da Panvel ficou meses parado por falta de gravador
+
+Eu tinha escrito so o `conferir_panvel.py` (validacao). Sem gravador, a Panvel
+seguiu em 6 meses enquanto os outros clientes ja tinham julho. **Licao: validar
+nao e gravar** — conferir cada cliente tem os DOIS passos.
+
+## Nomes de arquivo mudam de padrao entre meses
+
+    junho: SELL OUT PANVEL <EMP> POR LOJA JUNHO 26.xlsx
+    julho: VENDA POR LOJA PANVEL <EMP> JULHO 2026.xlsx
+
+Mesmo layout (22 colunas), nome completamente diferente. O coletor aceita os
+dois e le o mes de DENTRO do arquivo (coluna `Mês`).
+
+Tambem tolera arquivo **renomeado durante a execucao** — aconteceu com a
+PRUDENCE em 09/08: o script indexou, o Cristiano renomeou, e a leitura quebrou.
+Agora ele reindexada e segue.
+
+## Campos do monthly: val26_loja / val26_cdig (e os de 2025)
+
+A primeira tentativa de gravar usou nomes errados e a **trava abortou**,
+acusando 12 meses divergentes. Se tivesse gravado, teria apagado
+`val25_loja` e `val25_cdig` — a base de comparacao inteira. Preservar sempre.
+
+## Validacao cruzada entre fontes independentes
+
+O total do ranking POR LOJA de julho da GRANADO (R$ 1.623.376,02) e identico ao
+do arquivo POR PRODUTO. Dois relatorios diferentes, lidos por caminhos
+diferentes, mesmo numero. E a melhor prova de leitura correta que temos.
+
+# ARMADILHA RECORRENTE: o script DTV7 esconde botoes de TODA a pagina
+
+`escondeBtnsOriginais()` (index.html ~12748) varre **todos os botoes do
+dashboard** e oculta qualquer um cujo texto seja GRANADO, PRUDENCE, EVER GREEN,
+CLESS ou BELLIZ. Foi escrito para a tela da Dartora, mas age em tudo.
+
+A excecao e por PREFIXO DE ID:
+
+    dt-v7-   imec-emp-   uni-emp-   pv-   (este ultimo adicionado em 09/08)
+
+**Qualquer botao novo com nome de marca precisa de um id com prefixo listado
+ali**, senao desaparece poucos milissegundos depois de criado.
+
+Ja custou tempo TRES vezes: positivacao da Dartora (08/08), botoes da Panvel
+(09/08) e antes disso os botoes originais da Dartora.
+
+## Camadas sobrepostas na Panvel
+
+Havia TRES lugares criando os mesmos botoes de empresa com a lista fixa
+GRANADO/PRUDENCE: o HTML estatico, `pvRenderEmpresas()` e a injecao dentro de
+`renderPanvelSellout()`. Corrigir um fazia outro sobrescrever. Hoje os tres
+leem do `DADOS_PANVEL`.
+
+Mesmo padrao da Dartora. **Vale consolidar essas camadas algum dia** — hoje
+qualquer mudanca de interface nessas duas telas custa o triplo do que deveria.
+
+## Rotulos fixos eliminados
+
+'Jan a Jun/26' (3 pontos) e 'Ranking de Lojas — Junho/26' agora derivam dos
+dados (`_pvPeriodo()` e `lojas_mes`).
