@@ -156,10 +156,17 @@ COLUNAS_VENDEDOR = ["VENDEDOR"]
 EMPRESAS_COM_VENDEDOR_NA_ORIGEM = {"PRUDENCE"}
 
 # nomes validos de vendedor — barreira contra codigo de representacao
+# VAREJO NAO entra: e uma OPERACAO, nao uma pessoa. Tem bloco proprio
+# (`varejo`) e card na Visao Geral. Estar na lista de vendedores fazia o
+# acomp_vendas somar quase o DOBRO do faturamento real (FIAT LUX jan/2026:
+# R$ 2,01 mi contra R$ 1,03 mi de verdade).
 VENDEDORES_VALIDOS = {
     "CRISTIANO", "EDIMAR", "MATHEUS", "HEIDI", "THIELIN", "CESAR", "ÂNGELA",
-    "ANGELA", "SUELI", "GRAZI", "AHMANDA", "SILVIA", "JEFERSON", "VAREJO",
+    "ANGELA", "SUELI", "GRAZI", "AHMANDA", "SILVIA", "JEFERSON",
 }
+
+# a operacao de varejo e contabilizada em separado, nunca no ranking de pessoas
+OPERACOES_NAO_PESSOA = {"VAREJO"}
 
 
 def canonico(nome):
