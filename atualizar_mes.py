@@ -171,7 +171,7 @@ def ler_faturamento(filepath):
         df = pd.read_excel(filepath)
     except Exception as e:
         print(f"  ❌ Erro ao ler o ficheiro: {e}")
-        return None, None
+        return None, None, None
 
     # Auto-detectar cabeçalho deslocado (ex: GRANADO — linha 1 contém os nomes das colunas)
     n_unnamed = sum(1 for c in df.columns if str(c).startswith('Unnamed:'))
@@ -181,7 +181,7 @@ def ler_faturamento(filepath):
             print(f"  ℹ️  Cabeçalho deslocado detectado — relido com header=1")
         except Exception as e:
             print(f"  ❌ Erro ao reprocessar cabeçalho: {e}")
-            return None, None
+            return None, None, None
 
     def norm_col(s):
         """Normaliza nome de coluna: sem acentos, só alfanumérico + underscore."""
@@ -194,14 +194,23 @@ def ler_faturamento(filepath):
 
     # Coluna de cliente
     cliente_col = None
-    for cand in ['CLIENTE','RAZAO_SOCIAL','NOME_CLIENTE','NOME_DO_CLIENTE','NOME']:
+    for cand in ['CLIENTE','RAZAO_SOCIAL','NOME_CLIENTE','NOME_DO_CLIENTE','NOME',
+                 'NOME_DA_CONTA','CONTA','DESC_CLIENTE','DESCRICAO_CLIENTE',
+                 'NOME_FANTASIA','CLIENTES']:
         if cand in cols_upper:
             cliente_col = cols_upper[cand]
             break
     if not cliente_col:
+        # fallback: qualquer coluna cujo nome contenha CLIENTE, CONTA ou RAZAO
+        # (o layout da CLESS mudou para 'Nome da conta' em julho/2026)
+        for k, orig in cols_upper.items():
+            if any(t in k for t in ('CLIENTE', 'CONTA', 'RAZAO')):
+                cliente_col = orig
+                break
+    if not cliente_col:
         print(f"  ❌ Coluna de CLIENTE não encontrada.")
         print(f"     Colunas disponíveis: {list(df.columns)}")
-        return None, None
+        return None, None, None
 
     # Coluna de valor
     valor_col = None
@@ -215,7 +224,7 @@ def ler_faturamento(filepath):
     if not valor_col:
         print(f"  ❌ Coluna de VALOR não encontrada.")
         print(f"     Colunas disponíveis: {list(df.columns)}")
-        return None, None
+        return None, None, None
 
     # Coluna de NF (opcional)
     nf_col = None
@@ -254,12 +263,35 @@ def ler_faturamento(filepath):
     return totais, nfs, nfs_valores
 
 def carregar_dados_html(html):
-    """Extrai JSON de DADOS_EMBEDDED do HTML."""
-    inicio = html.find('const DADOS_EMBEDDED = ')
-    if inicio == -1:
+    """Extrai JSON de DADOS_EMBEDDED do HTML.
+    Tolerante: aceita espaco OU quebra de linha depois do '=' e acha o fim do
+    objeto por balanceamento de chaves (o corte por ';\\n' quebrava quando o
+    JSON era regravado por outro script)."""
+    m = re.search(r'const\s+DADOS_EMBEDDED\s*=\s*', html)
+    if not m:
         raise ValueError("DADOS_EMBEDDED não encontrado no index.html")
-    inicio += len('const DADOS_EMBEDDED = ')
-    fim = html.find(';\n', inicio)
+    inicio = m.end()
+    d = 0
+    j = inicio
+    ins = False
+    esc = False
+    while j < len(html):
+        c = html[j]
+        if esc:
+            esc = False
+        elif c == '\\':
+            esc = True
+        elif c == '"':
+            ins = not ins
+        elif not ins:
+            if c == '{':
+                d += 1
+            elif c == '}':
+                d -= 1
+                if d == 0:
+                    break
+        j += 1
+    fim = j + 1
     return json.loads(html[inicio:fim]), inicio, fim
 
 def salvar_dados_html(html, dados, inicio, fim):
