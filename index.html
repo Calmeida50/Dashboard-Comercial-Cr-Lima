@@ -2046,10 +2046,7 @@
       <div id="pv-panel-estoque" style="display:none">
         <!-- Empresa tabs + botão sem venda -->
         <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
-          <button id="pv-est-btn-gr" onclick="pvEstEmpClick(0)"
-            style="padding:8px 20px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-weight:700;cursor:pointer;font-size:13px">GRANADO</button>
-          <button id="pv-est-btn-pr" onclick="pvEstEmpClick(1)"
-            style="padding:8px 20px;border-radius:8px;border:2px solid #e2e8f0;background:#fff;color:var(--text);font-weight:600;cursor:pointer;font-size:13px">PRUDENCE</button>
+          <span id="pv-est-empresa-selector" style="display:flex;gap:8px"></span>
           <span style="flex:1"></span>
           <button onclick="showPvDistribuicao()"
             style="padding:7px 18px;border-radius:8px;border:none;background:#7c3aed;color:#fff;font-weight:700;cursor:pointer;font-size:12px">📊 Distribuição por Loja</button>
@@ -7981,23 +7978,34 @@ function fecharModalSelloutEsc(e) {
 // ═══════════════════════════════════════════════════════════════
 
 function renderPanvelSellout() {
-  // Injeta seletor GRANADO/PRUDENCE no topo do painel sell out
+  // Injeta o seletor de empresa no topo do painel sell out.
+  // A lista vem do DADOS_PANVEL — era fixa em GRANADO/PRUDENCE, por isso a
+  // CLESS nunca aparecia. Esta e a TERCEIRA camada que mexia nesses botoes
+  // (havia o HTML estatico, o pvRenderEmpresas e esta injecao).
   const panel = document.getElementById('pv-panel-sellout');
-  if (panel && !document.getElementById('pv-btn-gr')) {
-    const bar = document.createElement('div');
-    bar.id = 'pv-empresa-bar';
-    bar.style.cssText = 'display:flex;gap:10px;margin-bottom:16px;align-items:center;';
+  const emps = Object.keys(DADOS_PANVEL || {});
+  let bar = document.getElementById('pv-empresa-bar');
+  if (panel && emps.length) {
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'pv-empresa-bar';
+      bar.style.cssText = 'display:flex;gap:10px;margin-bottom:16px;align-items:center;';
+      panel.insertBefore(bar, panel.firstChild);
+    }
+    if (!emps.includes(_pvEmpresa)) _pvEmpresa = emps[0];
     bar.innerHTML = '<span style="font-size:12px;color:#64748b;font-weight:600">Empresa:</span>';
-    ['GRANADO','PRUDENCE'].forEach((emp, idx) => {
+    const abrev = {GRANADO: 'gr', PRUDENCE: 'pr'};
+    emps.forEach(emp => {
       const b = document.createElement('button');
-      b.id = idx === 0 ? 'pv-btn-gr' : 'pv-btn-pr';
+      b.id = 'pv-btn-' + (abrev[emp] || emp.toLowerCase().replace(/\s+/g, ''));
       b.textContent = emp;
       b.onclick = () => selectPvEmpresa(emp);
+      const on = emp === _pvEmpresa;
       b.style.cssText = 'padding:8px 22px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;' +
-        (emp === 'GRANADO' ? 'border:2px solid #2563eb;background:#2563eb;color:#fff;' : 'border:2px solid #cbd5e1;background:#fff;color:#334155;');
+        (on ? 'border:2px solid #2563eb;background:#2563eb;color:#fff;'
+            : 'border:2px solid #cbd5e1;background:#fff;color:#334155;');
       bar.appendChild(b);
     });
-    panel.insertBefore(bar, panel.firstChild);
   }
   selectPvInfoTab(_pvInfoTab);
 }
@@ -8481,14 +8489,20 @@ function closePvTop10(event) {
 function selectPvEstEmpresa(emp) {
   _pvEstEmpresa = emp;
   _pvEstFiltro = 'todos';
-  ['GRANADO','PRUDENCE'].forEach((e, i) => {
-    const btn = document.getElementById(i === 0 ? 'pv-est-btn-gr' : 'pv-est-btn-pr');
-    if (!btn) return;
-    btn.style.background = e === emp ? '#2563eb' : '#fff';
-    btn.style.color      = e === emp ? '#fff' : 'var(--text)';
-    btn.style.border     = e === emp ? 'none' : '2px solid #e2e8f0';
-    btn.style.fontWeight = e === emp ? '700' : '600';
-  });
+  // botoes do estoque tambem vem dos dados (a CLESS nao existia na lista fixa)
+  const _empsE = Object.keys(DADOS_PANVEL || {});
+  const _boxE = document.getElementById('pv-est-empresa-selector');
+  if (_boxE && _empsE.length) {
+    const _ab = {GRANADO: 'gr', PRUDENCE: 'pr'};
+    _boxE.innerHTML = _empsE.map(e => {
+      const on = e === emp;
+      return `<button id="pv-est-btn-${_ab[e] || e.toLowerCase().replace(/\s+/g,'')}"
+        onclick="selectPvEstEmpresa('${e.replace(/'/g,"\\'")}')"
+        style="padding:8px 20px;border-radius:8px;border:${on?'none':'2px solid #e2e8f0'};
+        background:${on?'#2563eb':'#fff'};color:${on?'#fff':'var(--text)'};
+        font-weight:${on?700:600};cursor:pointer;font-size:13px">${e}</button>`;
+    }).join('');
+  }
   renderPvEstoque();
 }
 
