@@ -47,6 +47,25 @@ DRIVE = os.path.expanduser(
 )
 LOJA_ECOM = 574
 
+# As 80 lojas que DEVEM ter a linha de perfume (lista oficial do Cristiano).
+# REGRA (10/08/2026): o relatorio traz 102 lojas com perfume — as 22 extras
+# receberam produto POR ENGANO. Entao:
+#   - FATURAMENTO / performance: conta TODAS (as 22 entram como grupo a parte)
+#   - ESTOQUE e RUPTURA: SO estas 80. Nao se cobra abastecimento de loja que
+#     nao deveria ter o produto.
+LOJAS_OFICIAIS = {
+    1, 2, 4, 6, 11, 13, 27, 29, 30, 31, 33, 37, 39, 40, 41, 43, 44, 45, 46,
+    47, 49, 50, 53, 56, 59, 60, 62, 66, 67, 69, 73, 76, 77, 81, 84, 85, 87,
+    88, 89, 91, 96, 100, 102, 105, 106, 110, 112, 119, 126, 127, 132, 141,
+    146, 159, 163, 168, 170, 172, 182, 193, 234, 236, 257, 260, 269, 271,
+    277, 278, 286, 287, 291, 295, 300, 307, 322, 326, 360, 426, 458, 509,
+}
+
+# Loja da lista oficial que NUNCA recebeu produto — nao aparece em nenhuma
+# linha do relatorio. Fica no radar: se aparecer estoque nas proximas semanas,
+# e sinal de que o abastecimento finalmente chegou.
+LOJAS_SEM_HISTORICO = {88}
+
 # colunas por posicao (0-based apos header=2)
 COL = {"week": 0, "item": 4, "cod": 5, "loja_cod": 6, "loja_nome": 7,
        "vl_sem": 9, "vl_sem_aa": 10, "vl_mtd": 11, "vl_mtd_aa": 12,
@@ -191,6 +210,20 @@ def separa_operacao(d):
     ecom = d[d["loja_cod"] == LOJA_ECOM]
     fisica = d[d["loja_cod"] != LOJA_ECOM]
     return fisica, ecom
+
+
+def grupos(d):
+    """Separa nos TRES grupos que o Cristiano definiu:
+        oficiais  — as 80 que devem ter perfume (base de estoque e ruptura)
+        extras    — receberam produto por engano; contam no faturamento,
+                    mas NAO entram na cobranca de abastecimento
+        ecommerce — loja 574
+    """
+    ecom = d[d["loja_cod"] == LOJA_ECOM]
+    fis = d[d["loja_cod"] != LOJA_ECOM]
+    oficiais = fis[fis["loja_cod"].isin(LOJAS_OFICIAIS)]
+    extras = fis[~fis["loja_cod"].isin(LOJAS_OFICIAIS)]
+    return oficiais, extras, ecom
 
 
 if __name__ == "__main__":
