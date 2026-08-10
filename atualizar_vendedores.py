@@ -10,13 +10,18 @@ Blocos afetados:
     vendedores[NOME]                        = {hist, obj, real}
 
 ATRIBUICAO — tres camadas, da mais forte para a mais fraca:
-    1. coluna do proprio arquivo ('Vendedor' na PRUDENCE, 'Representante' na
-       BELLIZ/FIAT LUX/KISABOR) — vem do sistema do fabricante
+    1. coluna 'Vendedor' do arquivo — SO na PRUDENCE, onde o Cristiano marca
+       manualmente quais notas de BRAIR e DIMED sao dele e quais sao da GRAZI
+       (esses 2 clientes tem 2 vendedores, cada um com uma linha de produtos).
+       ATENCAO: BELLIZ, FIAT LUX e KISABOR tem coluna 'Representante', mas ela
+       traz a PROPRIA CR LIMA ('255-CR LIMA COMERCIO E REPRESENTACOES LTDA').
+       NAO usar — criaria um vendedor fantasma com o faturamento das 3.
     2. equivalencias.py (revisao manual do Cristiano)
     3. o que ja esta no clientes_detalhado (cadastro atual)
 
-SO MEXE EM 2026. O historico de 2025 (`meses25`, `hist`) e PRESERVADO — foi
-corrigido manualmente e nao deve ser reprocessado.
+SO MEXE DE JUNHO/2026 EM DIANTE (ver corte.py). Ate maio o dado veio da
+Planilha 2026, esta validado e CONGELADO. O historico de 2025 (`meses25`,
+`hist`) tambem e preservado.
 
 Uso:
     python3 atualizar_vendedores.py --simular
@@ -26,6 +31,7 @@ import os, re, sys, json, glob, shutil, datetime, unicodedata
 import pandas as pd
 import coletar_faturamento as C
 import equivalencias as E
+import corte   # trava: nada anterior a junho/2026
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -198,7 +204,10 @@ def coletar(D, ate_mes=12):
     """{(empresa, vendedor, chave_cliente): {nome, cod, meses[12]}} + relatorio"""
     cad = cadastro_atual(D)
     acc, sem_vend = {}, {}
-    for k in range(ate_mes):
+    # comeca no CORTE: jan-mai vieram da Planilha 2026 e estao congelados.
+    # Ler esses meses aqui produziria numero menor que o real, porque o Drive
+    # so tem 5 das 10 empresas nesse periodo.
+    for k in range(corte.IDX_CORTE, ate_mes):
         pasta = C.pasta_mes(MESES[k], 2026)
         if not pasta:
             continue
@@ -240,14 +249,132 @@ def coletar(D, ate_mes=12):
 
 
 def cobertura(D, acc, ate_mes):
-    """compara o total atribuido com o bloco `empresas` (fonte ja validada)"""
+    """compara o total atribuido com o bloco `empresas` (fonte ja validada).
+    So o periodo LIBERADO (junho em diante) — comparar com jan-jul daria uma
+    falsa lacuna de ~71%, porque o numerador so tem os meses reprocessados."""
     emp_b = D["empresas"]
     linhas = []
+    ini = corte.IDX_CORTE
     for empk in sorted({e for (e, _v, _c) in acc}):
-        s = sum(sum(d["meses"][:ate_mes]) for (e, _v, _c), d in acc.items() if e == empk)
-        t = sum((emp_b.get(empk, {}).get("real") or [0] * 12)[:ate_mes])
+        s = sum(sum(d["meses"][ini:ate_mes]) for (e, _v, _c), d in acc.items() if e == empk)
+        t = sum((emp_b.get(empk, {}).get("real") or [0] * 12)[ini:ate_mes])
         linhas.append((empk, s, t, t - s, (t - s) / t * 100 if t else 0))
     return linhas
+
+
+def meses_com_arquivo(ate):
+    """{empresa: set(indices de mes que TEM arquivo)} — o que nao tem arquivo
+    sera PRESERVADO como esta.
+    So considera de junho em diante: jan-mai estao congelados (o dado veio da
+    Planilha 2026) e o Drive nem tem todas as empresas nesse periodo."""
+    mapa = {}
+    for k in range(corte.IDX_CORTE, ate):
+        pasta = C.pasta_mes(MESES[k], 2026)
+        if not pasta:
+            continue
+        for f in sorted(os.listdir(pasta)):
+            if f.startswith(".") or f.startswith("~$"):
+                continue
+            p = os.path.join(pasta, f)
+            if not os.path.isfile(p):
+                continue
+            emp = C.identificar_empresa(f)
+            if not emp:
+                continue
+            r = C.ler_arquivo(p)
+            if r.get("erro"):
+                continue
+            empk = "BOTÂNICA" if emp == "BOTANICA" else emp
+            mapa.setdefault(empk, set()).add(k)
+    return mapa
+
+
+def gravar(D, acc, ate):
+    """reescreve clientes_detalhado, acomp_vendas e vendedores.
+    Preserva: meses sem arquivo, todo o historico de 2025 e os objetivos."""
+    tem = meses_com_arquivo(ate)
+    antigo_cd = D.get("clientes_detalhado") or {}
+    novo_cd = {}
+    preservados = []
+
+    # 1. clientes_detalhado
+    for empk in sorted(set(list(antigo_cd) + [e for (e, _v, _c) in acc])):
+        kmeses = tem.get(empk, set())
+        # indice por (vendedor, chave) do que ja existia
+        antes = {}
+        for v, lista in (antigo_cd.get(empk) or {}).items():
+            for c in lista:
+                antes[(v, chave(c["nome"]))] = c
+        novos = {k: d for k, d in acc.items() if k[0] == empk}
+        # une as duas listas de clientes
+        todas = set(antes) | {(v, c) for (_e, v, c) in novos}
+        saida = {}
+        for (v, ch) in sorted(todas):
+            velho = antes.get((v, ch))
+            novo = novos.get((empk, v, ch))
+            base = list((velho or {}).get("meses") or [0.0] * 12)
+            for k in range(ate):
+                if k in kmeses:                       # tem arquivo: reescreve
+                    base[k] = round((novo or {}).get("meses", [0.0] * 12)[k], 2)
+                # senao: mantem o que ja estava
+            item = {
+                "nome": (velho or novo or {}).get("nome", ""),
+                "cod": (velho or {}).get("cod", (novo or {}).get("cod", "")),
+                "meses": base,
+                "meses25": list((velho or {}).get("meses25") or [0.0] * 12),
+            }
+            if any(item["meses"]) or any(item["meses25"]):
+                saida.setdefault(v, []).append(item)
+        if saida:
+            novo_cd[empk] = saida
+        faltam = [MESES[k][:3] for k in range(ate) if k not in kmeses]
+        if faltam:
+            preservados.append("%s: %s" % (empk, ", ".join(faltam)))
+    D["clientes_detalhado"] = novo_cd
+    derivar(D, ate)
+    return preservados
+
+
+def derivar(D, ate):
+    """acomp_vendas e vendedores DERIVAM do clientes_detalhado.
+    Preserva `hist` e `obj` (2025 e objetivos nao sao reprocessados)."""
+    cd = D["clientes_detalhado"]
+    av = D.setdefault("acomp_vendas", {})
+    # zera so o `real` dos meses fechados; hist/obj ficam
+    for vend, meses in av.items():
+        for mk in list(meses):
+            for emp, d in meses[mk].items():
+                if isinstance(d, dict) and "real" in d:
+                    d["real"] = 0.0
+    for emp, vends in cd.items():
+        for vend, lista in vends.items():
+            for c in lista:
+                for k in range(ate):
+                    val = (c.get("meses") or [0] * 12)[k]
+                    if not val:
+                        continue
+                    mk = MES_JS[k]
+                    alvo = av.setdefault(vend, {}).setdefault(mk, {})
+                    reg = alvo.setdefault(emp, {"hist": 0.0, "obj": 0.0, "real": 0.0})
+                    reg["real"] = round(reg.get("real", 0.0) + val, 2)
+    # TOTAL por vendedor/mes
+    for vend, meses in av.items():
+        for mk, emps in meses.items():
+            t = {"hist": 0.0, "obj": 0.0, "real": 0.0}
+            for emp, d in emps.items():
+                if emp == "TOTAL" or not isinstance(d, dict):
+                    continue
+                for campo in ("hist", "obj", "real"):
+                    t[campo] = round(t[campo] + (d.get(campo) or 0), 2)
+            emps["TOTAL"] = t
+    # bloco `vendedores`: real acumulado; hist e obj preservados
+    vb = D.setdefault("vendedores", {})
+    for vend, meses in av.items():
+        soma = 0.0
+        for mk, emps in meses.items():
+            soma += (emps.get("TOTAL") or {}).get("real", 0.0)
+        reg = vb.setdefault(vend, {"hist": 0.0, "obj": 0.0, "real": 0.0})
+        reg["real"] = round(soma, 2)
 
 
 def main():
@@ -288,7 +415,36 @@ def main():
     if simular:
         print("\nSIMULACAO — nada foi gravado.")
         return 0
-    print("\n[gravacao ainda nao implementada — rode com --simular]")
+
+    h, ini, fim, _D2 = carregar()
+    preservados = gravar(D, acc, ate)
+    if preservados:
+        print("\nMESES PRESERVADOS (sem arquivo no Drive, mantido o publicado):")
+        for x in preservados:
+            print("   = %s" % x)
+
+    # verificacao: o total por vendedor tem de bater com o bloco `empresas`
+    cd = D["clientes_detalhado"]
+    emp_b = D["empresas"]
+    erro = False
+    for empk in sorted(cd):
+        s = sum(sum((c.get("meses") or [0] * 12)[:ate]) for v in cd[empk] for c in cd[empk][v])
+        t = sum((emp_b.get(empk, {}).get("real") or [0] * 12)[:ate])
+        if t and abs(s - t) > max(1.0, t * 0.005):
+            print("   ! %s: atribuido %s vs faturamento %s"
+                  % (empk, "{:,.2f}".format(s), "{:,.2f}".format(t)))
+            erro = True
+    if erro:
+        print("\nABORTADO — divergencia acima de 0,5%. Nada foi gravado.")
+        return 2
+
+    os.makedirs(os.path.join(PROJ, "_backups"), exist_ok=True)
+    bkp = os.path.join(PROJ, "_backups", "index.html.bak_vendedores_%s"
+                       % datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))
+    shutil.copy2(INDEX, bkp)
+    txt = json.dumps(D, ensure_ascii=False, separators=(",", ":"))
+    open(INDEX, "w", encoding="utf-8").write(h[:ini] + txt + h[fim:])
+    print("\ngravado. backup em _backups/%s" % os.path.basename(bkp))
     return 0
 
 
