@@ -139,9 +139,12 @@ def score_col(nome):
     return -1
 
 
-def achar_cabecalho(path, limite=8):
+def achar_cabecalho(path, limite=16):
     """acha a linha do cabecalho: a primeira cujas celulas rendem uma coluna
-    de valor valida e pelo menos 2 rotulos textuais"""
+    de valor valida e pelo menos 2 rotulos textuais.
+    Limite 16 (era 8): a KISABOR de junho/2026 traz um bloco de FILTROS no
+    topo (DATE, REGIONAL, RV, CNPJ...) e o cabecalho real so aparece na
+    linha 9. Com o limite antigo o arquivo era descartado."""
     try:
         cru = pd.read_excel(path, header=None, nrows=limite)
     except Exception:

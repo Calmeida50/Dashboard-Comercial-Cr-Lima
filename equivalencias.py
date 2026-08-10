@@ -87,6 +87,11 @@ APELIDOS = {
     # a AQUAFAST escreve por extenso; o cadastro tem a forma curta
     "UNIDASUL DISTRIBUIDORA DE ALIMENTOS S.A": "UNIDASUL DISTRIB ALIMENTICIA S/A",
     "UNIDASUL DISTRIBUIDORA DE ALIMENTOS": "UNIDASUL DISTRIB ALIMENTICIA S/A",
+    # KISABOR: o cadastro traz a CIDADE no fim do nome, o arquivo nao
+    "BIER VALE": "BIER VALE FARROUPILHA",
+    "BEIRA RIO LJ 386": "BEIRA RIO LJ 386 LAJEADO",
+    "BEIRA RIO LJ 389": "BEIRA RIO LJ 389 LAJEADO",
+    "REDE POLO VENANCIO": "REDE POLO VENANCIO VENANCIO AIRES",
 }
 
 
@@ -143,6 +148,11 @@ VENDEDOR = {
     # o arquivo as vezes traz 'CRISAN' e as vezes ja o nome completo — os dois
     # convergem para C&A, mas a regra de vendedor precisa cobrir o nome final
     ("KISABOR",    "CRISAN"): "SUELI",
+    # cadastro clientes_banco.json, mas ausentes do clientes_detalhado
+    ("KISABOR",    "BIER VALE FARROUPILHA"): "SUELI",
+    ("KISABOR",    "BEIRA RIO LJ 386 LAJEADO"): "MATHEUS",
+    ("KISABOR",    "BEIRA RIO LJ 389 LAJEADO"): "MATHEUS",
+    ("KISABOR",    "REDE POLO VENANCIO VENANCIO AIRES"): "MATHEUS",
     # ultimos 11 casos sem casamento no cadastro (revisao de 09/08/2026)
     ("PRUDENCE",   "PETINELI & PETINELI COMERCIO LTDA."): "GRAZI",
     ("PRUDENCE",   "PETINELI & PETINELI COMERCIO LTDA"): "GRAZI",
@@ -184,7 +194,9 @@ EMPRESAS_PENDENTES = set()
 
 # A KISABOR fecha a planilha com estatistica do Excel. 'VAREJO' e agrupamento.
 LIXO = {"SUM", "AVERAGE", "TOTAL", "COUNT", "SUBTOTAL", "MEDIA", "VAREJO",
-        "SOMA", "MAX", "MIN", "CONTAGEM", "NAN"}
+        "SOMA", "MAX", "MIN", "CONTAGEM", "NAN",
+        # a DEPIMIEL fecha com 'TOTAL GERAL:' (com dois-pontos) no campo cliente
+        "TOTAL GERAL", "TOTAL GERAL:", "TOTAIS", "RESUMO"}
 
 # --- 5. Colunas que ja trazem o vendedor na origem --------------------------
 # Tem prioridade sobre tudo: vem do sistema do fabricante.
