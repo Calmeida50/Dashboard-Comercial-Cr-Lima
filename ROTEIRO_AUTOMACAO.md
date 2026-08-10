@@ -1255,3 +1255,93 @@ O VAREJO deve ser **calculado**, nunca lido de uma fonte separada:
     VAREJO[mes] = soma(vendedores[mes]) - CRISTIANO[mes]
 
 Assim ele nunca mais diverge, e os problemas 1 e 2 desaparecem por construcao.
+
+---
+
+# REGRA DE CORTE: ANTES DE JUNHO E HISTORICO CONGELADO (09/08/2026)
+
+Explicado pelo Cristiano:
+
+> "Nos utilizamos uma planilha de excel para acompanhamento dos nossos
+> negocios, o nome desta planilha e **Planilha 2026**. Quando comecamos a
+> montar o dashboard, retiramos os historicos desta planilha e somente a
+> partir de **junho** que comecei a salvar no Drive os relatorios das
+> empresas."
+
+## A regra
+
+- **Janeiro a maio/2026: CONGELADO.** Veio da Planilha 2026. Nao reprocessar,
+  nao recalcular, nao sobrescrever. O Drive nao tem esses arquivos.
+- **Junho/2026 em diante: fonte e o DRIVE.** Tudo automatizado.
+
+## Comprovado nos arquivos do Drive
+
+    JAN   5 arquivos: AQUAFAST, CLESS, EVER GREEN, GRANADO, KISABOR
+    FEV   6 arquivos: (as mesmas 5)
+    MAR   6 arquivos: (as mesmas 5)
+    ABR   7 arquivos: (as mesmas 5)
+    MAI   6 arquivos: (as mesmas 5)
+    JUN  10 arquivos: + BELLIZ, DEPIMIEL, FIAT LUX, PAYOT, PRUDENCE
+    JUL   9 arquivos: (falta AQUAFAST)
+
+De jan a mai faltam 5 das 10 empresas — **BELLIZ, DEPIMIEL, FIAT LUX, PAYOT e
+PRUDENCE nem existem no Drive nesse periodo**.
+
+## O que isso corrige no diagnostico
+
+Os **R$ 11,7 milhoes "sem atribuicao"** que eu apurei NAO sao todos lacuna de
+cadastro. Boa parte e faturamento cujo ARQUIVO nao esta no Drive — o dado veio
+da Planilha 2026 e esta correto no dashboard.
+
+O `diagnostico_atribuicao.py` varreu jan-jul do Drive e comparou com o
+dashboard inteiro. **A comparacao so e valida de junho em diante.**
+Refazer o diagnostico restrito a jun-jul antes de qualquer conclusao.
+
+## Consequencia para o gravador
+
+O gravador dos blocos por vendedor (`clientes_detalhado`, `acomp_vendas`,
+`vendedores`, comissoes) deve:
+
+1. **PRESERVAR integralmente os meses de janeiro a maio** — indices 0 a 4 dos
+   arrays de 12 posicoes.
+2. **Reescrever apenas de junho em diante** (indice 5+).
+3. Abortar se algum mes congelado mudar — trava igual a dos outros coletores.
+
+Isso tambem vale para o `sincronizar.py`: nenhuma categoria deve reprocessar
+mes anterior a junho/2026.
+
+## Diagnostico REFEITO com o recorte correto (so JUNHO)
+
+Junho e o unico mes fechado com o Drive completo (10 empresas). Numeros:
+
+    CRISTIANO         6.514.706,10
+    demais (varejo)   2.728.896,63
+    soma              9.243.602,73
+    GERAL real        10.190.155,24
+    SEM ATRIBUICAO      946.552,51   (9,3%)
+
+**Nao os 17% que eu havia estimado** — aquela conta usava jan-jul, periodo em
+que o Drive nao tem 5 das 10 empresas.
+
+### A lacuna esta concentrada na AQUAFAST
+
+    AQUAFAST     82,8% sem atribuicao  (R$ 887.069 de R$ 1.071.721)
+    PRUDENCE     26,5%
+    GRANADO      24,0%
+    FIAT LUX     23,8%
+    BELLIZ        7,9%
+    PAYOT         3,1%
+
+A AQUAFAST sozinha responde por quase toda a diferenca — a carteira dela
+praticamente nao foi cadastrada.
+
+### Tres empresas com percentual NEGATIVO (detalhe soma MAIS que o faturamento)
+
+    EVER GREEN   -43,5%   (R$ 3.061.933 atribuido vs R$ 2.134.271 faturado)
+    CLESS        -24,0%
+    KISABOR       -4,6%
+
+Isso e impossivel se as duas fontes estiverem certas. Suspeita: dupla contagem
+de filial no `clientes_detalhado` (o mesmo cliente com varios codigos, ja
+identificado antes como "COOPERATIVA... / filiais"). Investigar antes do
+gravador — pode inflar a comissao de quem tem esses clientes.
