@@ -104,6 +104,10 @@ PREF = [
     (50,  ["VALOR DO PEDIDO"]),
     (45,  ["VALOR PRODUTOS"]),
     (40,  ["FATURAMENTO"]),
+    # 'Vlr.Titulo' — formato antigo da EVER GREEN (jan-abr/2026). A empresa
+    # quebra a NF por faixa de comissao, entao a mesma nota aparece em varias
+    # linhas e SOMAR e o correto (nao sao parcelas).
+    (15,  ["VLR TITULO", "VLR.TITULO", "VALOR TITULO"]),
     (35,  ["R$"]),          # KISABOR usa so 'R$' como cabecalho da coluna
     (30,  ["BRUTO"]),
     (20,  ["VALOR"]),
@@ -117,6 +121,12 @@ def score_col(nome):
     bruto = str(nome or "").strip().upper().replace(" ", "")
     if bruto.startswith("R$"):
         return 35
+    # 'Vlr.Titulo' e valor, mas TITULO esta no VETO (para barrar 'Numero do
+    # Titulo'). Excecao explicita, antes do veto: so quando vier com VLR/VALOR.
+    # Peso BAIXO (15): e o formato antigo da EVER GREEN, mas se a planilha
+    # tiver qualquer coluna de valor melhor (VALOR, LIQUIDO...), ela ganha.
+    if ("VLR" in n or "VALOR" in n) and "TITULO" in n:
+        return 15
     if not n:
         return -1
     for v in VETO:
@@ -191,6 +201,17 @@ def ler_arquivo(path):
             df = df[~fora]
     if df.empty:
         out["erro"] = "planilha so tinha linha de total"
+        return out
+
+    # REJEITA relatorio de COMISSAO disfarcado de faturamento.
+    # 'FATURAMENTO CLESS ABRIL 2026.xlsx' tem Dt Comissao, Vlr Base, %,
+    # Comissao — e comissao, nao faturamento. O nome engana. Sem esta barreira
+    # o coletor substituiria o faturamento do mes pelo valor da comissao.
+    cols_norm = [norm(c) for c in df.columns]
+    sinais = sum(1 for c in cols_norm
+                 if "COMISSAO" in c or "VLR BASE" in c or c == "%")
+    if sinais >= 2:
+        out["erro"] = "parece relatorio de COMISSAO, nao de faturamento"
         return out
 
     # coluna de valor: maior score; empate resolve pela mais a direita.
