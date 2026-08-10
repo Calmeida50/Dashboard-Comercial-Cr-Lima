@@ -1309,7 +1309,7 @@
   <!-- RANKING DE CLIENTES -->
   <div id="page-ranking-clientes" class="page">
     <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div><h1>Ranking de Clientes</h1><p id="ranking-clientes-sub" style="color:var(--muted);font-size:13px">Volume total por cliente — <strong>Janeiro a Junho 2026</strong> (faturamento confirmado) — clique para ver o mix por empresa</p></div>
+      <div><h1>Ranking de Clientes</h1><p id="ranking-clientes-sub" style="color:var(--muted);font-size:13px">Volume total por cliente (faturamento confirmado) — clique para ver o mix por empresa</p></div>
       <button class="btn-export" onclick="exportarRankingClientes()">⬇ Excel</button>
     </div>
     <!-- Filtro por Vendedor -->
@@ -6656,7 +6656,7 @@ function countClientesUnicos() {
   // Conta clientes únicos em todas as empresas, deduplicados por nome normalizado
   const cd = DATA.clientes_detalhado || {};
   const currentM = new Date().getMonth();
-  const cols = Math.min(currentM + 1, 6);
+  const cols = _mesesFechados();
   const nomes = new Set();
   for (const vendedores of Object.values(cd)) {
     for (const lista of Object.values(vendedores)) {
@@ -6670,11 +6670,22 @@ function countClientesUnicos() {
   return nomes.size;
 }
 
+
+// ultimo mes FECHADO: derivado do bloco `empresas`, nao um numero fixo.
+// Estava travado em 6 (junho) em 2 lugares, entao julho nunca aparecia no
+// Ranking de Clientes mesmo com o dado gravado.
+function _mesesFechados() {
+  const g = ((DATA.empresas || {}).GERAL || {}).real || [];
+  let n = 0;
+  for (let i = 0; i < g.length; i++) if ((g[i] || 0) > 0) n = i + 1;
+  return n || 6;
+}
+
 function buildClientesRanking() {
   // Usa clientes_detalhado (fonte mais completa, inclui todos os clientes mapeados por empresa/vendedor)
   const cd = DATA.clientes_detalhado || {};
   const currentM = new Date().getMonth();
-  const cols = Math.min(currentM + 1, 6);
+  const cols = _mesesFechados();
   const map = {}; // normalizedName → {nome, vendedor, real, empresas:{emp:real}}
   for (const [emp, vendedores] of Object.entries(cd)) {
     for (const [vend, lista] of Object.entries(vendedores)) {
@@ -6732,7 +6743,7 @@ function renderRankingClientes() {
   }
   const totalReal = lista.reduce((s,c) => s + c.real, 0);
   const currentMonthIdx = new Date().getMonth();
-  const cols = Math.min(currentMonthIdx + 1, 6);
+  const cols = _mesesFechados();
 
   // Título com período
   const anoAtual = new Date().getFullYear();
@@ -6744,7 +6755,7 @@ function renderRankingClientes() {
 
   // Subtitle com período completo
   const subEl = document.getElementById('ranking-clientes-sub');
-  if (subEl) subEl.innerHTML = 'Volume total por cliente — <strong>Janeiro a Junho 2026</strong> (faturamento confirmado) — clique para ver o mix por empresa';
+  if (subEl) subEl.innerHTML = 'Volume total por cliente — <strong>Janeiro a ' + MESES_FULL[_mesesFechados()-1] + ' ' + anoAtual + '</strong> (faturamento confirmado) — clique para ver o mix por empresa';
 
   const tbody = document.getElementById('ranking-clientes-tbody');
   tbody.innerHTML = '';
@@ -10811,7 +10822,7 @@ function abrirVgClientes(empresa, vendedor) {
   const cliList = ((DATA.clientes_detalhado||{})[empresa]||{})[vendedor]||[];
   const MS = ['Jan','Fev','Mar','Abr','Mai','Jun'];
   const currentM = new Date().getMonth();
-  const cols = Math.min(currentM + 1, 6);
+  const cols = _mesesFechados();
 
   const sorted = [...cliList].map(c=>({...c,ytd:(c.meses||[]).slice(0,cols).reduce((a,b)=>a+b,0),ytd25:(c.meses25||[]).slice(0,cols).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.ytd-a.ytd);
   const ativos = sorted.filter(c=>c.ytd>0);
@@ -10921,7 +10932,7 @@ function exportarVgClientes(empresa, vendedor) {
   const cliList = ((DATA.clientes_detalhado||{})[empresa]||{})[vendedor]||[];
   const MS_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho'];
   const currentM = new Date().getMonth();
-  const cols = Math.min(currentM + 1, 6);
+  const cols = _mesesFechados();
   const sorted = [...cliList].map(c=>({...c,ytd:(c.meses||[]).slice(0,cols).reduce((a,b)=>a+b,0)})).sort((a,b)=>b.ytd-a.ytd);
   const rows = [['Cliente',...MS_FULL.slice(0,cols),'Total YTD']];
   sorted.forEach(c => rows.push([c.nome,...Array.from({length:cols},(_,i)=>(c.meses||[])[i]||0),c.ytd]));
