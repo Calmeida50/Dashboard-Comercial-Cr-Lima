@@ -1420,3 +1420,49 @@ mai. Um cliente desse porte nao passa 3 meses sem comprar.
 mostram numeros inflados. O gravador, ao reconstruir junho a partir do
 arquivo, vai CORRIGIR isso — e os valores por vendedor vao MUDAR (para menos)
 em junho. Avisar o Cristiano antes de gravar.
+
+## CORRECAO do diagnostico da EVER GREEN (09/08/2026, mesmo dia)
+
+O que escrevi acima sobre "nao e possivel reconstruir jan-mai" e sobre
+"R$ 4,4 milhoes faltando" **estava ERRADO**. Registro para nao induzir erro
+depois.
+
+### 1. A nota repetida NAO e parcela
+
+Cristiano: *"nao sao parcelas. A empresa quebra a nota por comissao paga. Tem
+itens com comissoes diferentes."* Ele padronizou o controle em 3% de comissao.
+
+Portanto **SOMAR as linhas da mesma nota e o correto** — cada linha e uma
+parcela real do valor faturado, separada por faixa de comissao.
+
+### 2. A divergencia era TOTALIZADOR no arquivo
+
+Dois relatorios (FEV e MAR) tinham uma linha de totalizacao no fim — sem nota,
+sem cliente, sem data — que dobrava a soma. O Cristiano removeu.
+
+O coletor `coletar_faturamento.py` **ja descartava essa linha** (colunas
+descritivas vazias). Foi so a minha analise avulsa, feita sem o filtro, que
+somou tudo e gerou o alarme falso.
+
+### 3. Resultado apos a correcao: 7 de 7 meses conferem EXATO
+
+    JAN  2.897.839,91   FEV  1.985.488,88   MAR  2.410.539,27
+    ABR  1.710.556,86   MAI  1.929.023,72   JUN  2.134.270,52
+    JUL  2.237.606,15
+
+Todos batendo com o dashboard, diferenca zero. **A EVER GREEN esta integra e
+pode ser lida do Drive em qualquer mes** — inclusive jan-mai, ao contrario do
+que eu havia concluido.
+
+### 4. A data americana continua sem ser problema
+
+O Excel guarda data real; so a exibicao e MM/DD/AAAA.
+
+### O que permanece valido
+
+- O `clientes_detalhado` da EVER GREEN em JUNHO ainda soma R$ 3,06 mi contra
+  R$ 2,13 mi do bloco `empresas`. **Esse problema e real e independe do
+  totalizador** — a SAWE aparece com R$ 156 mil sendo que faturou R$ 29 mil.
+- A regra de congelar jan-mai continua valendo para as OUTRAS empresas, que
+  de fato nao tem arquivo no Drive nesse periodo. A EVER GREEN e excecao:
+  ela tem tudo, desde jan/2025.
