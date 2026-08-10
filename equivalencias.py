@@ -82,6 +82,8 @@ APELIDOS = {
     "MADREPEROLA ACESSORIOS E MAQUIAGENS": "RAFAELA FURINI",
     "20.808.832 JULIARA FERREIRA DA SILVA": "JULIARA FERREIRA DA SILVA 01507069014",
     "COSMETICOS ANA LIDIA": "ANA LIDIA",
+    # o arquivo traz 'LTDA' e o cadastro nao — sem isso fica sem vendedor
+    "LUIS CLAUDIOMIR DE AVILA & CIA LTDA": "LUIS CLAUDIOMIR DE AVILA & CIA",
 }
 
 
@@ -135,6 +137,9 @@ VENDEDOR = {
     ("BELLIZ",     "ANA LIDIA"): "CESAR",
     ("GRANADO",    "UNIMED SERRA GAUCHA"): "SUELI",
     ("KISABOR",    "C&A COMERCIO DE ALIMENTOS LTDA"): "SUELI",
+    # o arquivo as vezes traz 'CRISAN' e as vezes ja o nome completo — os dois
+    # convergem para C&A, mas a regra de vendedor precisa cobrir o nome final
+    ("KISABOR",    "CRISAN"): "SUELI",
     # ultimos 11 casos sem casamento no cadastro (revisao de 09/08/2026)
     ("PRUDENCE",   "PETINELI & PETINELI COMERCIO LTDA."): "GRAZI",
     ("PRUDENCE",   "PETINELI & PETINELI COMERCIO LTDA"): "GRAZI",
@@ -156,6 +161,8 @@ VENDEDOR_GERAL = {
     "IRMAOS ANDREAZZA LTDA": "ÂNGELA",  # O Vantajao
     # DARTORA = SGM (mesmo cliente). Vendedor: CRISTIANO, em qualquer empresa.
     "SGM INDUSTRIA DE COSMETICOS LTDA": "CRISTIANO",
+    # aparece em GRANADO, KISABOR e FIAT LUX, sempre com o MATHEUS
+    "LUIS CLAUDIOMIR DE AVILA & CIA": "MATHEUS",
 }
 
 # --- 4. LIXO: rotulos que NAO sao cliente -----------------------------------
@@ -204,6 +211,9 @@ def canonico(nome):
     s = "".join(c for c in s if not unicodedata.combining(c)).upper().strip()
     s = re.sub(r"^\d+\s*[-–]\s*", "", s)
     s = re.sub(r"\s*[-–]\s*\d+\s*$", "", s)
+    # codigo entre parenteses no fim: 'LUIS CLAUDIOMIR ... (005853000102)'
+    # sem isso o cliente parece novo e fica sem vendedor
+    s = re.sub(r"\s*\([\d\s./-]+\)\s*$", "", s)
     s = re.sub(r"\s+", " ", s).strip()
     if s in LIXO:
         return None

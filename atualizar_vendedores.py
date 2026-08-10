@@ -423,17 +423,48 @@ def main():
         for x in preservados:
             print("   = %s" % x)
 
-    # verificacao: o total por vendedor tem de bater com o bloco `empresas`
+    # verificacao: o total por vendedor tem de bater com o bloco `empresas`.
+    # SO no periodo reprocessado (junho em diante). Conferir jan-jul acusaria
+    # divergencia sempre, porque jan-mai foi PRESERVADO com a atribuicao
+    # antiga, que e incompleta — e nao e para mexer nela.
+    # ATENCAO: nao usar o nome `ini` aqui — ele ja guarda a posicao do
+    # DADOS_EMBEDDED no HTML e e usado em h[:ini] na gravacao.
     cd = D["clientes_detalhado"]
     emp_b = D["empresas"]
     erro = False
+    k0 = corte.IDX_CORTE
+    com_arq = meses_com_arquivo(ate)
     for empk in sorted(cd):
-        s = sum(sum((c.get("meses") or [0] * 12)[:ate]) for v in cd[empk] for c in cd[empk][v])
-        t = sum((emp_b.get(empk, {}).get("real") or [0] * 12)[:ate])
+        # so confere os meses que ESTE gravador realmente reprocessou.
+        # Mes preservado (sem arquivo no Drive, ex: KISABOR junho em PDF) pode
+        # ter divergencia herdada do dashboard — nao e para abortar por isso,
+        # porque reprocessar nao a resolveria.
+        ks = sorted(com_arq.get(empk, set()))
+        ks = [k for k in ks if k0 <= k < ate]
+        if not ks:
+            continue
+        s = sum(sum((c.get("meses") or [0] * 12)[k] for k in ks)
+                for v in cd[empk] for c in cd[empk][v])
+        t = sum((emp_b.get(empk, {}).get("real") or [0] * 12)[k] for k in ks)
         if t and abs(s - t) > max(1.0, t * 0.005):
-            print("   ! %s: atribuido %s vs faturamento %s"
-                  % (empk, "{:,.2f}".format(s), "{:,.2f}".format(t)))
+            print("   ! %s: atribuido %s vs faturamento %s  (meses %s)"
+                  % (empk, "{:,.2f}".format(s), "{:,.2f}".format(t),
+                     ", ".join(MESES[k][:3] for k in ks)))
             erro = True
+    # aviso (nao bloqueia) para os meses preservados que ja vinham divergentes
+    for empk in sorted(cd):
+        ks = sorted(com_arq.get(empk, set()))
+        pres = [k for k in range(k0, ate) if k not in ks]
+        if not pres:
+            continue
+        s = sum(sum((c.get("meses") or [0] * 12)[k] for k in pres)
+                for v in cd[empk] for c in cd[empk][v])
+        t = sum((emp_b.get(empk, {}).get("real") or [0] * 12)[k] for k in pres)
+        if t and abs(s - t) > max(1.0, t * 0.005):
+            print("   ~ %s: %s preservado(s) com divergencia herdada "
+                  "(%s vs %s) — arquivo nao esta no Drive"
+                  % (empk, ", ".join(MESES[k][:3] for k in pres),
+                     "{:,.2f}".format(s), "{:,.2f}".format(t)))
     if erro:
         print("\nABORTADO — divergencia acima de 0,5%. Nada foi gravado.")
         return 2
