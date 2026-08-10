@@ -32,6 +32,13 @@ import corte
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
 
+# CORTE PROPRIO DAS COMISSOES: elas sao PAGAS, entao o congelamento vai um mes
+# alem do corte geral. O Cristiano confirmou em 10/08/2026 que junho ja foi
+# pago — recalcular sobrescreveria valor ja acertado com a equipe.
+#   faturamento/vendedores: recalcula de JUNHO em diante  (corte.IDX_CORTE = 5)
+#   comissoes:              recalcula de JULHO em diante  (IDX_COMISSAO = 6)
+IDX_COMISSAO = 6
+
 MESES = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO",
          "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"]
 
@@ -74,11 +81,11 @@ def main():
     ate = 0
     for x in (D.get("empresas", {}).get("GERAL", {}).get("real") or []):
         ate += 1 if x else 0
-    ate = max(ate, corte.IDX_CORTE + 1)
+    ate = max(ate, IDX_COMISSAO + 1)
 
     print("=" * 72)
     print("  COMISSOES — recalculo de %s ate %s%s"
-          % (MESES[corte.IDX_CORTE][:3], MESES[ate - 1][:3],
+          % (MESES[IDX_COMISSAO][:3], MESES[ate - 1][:3],
              "  [SIMULACAO]" if simular else ""))
     print("=" * 72)
 
@@ -99,7 +106,7 @@ def main():
                         it.get("mes_pago", ""))
 
     mudou = []
-    for k in range(corte.IDX_CORTE, ate):
+    for k in range(IDX_COMISSAO, ate):
         mk = MESES[k]
         # zera o mes nos blocos que vamos reescrever
         acum_v = {}
