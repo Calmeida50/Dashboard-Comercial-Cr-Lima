@@ -84,6 +84,9 @@ APELIDOS = {
     "COSMETICOS ANA LIDIA": "ANA LIDIA",
     # o arquivo traz 'LTDA' e o cadastro nao — sem isso fica sem vendedor
     "LUIS CLAUDIOMIR DE AVILA & CIA LTDA": "LUIS CLAUDIOMIR DE AVILA & CIA",
+    # a AQUAFAST escreve por extenso; o cadastro tem a forma curta
+    "UNIDASUL DISTRIBUIDORA DE ALIMENTOS S.A": "UNIDASUL DISTRIB ALIMENTICIA S/A",
+    "UNIDASUL DISTRIBUIDORA DE ALIMENTOS": "UNIDASUL DISTRIB ALIMENTICIA S/A",
 }
 
 
@@ -166,17 +169,18 @@ VENDEDOR_GERAL = {
     # as duas razoes sociais (DISTRIBUIDORA e MEDICAMENTOS) sao da HEIDI
     "GAUCHAFARMA DISTRIBUIDORA LTDA": "HEIDI",
     "GAUCHAFARMA MEDICAMENTOS LTDA": "HEIDI",
+    # cadastro: SUELI em BELLIZ, EVER GREEN e GRANADO
+    "COOP AGRICOLA CAIRU LTDA": "SUELI",
 }
 
 # --- 4. LIXO: rotulos que NAO sao cliente -----------------------------------
-# Empresas cuja carteira ainda nao esta cadastrada: ficam FORA do reprocessamento
-# por vendedor e mantem o que ja esta publicado. Assim as demais podem ser
-# atualizadas sem esperar por elas.
+# Empresas cuja carteira ainda nao esta cadastrada: ficam FORA do
+# reprocessamento por vendedor e mantem o que ja esta publicado.
 #
-# AQUAFAST (10/08/2026): 82,8% da carteira sem vendedor atribuido. O Cristiano
-# vai salvar o relatorio no Drive; quando entrar, basta remover daqui e ela
-# volta ao ciclo automatico.
-EMPRESAS_PENDENTES = {"AQUAFAST"}
+# AQUAFAST saiu daqui em 10/08/2026: o relatorio de julho entrou no Drive e a
+# carteira dela fecha 100% em junho e julho (o unico faltante era a UNIDASUL,
+# que so estava escrita por extenso — resolvido nos APELIDOS).
+EMPRESAS_PENDENTES = set()
 
 # A KISABOR fecha a planilha com estatistica do Excel. 'VAREJO' e agrupamento.
 LIXO = {"SUM", "AVERAGE", "TOTAL", "COUNT", "SUBTOTAL", "MEDIA", "VAREJO",
