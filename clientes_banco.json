@@ -1,0 +1,6521 @@
+{
+  "20.808.832 JULIARA FERREIRA DA SILVA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "29.387.908 CARLA TESTA REBELATTO": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "29387908 CARLA TESTA REBELATTO": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "2A FARMACEUTICA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "57.585.403 FERNANDA DE ANDRADE": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "A LORENA DE OLIVEIRA AMAM BIJUTERIAS": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ABREU PEREIRA E CIA LTDA ME": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ADELAR B GONCALVES & CIA LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ADELAR B GONCALVES E CIA LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "AGA DA TUPY COM. PROD FARMACEUTICOS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "AGAFARMA": {
+    "vendedor_correto": "HEIDI",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "HEIDI"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Heidi"
+  },
+  "AGAFARMA HOSPITAL VIDA E SAUDE LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "AIME COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ALCEU KLEINKAUF & CIA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ALCEU KLEINKAUF E CIA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ALCEU KLEINKAUF E CIALTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ALENCAR NEGRINI SIQUEIRA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ALENCAR NEGRINI SIQUEIRA ME": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "DEPIMIEL",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ALEXANDRE ACKERMANN E CIA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ALINE VOLOSKI BEAUTY STORE LTDA": {
+    "vendedor_correto": [
+      "B2B"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "B2B"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "AMMO COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ANA LIDIA JANTSCH": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ANDREA GARCIA R.BERTOLDO": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ANDREAZZA": {
+    "vendedor_correto": "ÂNGELA",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "ÂNGELA"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Angela"
+  },
+  "ARMAZEM DAS UTILIDADES LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "AROMAS E POCOES COM DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ASSOCIAÇAO CULTURAL E BENEFICIENTE ILE MULHER": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ASUN COM DE GENEROS ALIMENTICIOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ASUN COMERCIO DE GENEROS ALIMENTICIOS EIRELI": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ASUN COMERCIO DE GENEROS ALIMENTICIOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "DEPIMIEL",
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ATACADAO S.A.": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ATACADAO S/A": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ATACADO IRMAOS TT LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ATACADO VANTAJAO": {
+    "vendedor_correto": [
+      "JEFERSON"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "JEFERSON"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ATACADO VANTAJÃO": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ATACADÃO S/A": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "AVELLANEDAAVELLANEDA LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "AZZOLINI DISTRIBUIDORA DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BACCARIN E IANISKI LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BAH GURIA COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BAH, GURIA! COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BANDEIRA & TOMELERO PRODUTOS FARMACEUTICOS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BEIRA RIO LJ 386 LAJEADO": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BEIRA RIO LJ 389 LAJEADO": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BELEZA CONSULTORIA, SALAO E BARB LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BELEZA CONSULTORIA, SALAO E BARBEARIA LT": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BELLER COMERCIO DE PAPEIS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BIER VALE FARROUPILHA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BIO SUL COM PROD AGROPET IMP E EXP LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BONNO FREE SHOP LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BRAIR (LJ 160) CD": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BRASAO SUPERMERCADOS S/A": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BRASIL FREE SHOP COM VAREJISTA DE MERCADORIAS LTDA": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BRS SP SUPRIMENTOS CORPORATIVOS S/A": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BS FARMACIAS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "DEPIMIEL"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "BUGS E MARTINS LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "C & A COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "C&A COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO",
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CALIONI BAVARESCO CIA LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CALIZA SUPERMERCADO LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CANELA COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CARLOS ALBERTO DE SOUZA BUCKER": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CARLOTA LAJEADO COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CARLOTA TEUTONIA COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CASA BEAUTY COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CASA BEAUTY COSMETICOS LTDA ME": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CASA DE CARNES MOACIR LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CASACLARA ARTIGOS DE CAMA E MESA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CAYE E FILHOS COMERCIO ATACADISTA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CELEIRO DOS COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CENTRAL BELA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CENTRAL FARMACIA CAXIAS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CENTRAL GAUCHA DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CEREALISTA GIRUA LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CERVOSUL": {
+    "vendedor_correto": "HEIDI",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "HEIDI"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Heidi"
+  },
+  "CERVOSUL DISTRIB DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CERVOSUL DISTRIBUIDORA DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "EVER GREEN",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CIA. ZAFFARI COMERCIO E INDUSTRIA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CLINICA REBELATTO": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMERCIAL MAGNABOSCO LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMERCIAL MELATTI LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMERCIAL ZAFFARI": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMERCIAL ZAFFARI LTDA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "DEPIMIEL",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMERCIO DE ALIMENTOS ANSOLIN LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "BOTÂNICA",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMERCIO DE ALIMENTOS LOUZADA LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMERCIO DE COSMETICOS CAXIENSE LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMERCIO DE MEDICAMENTOS BRAIR LTDA": {
+    "vendedor_correto": "CRISTIANO",
+    "empresas": [
+      "BELLIZ",
+      "GRANADO",
+      "PAYOT",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "GRAZI"
+    ],
+    "tipo": "complexo",
+    "obs": "Belliz, Granado, Payot somente Cristiano. Linha de Ethical da Prudence Grazi. Vou sinalizar na planilha de faturamento quando for da Grazi",
+    "por_empresa": {
+      "BELLIZ": "CRISTIANO",
+      "GRANADO": "CRISTIANO",
+      "PAYOT": "CRISTIANO",
+      "PRUDENCE": "GRAZI"
+    }
+  },
+  "COMERCIO DE MEDICAMENTOS BRAIR LTDA ( Farmacias Sao Joao )": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMPANHIA APOLO DE SUPERMERCADOS": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMPANHIA ZAFFARI COM E IND": {
+    "vendedor_correto": "HEIDI",
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "HEIDI"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Heidi"
+  },
+  "COMPANHIA ZAFFARI COMERCIO E INDUSTRIA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COMPREMED MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CONEXAO DA BEL C E DISTRIBUIDORA LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOP AGRICOLA CAIRU LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "EVER GREEN",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOP AGRICOLA MISTA RIO BRANCO LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOP.TRIT.SEPEENSE LTDA": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOPERATIVA AGRICOLA": {
+    "vendedor_correto": "SUELI",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "SUELI"
+    ],
+    "tipo": "simples",
+    "obs": "Somente sueli"
+  },
+  "COOPERATIVA AGRICOLA CAIRU LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOPERATIVA AGRICOLA MIXTA SAO ROQUE LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOPERATIVA AGROINDUSTRIAL ALFA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOPERATIVA DALIA ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOPERATIVA TRITICOLA REGIONAL SAOLUIZEN": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COOPERATIVA TRITICOLA SARANDI LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COPROBEL": {
+    "vendedor_correto": "HEIDI / MATHEUS / SUELI",
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI",
+      "MATHEUS",
+      "SUELI"
+    ],
+    "tipo": "ok",
+    "obs": "ok"
+  },
+  "COSMETICOS CARAZINHO LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COSMETICOS SANTAMARIENSE LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COTRIJAL COOPERATIVA AGROPECUARIA E INDUSTRIAL": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "COTRIPAL AGROPECUARIA COOPERATIVA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "EVER GREEN",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CRESTANI & FILHOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CRISAN ANTONIO BROIL CAXIAS DO SUL": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CRISAN BELA VISTA CAXIAS DO SUL": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CRISAN CHARQUEADAS CAXIAS DO SUL": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CRISAN ESPLANADA CAXIAS DO SUL": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CRISAN INTERLAGOS CAXIAS DO SUL": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "CRISTO REI ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "D  D COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "D & D COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "D & G COMERCIO DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DAMO E TOFOLO DROGARIA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DARIO NEVES & CIA LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "DEPIMIEL",
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DARIO NEVES CIA.LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DEITOS & DEITOS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DESKART SUL": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DI HELLEN INDUSTRIA DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DIBS DISTRIBUIDORA DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DIMAR LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DIMED S A DISTRIBUIDORA DE MEDICAMENTOS": {
+    "vendedor_correto": "CRISTIANO / GRAZI",
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "GRAZI"
+    ],
+    "tipo": "complexo",
+    "obs": "Graze apenas a linha Ethical - vou sinalizar na planilha quando  for da Grazi",
+    "por_empresa": {
+      "GRANADO": "CRISTIANO",
+      "PRUDENCE": "GRAZI"
+    }
+  },
+  "DIMED S/A  DISTRIBUIDORA DE MEDICAMENTOS": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DIMED S/A - DISTRIBUIDORA DE MEDICAMENTOS": {
+    "vendedor_correto": "CRISTIANO / GRAZI",
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "GRAZI"
+    ],
+    "tipo": "complexo",
+    "obs": "Graze apenas a linha Ethical - vou sinalizar na planilha quando  for da Grazi",
+    "por_empresa": {
+      "GRANADO": "CRISTIANO",
+      "PRUDENCE": "GRAZI"
+    }
+  },
+  "DIMED S/A DISTRIB DE MEDICAMENTOS": {
+    "vendedor_correto": "CRISTIANO",
+    "empresas": [
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "GRAZI"
+    ],
+    "tipo": "complexo",
+    "obs": "Granado somente Cristiano, Graze apenas a linha Ethical - vou sinalizar na planilha quando  for da Grazi",
+    "por_empresa": {
+      "GRANADO": "CRISTIANO",
+      "PRUDENCE": "GRAZI"
+    }
+  },
+  "DIMEOESTE COMERCIO DE PRODUTOS FARMACEUT": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DIMEOESTE COMERCIO DE PRODUTOS FARMACEUTICOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DIMEOESTE COMERCIO DE PRODUTOS FARMACEUTICOS LTDA EPP": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DINES DITRIBUIDORA E COMERCIO LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DISCAPIL DISTRIBUIDORA CAXIENSE DE PILHAS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DISTRIBUIDORA DADO LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DISTRIBUIDORA DE ALIMENTOS BEIRA RIO LAJ 386": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DISTRIBUIDORA DE ALIMENTOS BEIRA RIO LAJ 389": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DKCA COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DKIG COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DKNH COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DKPA COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DKSSC COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DKTR COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DORNELLES E CIA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DROG E FARMA CIPOLATTO ROCHA EIRELI EPP": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DROG E FARMA CIPOLATTO ROCHA EIRELI EPP (B2B)": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DROGARIA E FARMACIA DE MANIPULACAO GLICOFARMA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DROGARIA LVD LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DROGARIA PRATA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DROGARIA RECK & SGANDERLA LTDA.": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DROGASUL DISTRIBUIDORA DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DUTRA E DUTRA COM DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "DUTY FREE SHOP TM IMPORTACAO E EXPORTACAO LTDA": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "E A FRIEDRICH LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "E. A. FRIEDRICH LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "EICKHOFF & CIA LTDA (B2B)": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "EL RINCON DEL PELUQUERO CHUI LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ELIA HOLLMANN & CIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ELIA HOLLMANN & CIA LTDA (2A FARMACEUTICA LTDA)": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ELIPLAST EMBALAGENS PLASTICAS LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ELIZANGELA DOS SANTOS PINTO": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ELYSANTOS COMERCIO DE COSMETICOS EIRELI": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "EMPORIO MINUANO SAO JOSE LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ENDERLE & MOURA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ESSENCIAL COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ESSENZIALE COM DE PRES E PROD DE BELEZA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ESTEFANI GAMBIN": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "EUPHORIA COM. PERF. E SERV BELEZA EIRELI": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FABESUL DISTRIBUIDORA LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FABIA RUTE KUHN WEBER": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FABIA RUTE KUHN WEBER LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FABIANE AMELIA MARTINELI 07672752928": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FAELA DISTRIBUIDORA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARDIN MULLER LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARM INHACOR M.V.C COM DE MEDICAM LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA BRASIL LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA CASAGRANDE LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA CENTRAL LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA CHUI LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA CONFIANÇA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA CONFIAN": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA DE MANIPULACAO SCHARDONG": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA DO IPAM LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA DO PEDRINHO LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA DOIS IRMAOS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA E DROGARIA SOMENSI LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA ELDORADO LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA ERECHIM": {
+    "vendedor_correto": "MATHEUS",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "MATHEUS"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Matheus"
+  },
+  "FARMACIA FARMACENTRO LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA GERAL LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA INHACOR M V C COMERCIAL DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA INMVCCDE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA MARIN LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA MARTINI E OZELAME LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA PAGANI LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA SORRISO LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIA VIDORI LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIAL ELDORADO LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIAS ASSOCIADAS DE CRISSIUMAL LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMACIAS SAO RAFAEL LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FARMAMELZ COMERCIO DE PRODUTOS FARMACEUTICOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FASCINACAO PRESENTES E COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FASCINACAO PRESENTES LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FELIPE GERMANO DA ROCHA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FERNANDA CARMEN DIETER": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FERNANDA DE ANDRADE": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FERNANDES E SILVA COM. DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FERNANDO PEDRO SANDRI": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FISIO REFLEXO & SAUDE LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FORT ATACADISTA": {
+    "vendedor_correto": "EDIMAR",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "EDIMAR"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Edimar"
+  },
+  "FRANCK F. MULLER SUPERMERCADO EIRELI": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "FVK ESCOVAS INTELIGENTES LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "G TONIETO COMERCIO ATACADISTA E VAREJISTA DE ALIM. LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GABRIELA DE SOUZA COSMETERIA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GAIA COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GAUCHAFARMA DISTRIBUIDORA LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GAUCHAFARMA MEDICAMENTOS LTDA": {
+    "vendedor_correto": "HEIDI",
+    "empresas": [
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "GRAZI",
+      "HEIDI"
+    ],
+    "tipo": "complexo",
+    "obs": "Somente Heidi"
+  },
+  "GENIAL PRODUTOS": {
+    "vendedor_correto": "MATHEUS",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "MATHEUS"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Matheus"
+  },
+  "GENIAL PRODUTOS PARA LIMPEZA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GILMAR MORAES ANTUNES COSMETICOS (Antigo: LUMAR)": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GILTON BORGES DE PINHO": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GILTON BORGES DE PINHO & CIA LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GILTON BORGES DE PINHO E CIA LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GILTON BORGES DOS SANTOS": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GLOSS COMERCIO DE COS E ACESSORIOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GLOSS COMERCIO DE COSMETICOS E ACESSORIOS EIRELI": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GRAZZIOTIN S A": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GUARAPARI COM DE GENEROS ALIMENT LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GUARAPARI COMERCIO DE GENEROS ALIMENTICIOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GUARAPARI COMERCIO DE GENEROS ALIMENTICIOS LTDA.": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "GUIMARAES E VARGAS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "H D DISTRIBUIDORA DE PRODUTOS HIGIENICOS": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HAMAMELIS FARMACIA DE MANIPULACAO LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HAODAY BRASIL LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HELANNA COMERCIO": {
+    "vendedor_correto": "MATHEUS",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "MATHEUS"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Matheus"
+  },
+  "HELANNA COMERCIO ATACADISTA DE PRODUTOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HILMI ABDULLAH CIA.LTDA": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HIMALAIA COM.DE PROD.ALIMENTAR": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HOSPITAL BENEFICENTE SAO JOAO BOSCO": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HOSPITAL SÃO JOÃO BOSCO": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HR COMERCIO DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "HUANE SOL COMÉRCIO ATACADISTA E VAREJISTA DE PRESENTES LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ICONE COMERCIAL LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "DEPIMIEL"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IMEC": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IMEC RS LAJEADO": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IMPERIAL SUPERMERCADOS": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IMPERIAL SUPERMERCADOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IMPORTADORA BAGE": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IMPORTADORA BAGE S/A": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IMPORTADORA E DISTRIBUIDORA DE ALIMENTOS REDE POLO VENÂNCIO": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IMPORTADORA E EXPORTADORA DE CEREAIS S/A": {
+    "vendedor_correto": "CRISTIANO / MATHEUS",
+    "empresas": [
+      "BELLIZ",
+      "DEPIMIEL",
+      "FIAT LUX",
+      "GRANADO",
+      "KISABOR",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "MATHEUS"
+    ],
+    "tipo": "complexo",
+    "obs": "Belliz, Fiat Lux e Kisabor Matheus - Prudence, Granado, Ever Green e Depimiel, cristiano",
+    "por_empresa": {
+      "BELLIZ": "MATHEUS",
+      "FIAT LUX": "MATHEUS",
+      "KISABOR": "MATHEUS",
+      "PRUDENCE": "CRISTIANO",
+      "GRANADO": "CRISTIANO",
+      "EVER GREEN": "CRISTIANO",
+      "DEPIMIEL": "CRISTIANO"
+    }
+  },
+  "IMPORTADORA E EXPORTADORA DE CEREAIS SA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "DEPIMIEL",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IRMAOS  ANDREAZZA": {
+    "vendedor_correto": "ÂNGELA",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "ÂNGELA"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Angela"
+  },
+  "IRMAOS ANDREAZZA": {
+    "vendedor_correto": "ÂNGELA",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "ÂNGELA"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Angela"
+  },
+  "IRMAOS ANDREAZZA LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "EVER GREEN",
+      "GRANADO",
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IRMAOS BERTI LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IRMAOS JAESCHKE & CIA LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IRMAOS JAESCHKE E CIA LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "IRMAOS ZAT LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ISAAC E MIGNON LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "J A R FARMACIAS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "JACIR WELTER": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "JAVIL COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "JAVIL IND COM DE CONFECCOES E COSM LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "JEAN CARLOS TRUCULO": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "JOSSANA RAQUEL LAUXEN PEIXOTO 97381497034": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "JULIA COMERCIO DE PRESENTES": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "K K COM.IMPORTACAO E EXPORTACAO LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "K K COMERCIO IMPORTACAO E EXPORTACAO LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "KELLY PEREIRA BERNARDES": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "KI  BELEZA COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "KI - BELEZA COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "KI BELEZA COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "KK COMERCIO IMPORTACAO E EXPORTACAO LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "KROLOW": {
+    "vendedor_correto": "THIELIN",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "THIELIN"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Thielin"
+  },
+  "L ZAN CIA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "L. J. KESSLER COMERCIO E REPRE": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "L. J. KESSLER COMERCIO E REPRES. LTDA ME": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "L. T. BORBA OLIVEIRA E CIA LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LADYDIU MEDICAMENTOS ESPECIAIS LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LAGOROCHA COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LAURI R DA SILVEIRA & CIA LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LAURI R DA SILVEIRA E CIA LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LDS PRODUTOS FARMACEUTICOS LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LENZ & CIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LG FINK & CIA LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LIBRAGA, BRANDAO E CIA. LTDA.": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LINS FERRAO ARTIGOS DO VESTUARIO LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LOJA DO CABELEREIRO LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LOJA POREXEMPLO COMERCIO DE UTILIDADES LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LOJA POREXEMPLO COMÉRCIO DE UTILIDADES LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LOJAS RENNER S.A.": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LONDRES MACRO ATAC": {
+    "vendedor_correto": "JEFERSON",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "JEFERSON"
+    ],
+    "tipo": "simples",
+    "obs": "somente Jeferson"
+  },
+  "LONDRES MACRO ATACADO DE PRODUTOS ALIMENTICIOS LTDA": {
+    "vendedor_correto": [
+      "JEFERSON"
+    ],
+    "empresas": [
+      "EVER GREEN",
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "JEFERSON"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LUCIANE MANETTI PORTO": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LUCIARA DE OLIVEIRA GIANECHINI": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LUIS CLAUDIOMIR DE AVILA & CIA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO",
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LUIS CLAUDIOMIR DE AVILA & CIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LULO LACOS INDUSTRIA E COMERCIO LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "LUMIER COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MAC DISTRIBUIDORA DE PRODUTOS AUTOMOTIVOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MACRO ATACADO KROLOW LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "EVER GREEN",
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MACRODOCE COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MACROPAMPA DISTRIBUIDORA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MADAME C LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MADREPEROLA ACESSORIOS E MAQUIAGENS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MAKE IN SANTA COMERCIO DE COSMETICO LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MANA COMERCIO ATACADISTA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MARCUS SUPERMERCADO LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MARCUS SUPERMERCADO LTDA.": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MARIA BELLA COSMETICOS E PERFUMARIA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MARIA LUIZA DUARTE ELEUTHERIO PRODUTOS MEDICOS": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MASTER ATS SUPERMERCADOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MAXI DISTRIBUIDORA DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MAYNARA HOFFMANN CARDOSO LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MELZ COMERCIO DE PRODUTOS FARMACEUTICOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MENON COMERCIO E REPRESENTACOES LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MENON COMERCIO E REPRESENTAÇÕES LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MERCADO REICHERT LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MICHELE KROLOW BERNAR": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MICKA BEAUTY SHOP LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MILLER - COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MILLER COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MILLER- COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MITHRASS COSMETICOS E SERVICOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MOURA & SANTOS": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "MOURA COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "NADIA S KROETZ": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "NH COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "NILO TOZZO DISTRIBUIDORA LTDA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "NKP FARMACIAS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "O VANTAJAO": {
+    "vendedor_correto": "ÂNGELA",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "JEFERSON"
+    ],
+    "tipo": "complexo",
+    "obs": "Somente Angela"
+  },
+  "O VANTAJAO ATACADO LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "O VANTAJAO SANTA F?;24/02/2026\"": {
+    "vendedor_correto": [
+      "JEFERSON"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "JEFERSON"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "O VANTAJAO SANTA FE": {
+    "vendedor_correto": "ÂNGELA",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "JEFERSON"
+    ],
+    "tipo": "complexo",
+    "obs": "Somente Angela"
+  },
+  "O VANTAJAO SANTA Fﾉ": {
+    "vendedor_correto": [
+      "JEFERSON"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "JEFERSON"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "O VANTAJAO STA FE DIST DE PROD ALIM LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "OCTAVIANO ZANDONAI & CIA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ODETE MARIA STEIN BLUME - ME": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ORG FARMACEUTICAS CONFIANCA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ORGANIZACOES FARMACEUTICAS CONFIANCA EIRELI": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "DEPIMIEL",
+      "EVER GREEN",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "OSMAR NICOLINI COMER": {
+    "vendedor_correto": "THIELIN",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "THIELIN"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Thielin"
+  },
+  "OSMAR NICOLINI SUPERMERCADOS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "OSNI BOING E CIA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "OSNI BOING E CIA LTDA.": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PACIFICO SUPERMERCADO E COMERCIAL ATACADISTA LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PASSARELA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PASSARELA CENTER LTDA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PATRICIA LICZBINSKI": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PATRICIA PALMA MORATES KURZ 99846292015": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PAULO ROBERTO FORNARI  CIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PAULO ROBERTO FORNARI CIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PAULO ROBERTO FORNARI E CIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO",
+      "PAYOT",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PAULO ROBERTO PREZOTTO COSMETICOS": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PCJ COMERCIO DE GENEROS ALIMEN": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PEDRO MACCARI & IRMAOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PETINELI DISTRIBUIDORA DE MATERIAL MEDICO HOSPITALAR LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PGL DISTRIBUICAO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PINK POT PLANT COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PIU BELLA LOJA DE COSMETICOS LTDA - ME": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "POLANCZYK  JABLONSKI LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PP COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PRO LAR COMERCIO VAREJISTA DE UTILIDADES PARA CASA LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PRONER SUPERMERCADOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PRONTO DOCE SOLUCAO EM DISTRIB": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "PRONTO DOCE SOLUCAO EM DISTRIBUICAO DE ALIMENTOS LTDA.": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "R T B DISTRIBUIÇAO LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "RAMOS SARTORI LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "REDE ALIANCA DE SUPERMERCADOS - RAS": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "REDE AVILA SUPERMERCADOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "REDE POLO VENANCIO VENANCIO AIRES": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "REDE SUPER LTDA": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "RIGHI COM. DE GENEROS ALIMENTICIOS LTDA.": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ROS COSMETICOS LTDA ME": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ROXO - ATACADO E VAREJO LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "RUDINEI BROMBATTI EIRELI EPP": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "RVB FARMACOS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "S E B COMERCIO DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "S G M INDUSTRIA DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "S R COSMETICOS LTDA ME": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SA0 JOAO FARMACIAS": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SALAO DE BELEZA MARIA CHIC LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SANCHO CANOAS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SAO JOAO FARMACIAS": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SAO LUCAS COMERCIO DE MEDICAMENTOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SAWE COSMETICOS": {
+    "vendedor_correto": "EDIMAR",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "EDIMAR"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Edimar"
+  },
+  "SAWE COSMETICOS EIRELI": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "DEPIMIEL",
+      "EVER GREEN",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SCARIOT COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SCHEYLLA KARINE MOSER & CIA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SDB COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "AQUAFAST"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SDB COMERCIO DE ALIMENTOS LTDA (FORT)": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "EVER GREEN",
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SEGREDOS DA BELEZA COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SENSACAO DA BELEZA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SENSUALE PRODUTOS DE BELEZA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SGM IND DE COM LTDA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SGM INDUSTRIA DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SILVIA COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SIM REDE DE POSTOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SINDICATO DOS TRAB. RURAIS DE LAJEADO": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SINDICATO DOS TRABALH RURAIS DE LAJEADO": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "FIAT LUX",
+      "GRANADO",
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SKM COSMETICOS E PERFUMARIA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SOKHNA HANNE NDONGO LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SONIA MARA MARIANI COSTA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SS COMERCIO DE PRODUTOS DE BELEZA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "DEPIMIEL"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "STREMA COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUELEN NICOLI HOSEL LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERGLOSS COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERM. GUANABARA": {
+    "vendedor_correto": "THIELIN",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "THIELIN"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Thielin"
+  },
+  "SUPERM.JEPSEN LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMAGO COMERCIO LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO BAKLIZI": {
+    "vendedor_correto": "EDIMAR",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "EDIMAR"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Edimar"
+  },
+  "SUPERMERCADO BAKLIZI LTDA": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "EVER GREEN",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO BERGAMA SCHI LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO BERGAMASCHI LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO BOHLKE  LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO BOHLKE LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO BOLAO LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO CASARAO DA FAMILIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO CONDOR LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO COTRIPA": {
+    "vendedor_correto": "MATHEUS",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "MATHEUS"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Matheus"
+  },
+  "SUPERMERCADO FALAVIGNA LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO GECEPEL": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO GECEPEL LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO GUANABARA S A": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "EVER GREEN",
+      "FIAT LUX",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO GUANABARA S.A.": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO IRANIENSE LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO JEPSEN  LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO LANZ LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO MARCIO LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO PORTAPRATA LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO RAFANA LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO SANTA MARTA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO SAO MARTINHO LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADO SJ LTDA": {
+    "vendedor_correto": "THIELIN",
+    "empresas": [
+      "BELLIZ",
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI",
+      "THIELIN"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Thielin"
+  },
+  "SUPERMERCADO ZULIAN LTDA": {
+    "vendedor_correto": [
+      "ÂNGELA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "ÂNGELA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADOCOTRISAL": {
+    "vendedor_correto": "MATHEUS",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "MATHEUS"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Matheus"
+  },
+  "SUPERMERCADOS BELTRAME LTDA": {
+    "vendedor_correto": [
+      "EDIMAR"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "EDIMAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADOS DALPIAZ LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERMERCADOS GUANABARA S/A": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SUPERVIZA SUPERMERCADOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "SÃO JOAO FARMACIAS": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TAIS MARTH BEIER TESSMER LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TAO NATURAL CAFETERIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "KISABOR"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TAVARES COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TCHIKYTA COSMETICOS E TRANSPORTES LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TCHIKYTA COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "THAIS AIRES QUINTAVA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TIAGO TRESOLDI SARMENTO": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TIFFANY ACESSORIOS E PRESENTES LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TIFFANY BIJUTERIAS E PRESENTES EIRELI": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TISCHLER E CIA LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TONDO & CANAL LTDA ME": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TOP COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TREICHEL": {
+    "vendedor_correto": "THIELIN",
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO",
+      "THIELIN"
+    ],
+    "tipo": "simples",
+    "obs": "Somente Thielin"
+  },
+  "TREICHEL MACROMERCADO LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "BELLIZ",
+      "EVER GREEN",
+      "FIAT LUX",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TREICHEL MACROMERCADO LTDA.": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "TROPICAL COSMETICOS E ACESSORIOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UFFA REDE DE LOJAS DE PROXIMIDADE LTDA": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UINI DISTRIBUIDORA DE PERFUMARIA LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UM ESPACO DE BELEZA LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNI DISTRIBUIDORA DE PERFUMARIA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIDASUL DISTRIB": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "EVER GREEN"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIDASUL DISTRIB ALIMENTICIA S/A": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO",
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIDASUL DISTRIBUIDORA ALIMENTICIA S A": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIDASUL DISTRIBUIDORA ALIMENTICIA S.A": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "AQUAFAST"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIDASUL DISTRIBUIDORA ALIMENTICIA S.A.": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIDASUL DISTRIBUIDORA ALIMENTICIA S/A": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIMED COOP SERV SAUDE VALES TAQUARI E RIO PARDO LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIMED COOPERATIVA DE SERVICOS DE SAUDE DOS VALES DO TAQUARI": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "PRUDENCE"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIMED ERECHIM COOP DE SER DE SAUDE LTDA": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIMED ERECHIM COOP DE SER DE SAUDE LTDA (B2B)": {
+    "vendedor_correto": [
+      "GRAZI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "GRAZI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIMED NORD RS SOC COOP DE SERV MED LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIMED SERRA GAUCHA/RS C. DE A. A SAUDE": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UNIMED SERRA GAUCHARS COOPERATIVA DE ASSISTENCIA A SAUDE LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "UP COMERCIO DE COSMETICOS PERFUMARIA LTDA": {
+    "vendedor_correto": [
+      "CESAR"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "CESAR"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "V. M. MARQUES": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "VERGINIA ALMEIDA DE SOUZA FLORES": {
+    "vendedor_correto": [
+      "SILVIA"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SILVIA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "VIEZZER & CIA LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "VIZI DISTRIB DE PROD PARA ANIMAIS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "VOCE COM DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "VOCE COMERCIO DE COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "GRANADO",
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "WAGNER RAUL BORTOLINI 01944929070": {
+    "vendedor_correto": [
+      "SUELI"
+    ],
+    "empresas": [
+      "BELLIZ"
+    ],
+    "vendedores_originais": [
+      "SUELI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "WBSC - PERFUMARIA E COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "WEBBER E BORGES LTDA": {
+    "vendedor_correto": [
+      "HEIDI"
+    ],
+    "empresas": [
+      "FIAT LUX"
+    ],
+    "vendedores_originais": [
+      "HEIDI"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "WMB SUPERMERCADOS DO BRASIL LTDA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "WMS SUPERMERCADOS DO BRASIL": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "WMS SUPERMERCADOS DO BRASIL LTDA": {
+    "vendedor_correto": [
+      "CRISTIANO"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "CRISTIANO"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "WS COMERCIO DE ALIMENTOS LTDA": {
+    "vendedor_correto": [
+      "AHMANDA"
+    ],
+    "empresas": [
+      "FIAT LUX",
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "AHMANDA"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "WS COSMETICOS LTDA": {
+    "vendedor_correto": [
+      "THIELIN"
+    ],
+    "empresas": [
+      "PAYOT"
+    ],
+    "vendedores_originais": [
+      "THIELIN"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  },
+  "ZES SUPERMERCADOS LTDA": {
+    "vendedor_correto": [
+      "MATHEUS"
+    ],
+    "empresas": [
+      "GRANADO"
+    ],
+    "vendedores_originais": [
+      "MATHEUS"
+    ],
+    "tipo": "sem_alteracao",
+    "obs": ""
+  }
+}

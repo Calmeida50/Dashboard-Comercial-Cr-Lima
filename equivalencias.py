@@ -163,9 +163,21 @@ VENDEDOR_GERAL = {
     "SGM INDUSTRIA DE COSMETICOS LTDA": "CRISTIANO",
     # aparece em GRANADO, KISABOR e FIAT LUX, sempre com o MATHEUS
     "LUIS CLAUDIOMIR DE AVILA & CIA": "MATHEUS",
+    # as duas razoes sociais (DISTRIBUIDORA e MEDICAMENTOS) sao da HEIDI
+    "GAUCHAFARMA DISTRIBUIDORA LTDA": "HEIDI",
+    "GAUCHAFARMA MEDICAMENTOS LTDA": "HEIDI",
 }
 
 # --- 4. LIXO: rotulos que NAO sao cliente -----------------------------------
+# Empresas cuja carteira ainda nao esta cadastrada: ficam FORA do reprocessamento
+# por vendedor e mantem o que ja esta publicado. Assim as demais podem ser
+# atualizadas sem esperar por elas.
+#
+# AQUAFAST (10/08/2026): 82,8% da carteira sem vendedor atribuido. O Cristiano
+# vai salvar o relatorio no Drive; quando entrar, basta remover daqui e ela
+# volta ao ciclo automatico.
+EMPRESAS_PENDENTES = {"AQUAFAST"}
+
 # A KISABOR fecha a planilha com estatistica do Excel. 'VAREJO' e agrupamento.
 LIXO = {"SUM", "AVERAGE", "TOTAL", "COUNT", "SUBTOTAL", "MEDIA", "VAREJO",
         "SOMA", "MAX", "MIN", "CONTAGEM", "NAN"}

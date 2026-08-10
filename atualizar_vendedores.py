@@ -297,40 +297,107 @@ def gravar(D, acc, ate):
     novo_cd = {}
     preservados = []
 
-    # 1. clientes_detalhado
+    # 1. clientes_detalhado — UMA entrada por (cliente, vendedor).
+    # Decisao do Cristiano (10/08): nao abrir por filial. O arquivo de
+    # faturamento ja traz o cliente consolidado, e o dashboard guardava uma
+    # linha por filial — reconciliar as duas formas mes a mes gerava perda ou
+    # duplicacao dependendo do caso. Consolidado, a regra fica simples:
+    #   mes COM arquivo  -> valor do arquivo
+    #   mes SEM arquivo  -> soma do que ja existia (congelado, preservado)
     for empk in sorted(set(list(antigo_cd) + [e for (e, _v, _c) in acc])):
+        # empresa pendente: mantem exatamente o que ja esta publicado
+        if empk in E.EMPRESAS_PENDENTES:
+            if antigo_cd.get(empk):
+                novo_cd[empk] = antigo_cd[empk]
+            preservados.append("%s: TUDO (carteira ainda nao cadastrada)" % empk)
+            continue
         kmeses = tem.get(empk, set())
-        # indice por (vendedor, chave) do que ja existia
+
+        # consolida o que existia: chave -> {meses somados, meses25, nome, vend}
         antes = {}
         for v, lista in (antigo_cd.get(empk) or {}).items():
             for c in lista:
-                antes[(v, chave(c["nome"]))] = c
-        novos = {k: d for k, d in acc.items() if k[0] == empk}
-        # une as duas listas de clientes
-        todas = set(antes) | {(v, c) for (_e, v, c) in novos}
+                canon_velho = E.canonico(c["nome"]) or c["nome"]
+                ch = chave(canon_velho)
+                a = antes.setdefault(ch, {"nome": c.get("nome", ""),
+                                          "cod": c.get("cod", ""),
+                                          "meses": [0.0] * 12,
+                                          "meses25": [0.0] * 12,
+                                          "vend": v})
+                for k in range(12):
+                    a["meses"][k] += (c.get("meses") or [0.0] * 12)[k]
+                    a["meses25"][k] += (c.get("meses25") or [0.0] * 12)[k]
+
+        # o que veio dos arquivos, por (chave, vendedor)
+        novos = {}
+        for k_, d_ in acc.items():
+            if k_[0] != empk:
+                continue
+            novos.setdefault(k_[2], []).append((k_[1], d_))
+
         saida = {}
-        for (v, ch) in sorted(todas):
-            velho = antes.get((v, ch))
-            novo = novos.get((empk, v, ch))
-            base = list((velho or {}).get("meses") or [0.0] * 12)
-            for k in range(ate):
-                if k in kmeses:                       # tem arquivo: reescreve
-                    base[k] = round((novo or {}).get("meses", [0.0] * 12)[k], 2)
-                # senao: mantem o que ja estava
-            item = {
-                "nome": (velho or novo or {}).get("nome", ""),
-                "cod": (velho or {}).get("cod", (novo or {}).get("cod", "")),
-                "meses": base,
-                "meses25": list((velho or {}).get("meses25") or [0.0] * 12),
-            }
-            if any(item["meses"]) or any(item["meses25"]):
-                saida.setdefault(v, []).append(item)
+        for ch in sorted(set(antes) | set(novos)):
+            velho = antes.get(ch)
+            lista_nova = novos.get(ch) or []
+            if lista_nova:
+                for idx_v, (vend_novo, dnovo) in enumerate(lista_nova):
+                    meses = [0.0] * 12
+                    # o historico congelado vai INTEIRO para o 1o vendedor
+                    # (regra do Cristiano: quando muda de vendedor, o
+                    #  historico vai junto)
+                    if idx_v == 0 and velho:
+                        for k in range(12):
+                            if k not in kmeses:
+                                meses[k] = round(velho["meses"][k], 2)
+                    for k in range(ate):
+                        if k in kmeses:
+                            meses[k] = round(dnovo.get("meses", [0.0] * 12)[k], 2)
+                    m25 = list(velho["meses25"]) if (idx_v == 0 and velho) else [0.0] * 12
+                    item = {"nome": (velho or dnovo).get("nome", ""),
+                            "cod": (velho or dnovo).get("cod", ""),
+                            "meses": [round(x, 2) for x in meses],
+                            "meses25": [round(x, 2) for x in m25]}
+                    if any(item["meses"]) or any(item["meses25"]):
+                        saida.setdefault(vend_novo, []).append(item)
+            elif velho:
+                # Cliente que NAO veio nos arquivos do periodo.
+                # Mantem os meses congelados, mas ZERA os meses que tem
+                # arquivo — se ele nao faturou, nao pode continuar com o valor
+                # antigo ali. Sem isso o mes conta duas vezes: uma no cliente
+                # novo e outra neste resquicio (EVER GREEN sobrava R$ 1,26 mi).
+                meses = [0.0] * 12
+                for k in range(12):
+                    if k not in kmeses:
+                        meses[k] = round(velho["meses"][k], 2)
+                item = {"nome": velho["nome"], "cod": velho["cod"],
+                        "meses": meses,
+                        "meses25": [round(x, 2) for x in velho["meses25"]]}
+                if any(item["meses"]) or any(item["meses25"]):
+                    saida.setdefault(velho["vend"], []).append(item)
         if saida:
             novo_cd[empk] = saida
         faltam = [MESES[k][:3] for k in range(ate) if k not in kmeses]
         if faltam:
             preservados.append("%s: %s" % (empk, ", ".join(faltam)))
     D["clientes_detalhado"] = novo_cd
+
+    # GUARDA: nenhum mes congelado pode mudar de valor. Roda ANTES de gravar.
+    # Em 09/08 eu so verifiquei DEPOIS e 42 meses foram apagados.
+    def _soma(bloco, empk, k):
+        return sum((c.get("meses") or [0.0] * 12)[k]
+                   for v in (bloco.get(empk) or {}) for c in bloco[empk][v])
+
+    perdas = []
+    for empk in set(list(antigo_cd) + list(novo_cd)):
+        for k in range(corte.IDX_CORTE):
+            a, b = _soma(antigo_cd, empk, k), _soma(novo_cd, empk, k)
+            if abs(a - b) > 0.02:
+                perdas.append("%s %s: %s -> %s" % (empk, MESES[k][:3],
+                              "{:,.2f}".format(a), "{:,.2f}".format(b)))
+    if perdas:
+        raise RuntimeError("MES CONGELADO ALTERADO — cancelado:\n   "
+                           + "\n   ".join(perdas[:15]))
+
     derivar(D, ate)
     return preservados
 
@@ -435,6 +502,10 @@ def main():
     k0 = corte.IDX_CORTE
     com_arq = meses_com_arquivo(ate)
     for empk in sorted(cd):
+        if empk in E.EMPRESAS_PENDENTES:
+            print("   = %s: fora desta rodada (carteira nao cadastrada); "
+                  "mantido o publicado" % empk)
+            continue
         # so confere os meses que ESTE gravador realmente reprocessou.
         # Mes preservado (sem arquivo no Drive, ex: KISABOR junho em PDF) pode
         # ter divergencia herdada do dashboard — nao e para abortar por isso,
