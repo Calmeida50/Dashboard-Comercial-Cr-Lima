@@ -20,6 +20,7 @@ Categorias e seus coletores:
 Estado guardado em _backups/estado_arquivos.json
 """
 import os, re, sys, json, glob, subprocess, datetime, hashlib
+import corte   # regra de corte: nada anterior a junho/2026 e reprocessado
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 DRIVE = os.path.expanduser(
@@ -53,6 +54,22 @@ FILTRO = {
 }
 
 
+def _mes_congelado_no_caminho(p):
+    """True se o arquivo esta numa pasta de mes anterior ao corte.
+    Mexer num arquivo de marco nao pode disparar reprocessamento — aquele
+    periodo veio da Planilha 2026 e esta congelado."""
+    alto = p.upper()
+    if "/2025/" in alto:
+        return True
+    for k in range(corte.IDX_CORTE):
+        nome = corte.MESES[k]
+        variantes = (nome, nome.replace("MARCO", "MARÇO"))
+        for v in variantes:
+            if "/%s/" % v in alto or "/%s " % v in alto:
+                return True
+    return False
+
+
 def impressao(pastas, filtro=None):
     """assinatura da pasta: nome, tamanho e data de cada arquivo relevante"""
     itens = []
@@ -65,6 +82,8 @@ def impressao(pastas, filtro=None):
                 if not p.lower().endswith((".xlsx", ".xls", ".xlsm", ".txt")):
                     continue
                 if filtro and filtro not in nome.upper():
+                    continue
+                if _mes_congelado_no_caminho(p):
                     continue
                 try:
                     st = os.stat(p)

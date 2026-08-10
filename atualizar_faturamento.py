@@ -118,6 +118,19 @@ def main():
         mes, ano = C.MESES[hoje.month - 1], hoje.year
     k = C.MESES.index(C.norm(mes))
 
+    # TRAVA DE CORTE: nada anterior a junho/2026 pode ser gravado.
+    # O dado desse periodo veio da Planilha 2026 e esta congelado.
+    import corte
+    if corte.congelado(k, ano):
+        print("=" * 70)
+        print("  RECUSADO — %s/%s esta CONGELADO" % (mes, ano))
+        print("=" * 70)
+        print("  A automacao vale de %s/%s em diante."
+              % (corte.MESES[corte.IDX_CORTE], corte.ANO_CORTE))
+        print("  Antes disso o dado veio da Planilha 2026 e nao se recalcula.")
+        print("  (o Drive nem tem todas as empresas nesse periodo)")
+        return 3
+
     print("=" * 70)
     print("  ATUALIZAR FATURAMENTO — %s/%s%s" % (mes, ano, "  [SIMULACAO]" if simular else ""))
     print("=" * 70)
