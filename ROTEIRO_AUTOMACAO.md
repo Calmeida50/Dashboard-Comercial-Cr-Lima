@@ -1345,3 +1345,78 @@ Isso e impossivel se as duas fontes estiverem certas. Suspeita: dupla contagem
 de filial no `clientes_detalhado` (o mesmo cliente com varios codigos, ja
 identificado antes como "COOPERATIVA... / filiais"). Investigar antes do
 gravador — pode inflar a comissao de quem tem esses clientes.
+
+---
+
+# EVER GREEN — diagnostico completo (09/08/2026)
+
+## Os relatorios dela existem desde jan/2025, mas com 5 LAYOUTS diferentes
+
+O Cristiano salvou no Drive o faturamento da EVER GREEN mes a mes desde
+janeiro/2025 (12 arquivos de 2025 + 7 de 2026). A empresa disponibilizou.
+
+Mas o formato **muda de mes para mes**:
+
+    JAN, FEV, MAR  relatorio de TITULOS: Nta Fiscal | Tipo | Cliente |
+                   Nome Cliente | DT Emissao | Vencto real | Vlr.Titulo
+    ABR            idem
+    MAI            ja consolidado: Nome Cliente | Num. Docto. | Emissao |
+                   Soma de Vlr.Total   (cabecalho na linha 1, nao na 0)
+    JUN, JUL       formato limpo: Data da Emissão | Número da Nota Fiscal |
+                   Nome do Cliente | Código do Cliente | Valor Total da Nota
+
+## Data americana: NAO e problema
+
+O Cristiano notou que o relatorio mostra `1/12/2026` (mes/dia/ano). **Mas o
+Excel guardou a data como DATA DE VERDADE** (`2026-01-12`), e so a EXIBICAO e
+americana. Nao houve embaralhamento de meses. Confirmado lendo com pandas.
+
+## O relatorio de TITULOS duplica a nota por PARCELA
+
+Em fevereiro, a NF **195176** aparece 2x (R$ 3.373,91 e R$ 18.004,36): e a
+mesma nota dividida em parcelas de pagamento. Somar todas as linhas conta a
+nota varias vezes.
+
+Por isso o arquivo de FEV e MAR da exatamente o DOBRO do dashboard.
+
+## NAO E POSSIVEL reconstruir jan-mai da EVER GREEN
+
+Nenhuma regra unica reproduz o publicado:
+
+    MES   soma linhas      unico por NF     dashboard
+    JAN   2.897.839,91     2.650.018,58     2.897.839,91   (soma acerta)
+    FEV   3.970.977,76     1.963.844,10     1.985.488,88   (nenhuma acerta)
+    MAR   4.821.078,54     2.336.159,02     2.410.539,27   (nenhuma acerta)
+    ABR   1.710.556,86     1.710.556,86     1.710.556,86   (ambas acertam)
+    JUN   2.134.270,52     —                2.134.270,52   (exato)
+
+**Conclusao: manter jan-mai CONGELADO**, como o Cristiano ja havia definido.
+Os numeros da Planilha 2026 estao certos e validados. Junho em diante o
+arquivo bate exato e a automacao funciona.
+
+## PROBLEMA REAL: o clientes_detalhado da EVER GREEN esta errado em JUNHO
+
+Junho e periodo automatizado, entao aqui importa. O bloco `empresas` esta
+certo (R$ 2.134.270,52), mas o `clientes_detalhado` soma **R$ 3.061.933,49** —
+43% a mais do que existe.
+
+Comparando cliente a cliente em junho:
+
+    cliente        arquivo        clientes_detalhado
+    UNIDASUL       456.715,63     1.024.158,94   (+124%)
+    CERVOSUL        98.031,37       205.956,96   (+110%)
+    SAWE            29.212,96       156.608,61   (+436%)
+    GUANABARA       45.968,60        92.252,66   (+101%)
+    ZAFFARI        828.948,84       833.473,90   (+0,5%)
+
+Nao e soma de outras empresas (testado: UNIDASUL em todas as empresas da
+R$ 1.617.084, tambem nao bate). Nao e duplicacao de filial. **Origem
+desconhecida** — provavelmente residuo da migracao da Planilha 2026.
+
+Sintoma adicional: UNIDASUL tem valor em jan, mar e jun mas ZERO em fev, abr e
+mai. Um cliente desse porte nao passa 3 meses sem comprar.
+
+**Consequencia**: as telas por vendedor leem do `clientes_detalhado`, entao
+mostram numeros inflados. O gravador, ao reconstruir junho a partir do
+arquivo, vai CORRIGIR isso — e os valores por vendedor vao MUDAR (para menos)
+em junho. Avisar o Cristiano antes de gravar.
