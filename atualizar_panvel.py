@@ -65,16 +65,16 @@ def main():
             p = idx.get((emp, mes))
             if not p:
                 continue
-            loja, dig, erro = C.ler(p)
+            loja, dig, erro, loja_aa, dig_aa, prods = C.ler(p, detalhe=True)
             if erro:
                 print("  ! %s %s: %s" % (emp, mes[:3], erro))
                 continue
             sig = SIGLA[mes]
             tl += loja; td += dig
             # ATENCAO aos nomes reais dos campos: val26_loja / val26_cdig.
-            # O bloco guarda TAMBEM val25_loja e val25_cdig — a base de
-            # comparacao com 2025. Precisam ser PRESERVADOS, senao a gravacao
-            # apaga o ano anterior inteiro.
+            # O ano anterior vem AGORA DO ARQUIVO (coluna 'Venda Efetiva Ano
+            # Anterior'). Antes so era preservado o que ja existia no bloco —
+            # por isso a PRUDENCE aparecia sem 2025 em todos os meses.
             a = ant_m.get(sig, {})
             antes = (a.get("val26_loja", 0) or 0) + (a.get("val26_cdig", 0) or 0)
             if a:
@@ -89,10 +89,10 @@ def main():
                       % (emp, sig, "{:,.2f}".format(loja + dig),
                          "{:,.2f}".format(loja), "{:,.2f}".format(dig)))
             item = {"mes": sig,
-                    "val26_loja": round(loja, 2), "val26_cdig": round(dig, 2)}
-            for k in ("val25_loja", "val25_cdig"):    # preserva 2025
-                if k in a:
-                    item[k] = a[k]
+                    "val26_loja": round(loja, 2), "val26_cdig": round(dig, 2),
+                    "val25_loja": round(loja_aa, 2), "val25_cdig": round(dig_aa, 2),
+                    # produtos do mes: permite clicar no mes e ver o detalhe
+                    "produtos": prods or []}
             monthly.append(item)
 
         if not monthly:

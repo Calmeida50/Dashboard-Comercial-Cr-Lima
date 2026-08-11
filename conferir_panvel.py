@@ -22,7 +22,7 @@ DRIVE = os.path.expanduser(
     "~/Library/CloudStorage/GoogleDrive-almeida.cristiano33@gmail.com/"
     "Meu Drive/PROJETO COMERCIAL IA/SELL OUT PRINCIPAIS CLIENTES"
 )
-EMPRESAS = ["GRANADO", "PRUDENCE"]
+EMPRESAS = ["GRANADO", "PRUDENCE", "CLESS"]
 MESES = ["JANEIRO","FEVEREIRO","MARCO","ABRIL","MAIO","JUNHO",
          "JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"]
 
@@ -71,21 +71,55 @@ def arquivos(por_loja=False):
     return idx
 
 
-def ler(path):
-    """devolve (valor_loja, valor_digital, linhas)"""
+def ler(path, detalhe=False):
+    """devolve (valor_loja, valor_digital, erro).
+    Com detalhe=True devolve tambem o ano anterior e a abertura por produto:
+    (loja, dig, erro, loja_aa, dig_aa, produtos).
+    O arquivo SEMPRE traz 'Venda Efetiva Ano Anterior' — o gravador antigo so
+    preservava o que ja existia no bloco e por isso a PRUDENCE ficava sem 2025."""
     d = pd.read_excel(path)
     col = next((c for c in d.columns
                 if "VENDA EFETIVA" in norm(c) and "ANTERIOR" not in norm(c)), None)
+    col_aa = next((c for c in d.columns
+                   if "VENDA EFETIVA" in norm(c) and "ANTERIOR" in norm(c)), None)
     org = next((c for c in d.columns if "ORIGEM" in norm(c)), None)
+    cnome = next((c for c in d.columns if "DESCRICAO ITEM" in norm(c)
+                  or ("ITEM" in norm(c) and "DESCRICAO" in norm(c))), None)
+    cqtd = next((c for c in d.columns if "QTD" in norm(c) and "VENDA" in norm(c)
+                 and "ANTERIOR" not in norm(c)), None)
     if col is None:
-        return None, None, "coluna de venda nao encontrada"
+        return (None, None, "coluna de venda nao encontrada", None, None, None) \
+            if detalhe else (None, None, "coluna de venda nao encontrada")
+
     d["_v"] = d[col].map(to_num)
+    d["_vaa"] = d[col_aa].map(to_num) if col_aa is not None else 0.0
+    d["_q"] = d[cqtd].map(to_num) if cqtd is not None else 0.0
+
     if org is None:
-        return float(d["_v"].sum()), 0.0, None
-    g = d.groupby(d[org].astype(str).str.strip())["_v"].sum()
-    loja = float(sum(v for k, v in g.items() if norm(k).startswith("LOJA")))
-    dig = float(sum(v for k, v in g.items() if not norm(k).startswith("LOJA")))
-    return loja, dig, None
+        loja, dig = float(d["_v"].sum()), 0.0
+        loja_aa, dig_aa = float(d["_vaa"].sum()), 0.0
+    else:
+        eh_loja = d[org].astype(str).str.strip().map(lambda k: norm(k).startswith("LOJA"))
+        loja = float(d.loc[eh_loja, "_v"].sum())
+        dig = float(d.loc[~eh_loja, "_v"].sum())
+        loja_aa = float(d.loc[eh_loja, "_vaa"].sum())
+        dig_aa = float(d.loc[~eh_loja, "_vaa"].sum())
+
+    if not detalhe:
+        return loja, dig, None
+
+    produtos = []
+    if cnome is not None:
+        g = d.groupby(d[cnome].astype(str).str.strip()).agg(
+            v=("_v", "sum"), vaa=("_vaa", "sum"), q=("_q", "sum"))
+        for nome, r in g.iterrows():
+            if not nome or nome.upper() in ("NAN", "TOTAL"):
+                continue
+            produtos.append({"nome": nome, "val": round(float(r["v"]), 2),
+                             "val_aa": round(float(r["vaa"]), 2),
+                             "qtd": int(r["q"])})
+        produtos.sort(key=lambda x: -x["val"])
+    return loja, dig, None, loja_aa, dig_aa, produtos
 
 
 def dashboard():
