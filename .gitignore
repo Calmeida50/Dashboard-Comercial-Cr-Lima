@@ -28,3 +28,8 @@ RELATORIOS*/
 *.tmp
 *.log
 ~$*
+
+# pasta de arquivos processados — nao deve ir para o site
+FATURAMENTO DAS EMPRESAS/
+NOVOS_DADOS/
+_saida/
