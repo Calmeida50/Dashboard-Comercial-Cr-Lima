@@ -151,6 +151,18 @@ def main():
             ultimas = [l for l in saida.strip().splitlines() if l.strip()][-6:]
             for l in ultimas:
                 print("    " + l[:120])
+            # O Drive as vezes recusa a leitura enquanto sincroniza:
+            #   OSError: [Errno 11] Resource deadlock avoided
+            # Em 10/08 isso aconteceu e a rotina marcou como "atualizado",
+            # gravando a impressao digital — entao ela NUNCA tentaria de novo
+            # e o dado ficava faltando em silencio. Agora isso e falha.
+            falha_leitura = any(t in saida for t in (
+                "Resource deadlock avoided", "Errno 11",
+                "cannot be determined", "No such file or directory"))
+            if falha_leitura:
+                relatorio.append("%s FALHOU ao ler o Drive — sera tentado de novo" % cat)
+                print("    !! Drive recusou a leitura; estado NAO atualizado")
+                break
             if cod == 2:
                 relatorio.append("%s ABORTOU (divergencia no historico)" % cat)
                 print("    !! abortado pela trava — estado NAO atualizado")

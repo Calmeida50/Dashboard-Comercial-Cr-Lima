@@ -41,6 +41,24 @@ EMPRESAS = {
 }
 
 
+def _abrir_excel(path, **kw):
+    """pd.read_excel com nova tentativa.
+    O Google Drive recusa a leitura enquanto sincroniza o arquivo:
+      OSError: [Errno 11] Resource deadlock avoided
+    Uma pausa curta resolve na maioria dos casos."""
+    import time
+    ultimo = None
+    for tentativa in range(4):
+        try:
+            return pd.read_excel(path, **kw)
+        except OSError as e:
+            ultimo = e
+            if "deadlock" not in str(e).lower() and "errno 11" not in str(e).lower():
+                raise
+            time.sleep(1.5 * (tentativa + 1))
+    raise ultimo
+
+
 def norm(s):
     """maiuscula, sem acento, sem espaco duplicado, sem pontuacao solta"""
     s = str(s or "")
@@ -146,7 +164,7 @@ def achar_cabecalho(path, limite=16):
     topo (DATE, REGIONAL, RV, CNPJ...) e o cabecalho real so aparece na
     linha 9. Com o limite antigo o arquivo era descartado."""
     try:
-        cru = pd.read_excel(path, header=None, nrows=limite)
+        cru = _abrir_excel(path, header=None, nrows=limite)
     except Exception:
         return None
     for r in range(len(cru)):
@@ -171,7 +189,7 @@ def ler_arquivo(path):
         out["erro"] = "cabecalho nao encontrado"
         return out
     try:
-        df = pd.read_excel(path, header=hdr)
+        df = _abrir_excel(path, header=hdr)
     except Exception as e:
         out["erro"] = "falha ao abrir: %s" % e
         return out

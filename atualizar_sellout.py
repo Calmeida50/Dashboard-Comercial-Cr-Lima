@@ -34,7 +34,7 @@ ABREV = ["jan", "fev", "mar", "abr", "mai", "jun",
 
 def detalhe(path):
     """devolve o DataFrame ja limpo pelas regras 1 e 2, com colunas padrao"""
-    d = pd.read_excel(path)
+    d = C._abrir_excel(path)
     # ATENCAO: varios arquivos tem Cod. Filial E Desc_Filial. Pegar a primeira
     # coluna com "FILIAL" traz o CODIGO e arruina o ranking de lojas.
     # Sempre excluir as colunas de codigo.
@@ -144,6 +144,16 @@ def montar_produtos(antigo, m26, m25, meses26, meses25):
                 "val25": round(pv25.get(nome, 0.0), 2),
                 "qtd26": int(pq26.get(nome, 0)),
                 "qtd25": int(pq25.get(nome, 0)),
+                # valor e quantidade MES A MES — permite abrir a performance
+                # de cada SKU num mes especifico, nao so no acumulado
+                "val_2026": {a: round(m26[a]["prod_v"].get(nome, 0.0), 2)
+                             for a in meses26 if m26[a]["prod_v"].get(nome)},
+                "val_2025": {a: round(m25[a]["prod_v"].get(nome, 0.0), 2)
+                             for a in meses25 if m25[a]["prod_v"].get(nome)},
+                "qtd_2026": {a: int(m26[a]["prod_q"].get(nome, 0))
+                             for a in meses26 if m26[a]["prod_q"].get(nome)},
+                "qtd_2025": {a: int(m25[a]["prod_q"].get(nome, 0))
+                             for a in meses25 if m25[a]["prod_q"].get(nome)},
                 # lojas distintas que venderam o SKU em cada mes
                 "lojas_2026": {a: int(m26[a]["prod_lojas"].get(nome, 0))
                                for a in meses26 if m26[a]["prod_lojas"].get(nome)},

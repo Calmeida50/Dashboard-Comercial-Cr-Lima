@@ -62,7 +62,7 @@ def clientes_do_arquivo(path):
     hdr = C.achar_cabecalho(path)
     if hdr is None:
         return {}
-    d = pd.read_excel(path, header=hdr)
+    d = C._abrir_excel(path, header=hdr)
     d = d.loc[:, [c for c in d.columns if not str(c).startswith("Unnamed")]]
     d = d.dropna(how="all")
     # descarta linhas de totalizacao
