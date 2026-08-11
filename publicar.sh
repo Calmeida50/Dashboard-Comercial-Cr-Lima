@@ -8,6 +8,18 @@ PASTA="/Users/cristianoalmeida/Desktop/Projeto Comercial IA"
 SITE="https://calmeida50.github.io/Dashboard-Comercial-Cr-Lima/"
 cd "$PASTA" || { echo "Pasta nao encontrada: $PASTA"; exit 1; }
 
+# TRAVA DE SINTAXE: o JavaScript esta todo no index.html, entao um erro de
+# sintaxe derruba a PAGINA INTEIRA — foi o que aconteceu em 11/08.
+# Nada e publicado sem passar por aqui.
+if [ -f validar_js.py ]; then
+  if ! python3 validar_js.py; then
+    echo ""
+    echo "  PUBLICACAO CANCELADA — o JavaScript tem erro de sintaxe."
+    echo "  Corrija antes de publicar; o site ficaria em branco."
+    exit 2
+  fi
+fi
+
 echo ""
 echo "=============================================="
 echo "   Publicar Dashboard Comercial"
