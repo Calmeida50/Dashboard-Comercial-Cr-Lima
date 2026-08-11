@@ -104,6 +104,39 @@ def main():
         P[emp]["ytd_loja"] = round(tl, 2)
         P[emp]["ytd_cdig"] = round(td, 2)
         P[emp]["ytd_total"] = round(tl + td, 2)
+
+        # `produtos` = acumulado do ano por SKU, montado a partir dos meses.
+        # Sem isso a empresa nova (CLESS) ficava com a lista VAZIA e a tela
+        # acabava mostrando os produtos da empresa anterior.
+        acc = {}
+        for m in monthly:
+            for p_ in (m.get("produtos") or []):
+                a = acc.setdefault(p_["nome"], {"nome": p_["nome"], "val26": 0.0,
+                                                "val25": 0.0, "qtd26": 0,
+                                                "val26_loja": 0.0, "val26_cdig": 0.0})
+                a["val26"] += p_.get("val", 0.0)
+                a["val25"] += p_.get("val_aa", 0.0)
+                a["qtd26"] += p_.get("qtd", 0)
+                a["val26_loja"] += p_.get("val_loja", 0.0)
+                a["val26_cdig"] += p_.get("val_cdig", 0.0)
+        antigos = {x.get("nome"): x for x in (antigo.get("produtos") or [])}
+        prods = []
+        for nome, a in acc.items():
+            item = {"nome": nome,
+                    "val26": round(a["val26"], 2),
+                    "val25": round(a["val25"], 2),
+                    "qtd26": int(a["qtd26"]),
+                    "val26_loja": round(a["val26_loja"], 2),
+                    "val26_cdig": round(a["val26_cdig"], 2)}
+            # preserva o que so o carregamento antigo tinha
+            v = antigos.get(nome) or {}
+            for k in ("cod", "marca", "qtd26_loja", "qtd26_cdig"):
+                if k in v:
+                    item[k] = v[k]
+            prods.append(item)
+        prods.sort(key=lambda x: -x["val26"])
+        if prods:
+            P[emp]["produtos"] = prods
         P[emp]["pct_loja"] = round(tl / (tl + td) * 100, 1) if (tl + td) else 0
         P[emp]["pct_cdig"] = round(td / (tl + td) * 100, 1) if (tl + td) else 0
         marca = "   << EMPRESA NOVA" if emp in novas else ""

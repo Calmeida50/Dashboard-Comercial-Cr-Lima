@@ -110,14 +110,21 @@ def ler(path, detalhe=False):
 
     produtos = []
     if cnome is not None:
-        g = d.groupby(d[cnome].astype(str).str.strip()).agg(
-            v=("_v", "sum"), vaa=("_vaa", "sum"), q=("_q", "sum"))
-        for nome, r in g.iterrows():
+        d["_eh_loja"] = (d[org].astype(str).str.strip()
+                         .map(lambda k: norm(k).startswith("LOJA"))
+                         if org is not None else True)
+        g = d.groupby(d[cnome].astype(str).str.strip())
+        for nome, sub in g:
             if not nome or nome.upper() in ("NAN", "TOTAL"):
                 continue
-            produtos.append({"nome": nome, "val": round(float(r["v"]), 2),
-                             "val_aa": round(float(r["vaa"]), 2),
-                             "qtd": int(r["q"])})
+            produtos.append({
+                "nome": nome,
+                "val": round(float(sub["_v"].sum()), 2),
+                "val_aa": round(float(sub["_vaa"].sum()), 2),
+                "qtd": int(sub["_q"].sum()),
+                "val_loja": round(float(sub.loc[sub["_eh_loja"], "_v"].sum()), 2),
+                "val_cdig": round(float(sub.loc[~sub["_eh_loja"], "_v"].sum()), 2),
+            })
         produtos.sort(key=lambda x: -x["val"])
     return loja, dig, None, loja_aa, dig_aa, produtos
 
