@@ -52,6 +52,36 @@ def mix_ativo(html):
     return mix
 
 
+def _empresa_pelo_conteudo(path):
+    """Descobre a marca lendo a descricao dos produtos.
+    Usado quando o nome do arquivo nao traz a empresa. As marcas costumam
+    aparecer no proprio nome do produto ('BASE MATTE PAYOT ...')."""
+    MARCAS = ["PAYOT", "GRANADO", "PRUDENCE", "BELLIZ", "CLESS", "EVER GREEN",
+              "RICCA", "PHEBO", "KISS", "AQUAFAST", "DEPIMIEL", "FIAT LUX",
+              "KISABOR"]
+    # marcas que pertencem a uma empresa maior
+    DONO = {"RICCA": "BELLIZ", "KISS": "BELLIZ", "PHEBO": "GRANADO"}
+    try:
+        d = pd.read_excel(path, nrows=400)
+    except Exception:
+        return None
+    col = next((c for c in d.columns if "PRODUTO" in norm(c)
+                and "COD" not in norm(c)), None)
+    if col is None:
+        return None
+    texto = " ".join(norm(x) for x in d[col].dropna().astype(str).head(300))
+    contagem = {}
+    for m in MARCAS:
+        n = texto.count(m)
+        if n:
+            contagem[DONO.get(m, m)] = contagem.get(DONO.get(m, m), 0) + n
+    if not contagem:
+        return None
+    # a marca dominante manda
+    emp, n = max(contagem.items(), key=lambda x: x[1])
+    return emp if n >= 5 else None
+
+
 def arquivos(mes=None):
     """{empresa: caminho} do mes pedido, ou do mes mais recente disponivel"""
     achados = {}
@@ -70,6 +100,16 @@ def arquivos(mes=None):
         emp = re.sub(r"\.(XLSX|XLS|XLSM)\b", " ", emp)
         emp = re.sub(r"\b(26|2026)\b", " ", emp)
         emp = re.sub(r"\s+", " ", emp).strip(" .-_")
+        # Se o nome do arquivo nao diz a empresa (ex: 'ESTOQUE SAO JOAO JULHO
+        # 26.xlsx', salvo em 10/08 sem a marca), descobrir pelo CONTEUDO:
+        # a marca costuma aparecer na descricao dos produtos.
+        if not emp:
+            emp = _empresa_pelo_conteudo(p)
+            if emp:
+                print("  (empresa identificada pelo conteudo: %s — %s)"
+                      % (emp, os.path.basename(p)))
+        if not emp:
+            continue
         achados.setdefault(mm, {}).setdefault(emp, []).append(p)
     if not achados:
         return None, {}
@@ -241,7 +281,8 @@ def main():
     # (decisao do Cristiano, 08/08/2026 — mesma regra do faturamento)
     preservadas = []
     for emp, bloco in antigo.items():
-        if emp == "periodo" or emp in novo:
+        # ignora chaves que nao sao empresa (periodo) e restos sem nome
+        if emp == "periodo" or not str(emp).strip() or emp in novo:
             continue
         novo[emp] = bloco
         # guarda o periodo REAL do dado dela (se ja tinha um proprio, mantem),
