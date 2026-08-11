@@ -30,12 +30,23 @@ DRIVE = os.path.expanduser(
 ESTADO = os.path.join(PROJ, "_backups", "estado_arquivos.json")
 
 CATEGORIAS = {
-    "faturamento":  (["FATURAMENTO DAS EMPRESAS*"], ["atualizar_faturamento.py"]),
+    # O faturamento dispara TRES scripts em sequencia, nesta ordem:
+    #   1. atualizar_faturamento.py  -> bloco `empresas` (total por empresa)
+    #   2. atualizar_vendedores.py   -> clientes_detalhado, acomp_vendas,
+    #                                   vendedores (as telas por vendedor e o
+    #                                   ranking de clientes leem daqui)
+    #   3. atualizar_comissoes.py    -> comissoes_* (depende do passo 2)
+    # A ordem importa: a comissao e calculada sobre o que o passo 2 atribuiu.
+    "faturamento":  (["FATURAMENTO DAS EMPRESAS*"], ["atualizar_faturamento.py",
+                                                     "atualizar_vendedores.py",
+                                                     "atualizar_comissoes.py"]),
     "sellout_sj":   (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_sellout.py"]),
     "sellout_dt":   (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_dartora.py"]),
     "sellout_nt":   (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_nilo.py"]),
     "sellout_imec": (["SELL OUT PRINCIPAIS CLIENTES"], ["conferir_imec.py"]),
     "sellout_aqua": (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_unidasul_aquafast.py"]),
+    # Renner: unico cliente com relatorio SEMANAL, em pasta propria
+    "sellout_renner": (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_renner.py"]),
     "sellout_pv":   (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_panvel.py",
                                                         "atualizar_panvel_lojas.py"]),
     "estoque":      (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque.py"]),
@@ -46,6 +57,7 @@ FILTRO = {
     "sellout_sj":   "SAO JOAO",
     "sellout_dt":   "DARTORA",
     "sellout_nt":   "NILO",
+    "sellout_renner": "SEMANA",
     "sellout_imec": "IMEC",
     "sellout_aqua": "AQUAFAST",
     "sellout_pv":   "PANVEL",
