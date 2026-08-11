@@ -164,3 +164,24 @@ reconstruída, mas segue congelada junto com o resto por consistência.
 - Salva os arquivos no Drive ao longo do dia e espera a rotina pegar.
 - Quando ele diz "de junho para trás", inclui junho. Confirmar sempre que a
   fronteira importar.
+
+---
+
+## Mês Corrente: pedidos, não faturamento (11/08/2026)
+
+A tela **Mês Corrente** mostra os **pedidos captados** — o que as secretárias
+digitam na planilha de pedidos diários no Drive. **Nunca** o faturamento.
+
+Motivo (Cristiano): serve para acompanhar o que foi captado no mês, mesmo que
+na hora de faturar o pedido não seja atendido 100%. São duas informações
+diferentes e não devem ser misturadas.
+
+**O bug que existia:** o código somava as duas fontes
+(`realMesBase + LIVE_PEDIDOS.totalGeral`). Enquanto o mês não tinha
+faturamento só apareciam os pedidos; quando o faturamento entrava, o valor
+DOBRAVA. Julho apareceu com R$ 20,7 milhões contra R$ 11,0 milhões reais.
+
+Fonte: `LIVE_PEDIDOS_MULTI[mesIdx]`, que tem todos os meses. Mês sem pedidos
+digitados cai no faturamento, para não zerar histórico antigo.
+
+Todas as **outras** telas seguem usando faturamento normalmente.
