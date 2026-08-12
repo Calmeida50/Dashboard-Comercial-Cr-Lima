@@ -242,3 +242,24 @@ Vale também na exportação para Excel, onde os clientes saem agrupados
   Cmd+Shift+R. Se persistir, abrir com `?v=2` na URL.
 - **`publicar.sh` diz "Nada a publicar"** quando o commit já foi feito antes
   dele — é normal, o `git push` seguinte é que publica.
+
+---
+
+## Pendências zeradas em 12/08/2026
+
+1. **Renner: perfume separado da linha antiga.** O bloco `sellout_renner`
+   agora grava três séries: `meses`, `meses_perfume` e `meses_linha_antiga`.
+   A virada do mês é detectada sempre pela série completa — filtrando, alguma
+   semana fica com MTD zero no recorte e a contagem desalinha.
+   Conferido: as 3 séries com 8 meses e perfume + linha antiga = total.
+   **FALTA:** mostrar as duas séries na TELA da Renner (hoje só o dado está
+   gravado; a tela ainda exibe o total).
+
+2. **Percentual distorcido.** `varPct(v26, v25, minBase)` devolve "novo" (roxo)
+   quando a base de 2025 é menor que R$ 500. Aplicado na tabela de produtos da
+   Panvel. **FALTA:** aplicar nas demais telas que mostram variação por
+   produto (São João, Dartora, Nilo, IMEC).
+
+3. **Canal do cliente** — depende do Cristiano preencher a coluna CANAL em
+   `_saida/Base_Clientes_Canal.xlsx` (543 clientes). Depois disso dá para
+   montar a análise por canal no dashboard.
