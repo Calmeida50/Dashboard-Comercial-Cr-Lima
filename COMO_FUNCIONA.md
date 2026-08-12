@@ -34,6 +34,7 @@ Tudo dentro de `Meu Drive/PROJETO COMERCIAL IA/`:
 | **Renner (semanal)** | pasta própria da Renner | `Semana <N> 2026.xlsx` |
 | Estoque São João | `ESTOQUE DOS PRINCIPAIS CLIENTES/2026/<MÊS>/` | `ESTOQUE SAO JOAO <EMPRESA> <MÊS> 26.xlsx` |
 | Estoque Panvel | idem | contém `PANVEL` |
+| **Financeiro / Receita Líquida** | `FINANCEIRO/` | `CONTROLE DE CUSTO E CONTROLE DE RECEITAS 26.xlsx` |
 
 **O nome importa.** É por ele que o sistema descobre a empresa e o mês.
 Se faltar a empresa no nome, o coletor tenta descobrir pela descrição dos
@@ -53,6 +54,21 @@ Quando o **FATURAMENTO** muda, rodam três scripts em sequência:
 
 As demais categorias são independentes: cada sell out e cada estoque tem seu
 próprio coletor.
+
+O **FINANCEIRO** roda o `atualizar_financeiro.py`, que alimenta as duas telas
+de uma vez: Receita Líquida e Financeiro. É a mesma planilha para as duas.
+Como você a preenche diariamente, ela é reprocessada no ciclo do mesmo dia.
+Duas coisas a saber:
+
+- As colunas de **2025 são preservadas** — a planilha é só de 2026.
+- Se a soma das empresas não bater com o bloco RESUMO da própria planilha, o
+  log avisa. Vale o total pela **soma das empresas**, que é o que reconcilia
+  com a abertura por empresa da tela.
+
+**Estoque: a data que aparece na tela** é a data em que o arquivo foi salvo no
+Drive, por empresa — não o fim do mês. Cliente semanal e cliente mensal
+convivem sem ajuste: cada um mostra a sua data. Regravar o arquivo com o mesmo
+nome já conta como mudança e dispara o coletor.
 
 ---
 

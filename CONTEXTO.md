@@ -276,36 +276,91 @@ Vale também na exportação para Excel, onde os clientes saem agrupados
 
 ---
 
-## PRÓXIMA TAREFA: recalcular a cobertura da São João (diagnóstico 12/08)
+## Sessão de 12/08/2026 — tarde
 
-**Problema:** a aba Cobertura mostra só até JUNHO e apenas 5 produtos por
-empresa. Julho não aparece.
+### Aba Cobertura da São João (Sell Out → São João → Cobertura)
 
-**Causa:** `atualizar_sellout.py` apenas PRESERVA `cobertura_mensal` (linhas
-~136-163) — nunca calcula. O dado veio de um carregamento antigo que parou em
-junho e cobria 5 SKUs. O comentário no topo do arquivo diz isso explicitamente:
-"PRESERVA: cobertura_mensal (dentro de produtos) e avg3m".
+Ganhou, nesta ordem: **Produto · Sell out 2025 · Sell out 2026 · 26x25 ·
+Lojas com estoque (data) · Lojas no mês · Mês anterior · Δ mês · Mesmo mês
+2025 · Δ ano**, mais linha de TOTAL. O Excel da aba saiu igual.
 
-Confirmado:
-    GRANADO: 86 produtos, só 5 com cobertura_mensal
-    BELLIZ : 139 produtos, só 5 com cobertura_mensal
-    meses gravados: jan a jun (sem julho)
+Não precisou de coletor: `val_2026`/`val_2025` já existiam por produto e por
+mês para praticamente todos os SKUs. A variação usa o `varPct` com base mínima
+de R$ 500 — abaixo disso mostra "novo" em roxo.
 
-**O que fazer:** calcular a cobertura no coletor, a partir dos arquivos de
-sell out da São João, que trazem venda LOJA A LOJA. Para cada SKU e cada mês:
-    qtd_venda = nº de lojas com venda > 0
-    qtd_zero  = nº de lojas da rede sem venda daquele SKU
-    lojas     = lista das lojas sem venda (o modal usa para detalhar)
+A coluna de estoque vem de `estoque_sao_joao[emp].produtos[].lojas` (lojas com
+estoque > 0), casada pelo NOME do produto. Casou 100% nas seis empresas nas
+linhas que aparecem na tela. Itens com **zero lojas com estoque** saem em
+vermelho — ruptura total na rede.
 
-A estrutura atual de `cobertura_mensal` é:
-    {"jan": {"qtd_zero": 26, "qtd_venda": 1231, "lojas": [...]}, ...}
+### Bloco "Cobertura de Lojas — Top 5 SKUs" REMOVIDO
 
-Atenção: o filtro "Apenas itens ativos" usa MIX_ATIVO_SAO_JOAO. E o cálculo
-deve respeitar o corte (só de junho em diante) — jan-mai fica como está.
+Ficava no fim da tela de Sell Out e perdeu a função para a aba Cobertura.
+Saíram o card, o modal de lojas sem venda e ~206 linhas de JS
+(`renderCoberturaSkus`, `selecionarCoberturaMes`, `abrirModalCobertura`,
+`MESES_COB` e as do modal).
 
-**Já pronto e funcionando:** as 3 colunas novas na tabela (Venda 2025, Venda
-2026 e 26x25) já usam `val_2026[mes]` e `val_2025[mes]`, que existem para
-TODOS os produtos e todos os meses. Elas vão aparecer sozinhas assim que a
-cobertura for calculada para mais SKUs.
+**Consequência importante:** `cobertura_mensal` não é mais usado em tela
+nenhuma. A tarefa "recalcular a cobertura no `atualizar_sellout.py`", que era
+a próxima da fila, DEIXOU DE EXISTIR. Se aparecer em anotação antiga, ignore.
 
-`MESES_COB` já foi corrigido para listar os 12 meses.
+### Data de atualização do estoque, por cliente
+
+Antes os coletores gravavam só `periodo` = último dia do mês da pasta, e a tela
+mostrava "31/07" mesmo para arquivo salvo em 05/08. Agora
+`atualizar_estoque.py` e `atualizar_estoque_panvel.py` gravam **`atualizado_em`
+com a data real do arquivo, por empresa**, mais o nome do arquivo.
+
+Na tela, uma função só (`dataEstoque`) alimenta três pontos: badge do estoque
+São João, badge da Panvel e o cabeçalho da coluna de estoque na Cobertura.
+Cai no `periodo` como reserva se faltar a data. Empresa sem arquivo novo
+conserva a data dela, não herda a de quem mandou.
+
+Isso cobre ritmos diferentes: São João e Panvel semanais, outros mensais. O
+`sincronizar.py` assina cada pasta por nome + tamanho + data de modificação,
+então regravar o MESMO nome de arquivo já dispara o coletor.
+
+Ressalva: a data vem do arquivo no Drive, não de dentro da planilha (o layout
+de estoque não tem data). Se o Drive reescrever o arquivo numa
+ressincronização, a data pode andar sem o dado ter mudado.
+
+### Somatório no modal de produtos do Sell Out
+
+Clicando na empresa no Consolidado (aba Acumulado), o modal agora fecha com uma
+linha TOTAL: nº de SKUs, val 2026, qtd 2026, val 2025, qtd 2025 e variação.
+Confere com os cards do topo — as seis empresas somam R$ 40.364.623,88.
+
+### Receita Líquida e Financeiro entraram no ciclo — 11ª categoria
+
+**Antes não tinham atualização automática nenhuma:** nem coletor, nem categoria
+no `sincronizar.py`. Os três blocos eram carregados à mão e estavam parados em
+junho desde 11/07.
+
+Criado o **`atualizar_financeiro.py`**, que lê
+`FINANCEIRO/CONTROLE DE CUSTO E CONTROLE DE RECEITAS 26.xlsx` e escreve
+`receitas_empresa_mensal`, `financeiro` e `receita_liquida`.
+
+Layout da planilha: aba `RECEITAS 2026` com matriz mês × empresa, coluna TOTAL
+e um bloco RESUMO abaixo; aba `CONTROLE DE CUSTOS 2026` com blocos de 3 colunas
+por mês (rótulo | VALOR | %), seis por faixa, em duas faixas (jan-jun, jul-dez)
+— interessa a linha TOTAL.
+
+Decisões do coletor:
+- **PRESERVA as colunas de 2025** (`jur25`/`rec25`/`liq25`). A planilha é só de
+  2026; recalcular zeraria o comparativo.
+- **Trava de conferência:** reprocessa jan–mai e compara com o publicado; se
+  divergir mais de R$ 0,01, aborta sem gravar. Rodou limpo.
+- **Junho mudou:** a planilha tem duas fontes de receita que não fecham — soma
+  das empresas R$ 370.791,55 contra RESUMO R$ 369.568,23 (dif R$ 1.223,32). O
+  dashboard usava o RESUMO. Adotada a SOMA DAS EMPRESAS, que reconcilia com a
+  abertura por empresa da tela. Líquido de junho: R$ 128.343,87 → R$ 129.567,19.
+  O coletor avisa toda vez que as duas fontes discordarem.
+
+Nota: a planilha de **pedidos diários** funciona por outro caminho — o
+navegador busca o Google Sheets ao vivo via `gviz` (`MASTER_DATA_SHEET_ID`),
+sem coletor e sem passar pela rotina das 18h. É a única tela assim.
+
+### Aprendizado de método
+
+`publicar.sh` versiona **só o index.html**. Mudança em `.py` precisa de commit
+à mão depois — passou batido duas vezes nesta sessão.
