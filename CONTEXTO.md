@@ -206,3 +206,39 @@ A coluna Total mostra quantos clientes distintos compraram no ano.
 
 Vale também na exportação para Excel, onde os clientes saem agrupados
 (recolhidos, com o +/- na lateral) reproduzindo o expandir da tela.
+
+---
+
+## O que foi feito em 12/08/2026
+
+- **YTD por vendedor** ganhou abertura por EMPRESA com as mesmas 5 linhas da
+  visão geral (Hist. 2025, Obj. 2026, Realizado, % Real/Obj., Cresc. vs 2025),
+  mais a linha de **Positivação**. Clicando na empresa, expande os CLIENTES
+  com realizado mês a mês, total 2026, total 2025 e variação em colunas
+  próprias. Botão de **Excel** exporta tudo no mesmo layout, com os clientes
+  agrupados (o Excel mostra o +/- na lateral).
+- **Mês Corrente**: nova coluna **Tendência** (projeção de fechamento) e
+  **% Tend.** (quanto isso representa do objetivo), logo após o Realizado.
+  Cálculo por DIAS ÚTEIS: `realizado / dias úteis decorridos × dias úteis do
+  mês`. Dias corridos distorceriam, porque pedido não entra no fim de semana.
+  Mês fechado mostra "—". Como a tela lê os pedidos digitados, a tendência se
+  atualiza todo dia.
+- **Cobertura da São João** ganhou 3 colunas: Venda 2025, Venda 2026 e 26x25.
+- **`gerar_base_clientes.py`**: gera `_saida/Base_Clientes_Canal.xlsx` com 543
+  clientes (413 ativos em 2026, 130 que só compraram em 2025), vendedor,
+  empresas, venda dos dois anos e coluna CANAL em branco com lista suspensa
+  (alimentar / farma / indireto) + aba de resumo automática.
+  **PENDENTE:** o Cristiano vai classificar o canal; depois disso dá para
+  montar a análise por canal no dashboard.
+
+### Aprendizados de método (12/08)
+
+- **Sempre `python3 validar_js.py` antes de publicar.** Já está dentro do
+  `publicar.sh`.
+- **Verificar se a substituição realmente aconteceu.** Contei a definição de
+  uma função como se fosse a chamada e publiquei código que nunca rodava.
+  Conferir com `grep -c` esperando o número certo de ocorrências.
+- **Cache do navegador engana.** Depois de publicar, esperar 1–2 min e usar
+  Cmd+Shift+R. Se persistir, abrir com `?v=2` na URL.
+- **`publicar.sh` diz "Nada a publicar"** quando o commit já foi feito antes
+  dele — é normal, o `git push` seguinte é que publica.
