@@ -273,3 +273,39 @@ Vale também na exportação para Excel, onde os clientes saem agrupados
 3. **Canal do cliente — PENDENTE**, aguardando o Cristiano preencher a coluna
    CANAL em `_saida/Base_Clientes_Canal.xlsx`. Depois disso: montar a análise
    por canal (alimentar / farma / indireto) no dashboard.
+
+---
+
+## PRÓXIMA TAREFA: recalcular a cobertura da São João (diagnóstico 12/08)
+
+**Problema:** a aba Cobertura mostra só até JUNHO e apenas 5 produtos por
+empresa. Julho não aparece.
+
+**Causa:** `atualizar_sellout.py` apenas PRESERVA `cobertura_mensal` (linhas
+~136-163) — nunca calcula. O dado veio de um carregamento antigo que parou em
+junho e cobria 5 SKUs. O comentário no topo do arquivo diz isso explicitamente:
+"PRESERVA: cobertura_mensal (dentro de produtos) e avg3m".
+
+Confirmado:
+    GRANADO: 86 produtos, só 5 com cobertura_mensal
+    BELLIZ : 139 produtos, só 5 com cobertura_mensal
+    meses gravados: jan a jun (sem julho)
+
+**O que fazer:** calcular a cobertura no coletor, a partir dos arquivos de
+sell out da São João, que trazem venda LOJA A LOJA. Para cada SKU e cada mês:
+    qtd_venda = nº de lojas com venda > 0
+    qtd_zero  = nº de lojas da rede sem venda daquele SKU
+    lojas     = lista das lojas sem venda (o modal usa para detalhar)
+
+A estrutura atual de `cobertura_mensal` é:
+    {"jan": {"qtd_zero": 26, "qtd_venda": 1231, "lojas": [...]}, ...}
+
+Atenção: o filtro "Apenas itens ativos" usa MIX_ATIVO_SAO_JOAO. E o cálculo
+deve respeitar o corte (só de junho em diante) — jan-mai fica como está.
+
+**Já pronto e funcionando:** as 3 colunas novas na tabela (Venda 2025, Venda
+2026 e 26x25) já usam `val_2026[mes]` e `val_2025[mes]`, que existem para
+TODOS os produtos e todos os meses. Elas vão aparecer sozinhas assim que a
+cobertura for calculada para mais SKUs.
+
+`MESES_COB` já foi corrigido para listar os 12 meses.
