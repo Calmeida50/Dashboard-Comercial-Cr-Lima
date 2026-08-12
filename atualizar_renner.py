@@ -78,10 +78,18 @@ def montar():
     ofp = of[of["cod"].isin(R.PERFUME_LOJA)]
     exp_ = ex[ex["cod"].isin(R.PERFUME_LOJA)]
 
-    # --- meses
-    meses = [{"mes": nome, "semana": s, "val": round(v, 2),
-              "val_aa": round(vaa, 2), "un": int(u), "un_aa": int(uaa)}
-             for nome, s, v, vaa, u, uaa in R.meses_fechados()]
+    # --- meses: TRES series.
+    # Em 2025 nao havia perfume na Renner, entao o total mistura duas
+    # operacoes: o perfume que entrou (sem base de comparacao) e a linha
+    # antiga que encolheu. Somados, o valor sobe 352% e a unidade cai 36%.
+    def _serie(flag):
+        return [{"mes": nome, "semana": s, "val": round(v, 2),
+                 "val_aa": round(vaa, 2), "un": int(u), "un_aa": int(uaa)}
+                for nome, s, v, vaa, u, uaa in R.meses_fechados(apenas_perfume=flag)]
+
+    meses = _serie(None)
+    meses_perfume = _serie(True)
+    meses_linha_antiga = _serie(False)
 
     # --- produtos
     g = d.groupby("cod").agg(
@@ -177,6 +185,8 @@ def montar():
         "periodo_semana": sem,
         "atualizado": datetime.date.today().isoformat(),
         "meses": meses,
+        "meses_perfume": meses_perfume,
+        "meses_linha_antiga": meses_linha_antiga,
         "resumo": {
             "venda_sem": round(sem_tot, 2), "venda_sem_aa": round(sem_aa, 2),
             "ytd": round(ytd_tot, 2), "ytd_aa": round(ytd_aa, 2),

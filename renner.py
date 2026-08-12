@@ -164,33 +164,59 @@ def ler(path):
     return out
 
 
-def meses_fechados(todas=None):
+def meses_fechados(todas=None, apenas_perfume=None):
     """Reconstroi os meses a partir da virada do MTD.
-    O MTD zera quando o mes vira, entao a semana ANTERIOR a virada carrega o
-    total fechado daquele mes. Devolve [(nome_mes, semana, dados_da_semana)].
+
+    apenas_perfume=True  -> so os 20 SKUs do mix de perfume
+    apenas_perfume=False -> so a linha antiga (Pink, shampoo, cremes...)
+    apenas_perfume=None  -> tudo junto
+
+    Separar importa: em 2025 NAO havia perfume na Renner. Somar tudo faz o
+    valor subir 352% enquanto a unidade cai 36% no mesmo mes — sao duas
+    operacoes diferentes na mesma linha.
     """
     if todas is None:
         todas = semanas()
     NOMES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
              "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
+
+    # A VIRADA DO MES e detectada SEMPRE pela serie completa. Filtrando por
+    # perfume ou linha antiga, alguma semana pode ficar com MTD zero nesse
+    # recorte e a contagem de meses desalinha — a linha antiga chegava a
+    # "setembro" enquanto o perfume parava em agosto.
+    viradas = {}          # numero da semana -> True se ela FECHA um mes
+    ant_geral = None
+    ult_sem = None
+    for n, p in todas:
+        dg = ler(p)
+        mtd_g = float(dg["vl_mtd"].sum())
+        if mtd_g == 0:
+            continue
+        if ant_geral is not None and mtd_g < ant_geral:
+            viradas[ult_sem] = True
+        ant_geral = mtd_g
+        ult_sem = n
+
     resumo = []
-    ant_mtd = None
-    ant = None          # (semana, soma_mtd, soma_mtd_aa, soma_un, soma_un_aa)
+    ant = None
     idx_mes = 0
     for n, p in todas:
         d = ler(p)
-        mtd = float(d["vl_mtd"].sum())
-        # semana incompleta (arquivo veio sem dados) — nao serve de fechamento
-        if mtd == 0:
-            continue
-        if ant_mtd is not None and mtd < ant_mtd:
-            # virou o mes: a semana ANTERIOR fechou
-            resumo.append((NOMES[idx_mes], ant[0], ant[1], ant[2], ant[3], ant[4]))
+        if apenas_perfume is True:
+            d = d[d["cod"].isin(MIX_PERFUME)]
+        elif apenas_perfume is False:
+            d = d[~d["cod"].isin(MIX_PERFUME)]
+        # a semana pode nao ter dado NESTE recorte, mas ainda fecha o mes
+        vals = (n, float(d["vl_mtd"].sum()), float(d["vl_mtd_aa"].sum()),
+                float(d["un_mtd"].sum()), float(d["un_mtd_aa"].sum()))
+        if viradas.get(n):
+            # esta semana E a que fecha o mes: sao os valores DELA que valem
+            resumo.append((NOMES[idx_mes], vals[0], vals[1], vals[2], vals[3], vals[4]))
             idx_mes += 1
-        ant_mtd = mtd
-        ant = (n, mtd, float(d["vl_mtd_aa"].sum()),
-               float(d["un_mtd"].sum()), float(d["un_mtd_aa"].sum()))
-    if ant:   # mes corrente, ainda aberto
+            ant = None
+            continue
+        ant = vals
+    if ant:
         resumo.append((NOMES[idx_mes] + " (parcial)", ant[0], ant[1], ant[2],
                        ant[3], ant[4]))
     return resumo
