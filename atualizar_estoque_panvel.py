@@ -188,6 +188,11 @@ def main():
         P[emp]["estoque"] = {
             "total_rede": rede or est_ant.get("total_rede", 0),
             "periodo": periodo,
+            # data REAL do arquivo, por empresa — a Panvel manda toda semana,
+            # entao o fim do mes da pasta nao serve como "atualizado em".
+            "atualizado_em": datetime.date.fromtimestamp(
+                os.path.getmtime(caminho)).isoformat(),
+            "arquivo": os.path.basename(caminho),
             "produtos": prods,
             "avg3m_map": avg,
             "sem_venda_60": sv,

@@ -255,6 +255,13 @@ def main():
 
         novo[emp] = {
             "tem_giro": any(x.get("giro") for x in prods),
+            # data REAL do arquivo usado, nao o fim do mes da pasta. E o que a
+            # tela mostra como "atualizado em". Cada cliente manda no seu ritmo
+            # (a Sao Joao e a Panvel toda semana, outros uma vez por mes), entao
+            # a data tem de ser por empresa, nao uma so para o bloco inteiro.
+            "atualizado_em": datetime.date.fromtimestamp(
+                os.path.getmtime(p)).isoformat(),
+            "arquivo": os.path.basename(p),
             "total_lojas": nlojas,
             "total_produtos": nat,          # a tela usa isso no % de ruptura
             "total_produtos_geral": len(prods),
@@ -289,7 +296,11 @@ def main():
         # senao a tela mostraria julho para um estoque que e de junho
         if not bloco.get("periodo_proprio"):
             bloco["periodo_proprio"] = antigo.get("periodo")
-        preservadas.append("%s (dado de %s)" % (emp, bloco["periodo_proprio"]))
+        # mesma logica para a data de atualizacao: empresa sem arquivo novo
+        # conserva a data do arquivo antigo dela.
+        if not bloco.get("atualizado_em"):
+            bloco["atualizado_em"] = bloco["periodo_proprio"]
+        preservadas.append("%s (dado de %s)" % (emp, bloco["atualizado_em"]))
     if preservadas:
         print("\nPRESERVADAS — sem arquivo neste mes, mantido o anterior:")
         for e in preservadas:
