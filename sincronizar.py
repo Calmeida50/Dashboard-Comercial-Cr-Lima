@@ -16,6 +16,7 @@ Categorias e seus coletores:
     sellout_imec -> conferir_imec.py
     sellout_aqua -> atualizar_unidasul_aquafast.py
     estoque      -> atualizar_estoque.py
+    financeiro   -> atualizar_financeiro.py  (Receita Liquida + Financeiro)
 
 Estado guardado em _backups/estado_arquivos.json
 """
@@ -51,6 +52,10 @@ CATEGORIAS = {
                                                         "atualizar_panvel_lojas.py"]),
     "estoque":      (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque.py"]),
     "estoque_pv":   (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque_panvel.py"]),
+    # Financeiro: uma planilha so, preenchida diariamente pelo Cristiano, que
+    # alimenta as telas Receita Liquida e Financeiro. Ate 12/08/2026 esses dois
+    # blocos eram carregados a mao e estavam parados em junho.
+    "financeiro":   (["FINANCEIRO"], ["atualizar_financeiro.py"]),
 }
 # filtro por nome de arquivo, para cada categoria so olhar o que lhe interessa
 FILTRO = {
