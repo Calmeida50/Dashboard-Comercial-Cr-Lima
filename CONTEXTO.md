@@ -263,3 +263,13 @@ Vale também na exportação para Excel, onde os clientes saem agrupados
 3. **Canal do cliente** — depende do Cristiano preencher a coluna CANAL em
    `_saida/Base_Clientes_Canal.xlsx` (543 clientes). Depois disso dá para
    montar a análise por canal no dashboard.
+
+### Atualização das pendências — fim do dia 12/08
+
+1. **Renner: perfume × linha antiga — CONCLUÍDO.** Dado gravado em três séries
+   E exibido na tela (aba Resumo tem 3 tabelas: Perfume, Linha antiga, Total).
+2. **Percentual distorcido — CONCLUÍDO.** Base mínima de R$ 500 nos 4 pontos
+   que calculam variação por produto; abaixo disso mostra "novo" em roxo.
+3. **Canal do cliente — PENDENTE**, aguardando o Cristiano preencher a coluna
+   CANAL em `_saida/Base_Clientes_Canal.xlsx`. Depois disso: montar a análise
+   por canal (alimentar / farma / indireto) no dashboard.
