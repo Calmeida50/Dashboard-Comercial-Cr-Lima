@@ -185,3 +185,24 @@ Fonte: `LIVE_PEDIDOS_MULTI[mesIdx]`, que tem todos os meses. Mês sem pedidos
 digitados cai no faturamento, para não zerar histórico antigo.
 
 Todas as **outras** telas seguem usando faturamento normalmente.
+
+---
+
+## Positivação no YTD por vendedor (12/08/2026)
+
+Cada empresa, na abertura do YTD por vendedor, traz a linha **Positivação**:
+quantos clientes da carteira compraram naquele mês e o percentual.
+
+**Critério da carteira (confirmado pelo Cristiano):** clientes que compraram
+em **2026 OU 2025**. Inclui os que estão parados este ano — que são justamente
+os que precisam ser trabalhados. A alternativa (contar só quem comprou em
+2026) daria um percentual mais alto e esconderia essa oportunidade.
+
+Exemplo: CESAR / BELLIZ tem 53 clientes na carteira; 17 positivados em janeiro
+= 32%. Contando só quem comprou em 2026 seriam 44 clientes e 38,6%.
+
+Semáforo: verde ≥60%, laranja ≥35%, vermelho abaixo.
+A coluna Total mostra quantos clientes distintos compraram no ano.
+
+Vale também na exportação para Excel, onde os clientes saem agrupados
+(recolhidos, com o +/- na lateral) reproduzindo o expandir da tela.
