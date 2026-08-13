@@ -52,6 +52,10 @@ CATEGORIAS = {
                                                         "atualizar_panvel_lojas.py"]),
     "estoque":      (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque.py"]),
     "estoque_pv":   (["ESTOQUE DOS PRINCIPAIS CLIENTES"], ["atualizar_estoque_panvel.py"]),
+    # Lady Diu: planilha mestre unica (2025 e 2026), so quantidade. O
+    # relatorio mensal do cliente pode ficar guardado na pasta do mes como
+    # comprovante — o coletor le apenas a planilha mestre.
+    "sellout_ld":   (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_sellout_ladydiu.py"]),
     # Financeiro: uma planilha so, preenchida diariamente pelo Cristiano, que
     # alimenta as telas Receita Liquida e Financeiro. Ate 12/08/2026 esses dois
     # blocos eram carregados a mao e estavam parados em junho.
@@ -66,6 +70,7 @@ FILTRO = {
     "sellout_imec": "IMEC",
     "sellout_aqua": "AQUAFAST",
     "sellout_pv":   "PANVEL",
+    "sellout_ld":   "LADY",
     "estoque":      "SAO JOAO",
     "estoque_pv":   "PANVEL",
 }
