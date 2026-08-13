@@ -124,12 +124,19 @@ def main():
 
     arqs = [p for p in glob.glob(os.path.join(PASTA, "*.xls*"))
             if not os.path.basename(p).startswith("~$")]
+    # mix SEM empresa no nome vale para todas: em 13/08/2026 o arquivo passou
+    # de "...CATEGORIA GRANADO.xlsx" para "...CATEGORIA.xlsx" e o coletor
+    # deixou de encontra-lo. Casar so por empresa era fragil demais.
+    mix_geral = next((p for p in arqs
+                      if "MIX" in os.path.basename(p).upper()
+                      and not any(e in os.path.basename(p).upper()
+                                  for e in EMPRESAS)), None)
     out = {}
     for emp in EMPRESAS:
         cl = next((p for p in arqs if "CLUSTER" in os.path.basename(p).upper()
                    and emp in os.path.basename(p).upper()), None)
         mx = next((p for p in arqs if "MIX" in os.path.basename(p).upper()
-                   and emp in os.path.basename(p).upper()), None)
+                   and emp in os.path.basename(p).upper()), None) or mix_geral
         if not cl and not mx:
             continue
         bloco = {"lojas_liberadas": {}, "familia": {}, "categoria": {},
