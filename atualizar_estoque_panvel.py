@@ -57,9 +57,15 @@ def arquivos(mes=None):
             continue
         emp = n.replace("ESTOQUE", "").replace("PANVEL", "").replace("DIMED", "")
         emp = emp.replace(mm, "")
-        emp = re.sub(r"\(\s*\d+\s*\)", " ", emp)
+        # QUALQUER coisa entre parenteses sai: era "(1)" das copias do Drive e
+        # agora tambem "( 12.08 )", a data da coleta semanal que o Cristiano
+        # passou a escrever no nome. Sem isso o coletor criou as empresas
+        # fantasma "CLESS ( 12.08 )" em 13/08/2026.
+        emp = re.sub(r"\([^)]*\)", " ", emp)
         emp = re.sub(r"\.(XLSX|XLS|XLSM)\b", " ", emp)
         emp = re.sub(r"\b(26|2026)\b", " ", emp)
+        # sobra de data solta no nome, tipo "12.08" ou "12-08" sem parenteses
+        emp = re.sub(r"\b\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?\b", " ", emp)
         emp = re.sub(r"\s+", " ", emp).strip(" .-_")
         achados.setdefault(mm, {}).setdefault(emp, []).append(p)
     if not achados:
@@ -71,7 +77,7 @@ def arquivos(mes=None):
     return mes, achados[mes]
 
 
-def ler(path, avg):
+def ler(path, avg, avg_nome=None):
     """devolve (produtos, total_rede, sem_venda_60)"""
     d = pd.read_excel(path)
     col = {norm(c): c for c in d.columns}
@@ -90,7 +96,7 @@ def ler(path, avg):
     cCds  = [col[k] for k in col if "EST CD" in k or ("EST" in k and "CD" in k)]
     cDias = ache("DIAS", "SEM", "VENDA")
     if cNome is None or cLoja is None:
-        return None, 0, []
+        return None, 0, [], {}
 
     d["_loja"] = pd.to_numeric(d[cLoja], errors="coerce").fillna(0)
     d["_cd"] = 0
@@ -100,17 +106,26 @@ def ler(path, avg):
     d = d[d["_n"].str.len() > 0]
 
     total_rede = int(d[cFil].nunique()) if cFil else 0
-    avgU = {norm(k): v for k, v in (avg or {}).items()}
+    # avg vem do sell out: chaveado por CODIGO. `avg_nome` e a reserva.
+    avgCod = {str(k).strip(): v for k, v in (avg or {}).items()}
+    avgU = {norm(k): v for k, v in (avg_nome or {}).items()}
 
     prods, semvenda = [], []
+    # DISTRIBUICAO DE ESTOQUE por loja: quantas filiais tem 0, 1, 2, 3 ou 4+
+    # unidades do item EM LOJA. Ate 13/08/2026 a tela chamava de "distribuicao
+    # por loja" um dado que na verdade vinha do arquivo de VENDA por loja, em
+    # faixas de quantidade VENDIDA — dizia "em estoque" e nao era.
+    dist = {}
     for nome, g in d.groupby("_n"):
         qloja = int(g["_loja"].sum())
         # ATENCAO: o estoque de CD e da REDE, nao da loja — vem REPETIDO em
         # todas as linhas do mesmo produto. Somar multiplicaria pelo numero de
         # lojas (664x). Pegar o valor UMA vez por produto.
         qcd = int(g["_cd"].max())
+        cod = str(g[cCod].iloc[0]) if cCod else ""
+        cod = re.sub(r"\.0$", "", cod)
         item = {
-            "cod": str(g[cCod].iloc[0]) if cCod else "",
+            "cod": cod,
             "nome": nome,
             "ean": str(g[cEan].iloc[0]) if cEan else "",
             "qtde_lojas": qloja,
@@ -118,7 +133,18 @@ def ler(path, avg):
             "qtde": qloja + qcd,
             "lojas": int((g["_loja"] > 0).sum()),
             "lojas_rup": int((g["_loja"] == 0).sum()),
-            "giro": round(float(avgU.get(norm(nome), 0)), 1),
+            # giro casa primeiro pelo CODIGO (chave real entre sell out e
+            # estoque); o nome fica como reserva para arquivo sem codigo.
+            "giro": round(float(avgCod.get(cod) or avgU.get(norm(nome)) or 0), 1),
+        }
+        un = g["_loja"]
+        dist[cod or nome] = {
+            "nome": nome,
+            "n0": int((un == 0).sum()),
+            "n1": int((un == 1).sum()),
+            "n2": int((un == 2).sum()),
+            "n3": int((un == 3).sum()),
+            "n4": int((un >= 4).sum()),
         }
         if cDias is not None:
             dias = pd.to_numeric(g[cDias], errors="coerce").dropna()
@@ -140,7 +166,7 @@ def ler(path, avg):
 
     prods.sort(key=lambda x: -x["qtde"])
     semvenda.sort(key=lambda x: -x["dias"])
-    return prods, total_rede, semvenda
+    return prods, total_rede, semvenda, dist
 
 
 def main():
@@ -177,7 +203,8 @@ def main():
         caminho = sorted(porEmp[emp], key=os.path.getmtime, reverse=True)[0]
         antigo = P.get(emp, {})
         avg = (antigo.get("estoque", {}) or {}).get("avg3m_map", {})
-        prods, rede, sv = ler(caminho, avg)
+        avg_nome = (antigo.get("estoque", {}) or {}).get("avg3m_nome", {})
+        prods, rede, sv, dist = ler(caminho, avg, avg_nome)
         if prods is None:
             print("  ! %s: layout nao reconhecido" % emp)
             continue
@@ -195,6 +222,9 @@ def main():
             "arquivo": os.path.basename(caminho),
             "produtos": prods,
             "avg3m_map": avg,
+            "avg3m_nome": avg_nome,
+            "avg3m_meses": est_ant.get("avg3m_meses"),
+            "dist_estoque": dist,
             "sem_venda_60": sv,
         }
         marca = "   << EMPRESA NOVA" if emp in novas else ""

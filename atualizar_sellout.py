@@ -120,6 +120,26 @@ def montar(emp, dados, antigo):
         [{"nome": k, "val26": round(lj26.get(k, 0.0), 2), "val25": round(lj25.get(k, 0.0), 2)}
          for k in set(lj26) | set(lj25)],
         key=lambda x: -x["val26"])
+
+    # ── VENDA MEDIA MENSAL (avg3m): 3 ULTIMOS MESES FECHADOS ──────────────
+    # Alimenta a cobertura da tela de estoque: cobertura = estoque / avg3m * 30.
+    # Ate 13/08/2026 estava CONGELADO em abr-jun — nenhum script calculava, os
+    # tres que citavam o campo apenas preservavam (mesmo caso do
+    # cobertura_mensal). Agora rola sozinho quando o mes fecha.
+    # O MES CORRENTE FICA DE FORA, mesmo que ja tenha arquivo salvo: mes
+    # parcial derrubaria a media e a cobertura pareceria melhor do que e.
+    hoje = datetime.date.today()
+    corrente = ABREV[hoje.month - 1] if hoje.year == 2026 else None
+    fechados = [a for a in meses26 if a != corrente]
+    ult3 = fechados[-3:]
+    avg = {}
+    if ult3:
+        for a in ult3:
+            for k, v in m26[a]["prod_q"].items():
+                avg[k] = avg.get(k, 0) + v
+        avg = {k: round(v / len(ult3), 1) for k, v in avg.items() if v}
+    novo["avg3m"] = avg
+    novo["avg3m_meses"] = ult3
     return novo, (lj26, lj25, m26, m25, meses26, meses25)
 
 

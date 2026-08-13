@@ -110,6 +110,13 @@ def ler(path, detalhe=False):
 
     produtos = []
     if cnome is not None:
+        # codigo do item: e a chave que casa o sell out com o estoque e com a
+        # distribuicao. Sem ele, so a GRANADO casava (a PRUDENCE e a CLESS nao
+        # tinham `cod` em `produtos`) e a venda media ficava vazia.
+        ccod = next((c for c in d.columns
+                     if "COD" in norm(c) and "ITEM" in norm(c)
+                     and not any(x in norm(c) for x in
+                                 ("FORNECEDOR", "BARRA", "GRUPO", "DESCRICAO"))), None)
         d["_eh_loja"] = (d[org].astype(str).str.strip()
                          .map(lambda k: norm(k).startswith("LOJA"))
                          if org is not None else True)
@@ -117,14 +124,18 @@ def ler(path, detalhe=False):
         for nome, sub in g:
             if not nome or nome.upper() in ("NAN", "TOTAL"):
                 continue
-            produtos.append({
+            item = {
                 "nome": nome,
                 "val": round(float(sub["_v"].sum()), 2),
                 "val_aa": round(float(sub["_vaa"].sum()), 2),
                 "qtd": int(sub["_q"].sum()),
                 "val_loja": round(float(sub.loc[sub["_eh_loja"], "_v"].sum()), 2),
                 "val_cdig": round(float(sub.loc[~sub["_eh_loja"], "_v"].sum()), 2),
-            })
+            }
+            if ccod is not None:
+                c0 = str(sub[ccod].iloc[0]).strip()
+                item["cod"] = re.sub(r"\.0$", "", c0)
+            produtos.append(item)
         produtos.sort(key=lambda x: -x["val"])
     return loja, dig, None, loja_aa, dig_aa, produtos
 

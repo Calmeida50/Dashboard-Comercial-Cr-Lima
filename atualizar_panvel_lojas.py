@@ -158,7 +158,12 @@ def main():
                       % (emp, meses[-2], "{:,.2f}".format(tot_a),
                          "{:,.2f}".format(tot_p), "{:,.2f}".format(dif)))
                 if abs(dif) > max(1.0, tot_p * 0.001):
-                    print("     ! divergencia acima de 0,1% — NAO vou sobrescrever %s" % emp)
+                    # "%%" escapa o sinal de porcentagem. Com um "%" solto o
+                    # print QUEBRAVA o script inteiro na hora de avisar — e a
+                    # trava so dispara quando ja ha problema, entao o erro so
+                    # aparecia no pior momento. Mesmo defeito do log de 09/08.
+                    print("     ! divergencia acima de 0,1%% — NAO vou sobrescrever %s"
+                          % emp)
                     continue
 
         lojas, dist = (None, None)

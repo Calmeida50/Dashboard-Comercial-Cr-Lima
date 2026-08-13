@@ -105,6 +105,40 @@ def main():
         P[emp]["ytd_cdig"] = round(td, 2)
         P[emp]["ytd_total"] = round(tl + td, 2)
 
+        # ── VENDA MEDIA MENSAL: janela movel dos 3 ULTIMOS MESES FECHADOS ──
+        # Ate 13/08/2026 esse campo estava CONGELADO em abr-jun: nenhum script
+        # o calculava, todos apenas preservavam (mesmo caso do cobertura_mensal).
+        # Criterio definido pelo Cristiano: LOJA + SITE somados. O estoque fica
+        # na loja e abastece tambem a venda do site, entao dividir a cobertura
+        # por so uma parte inflaria o numero.
+        # A chave e o CODIGO do item, que e como o estoque e a distribuicao
+        # casam. Cai para o nome quando o arquivo nao trouxer codigo.
+        # O MES CORRENTE FICA DE FORA, mesmo com arquivo ja salvo: a analise
+        # semanal grava agosto parcial, e um mes pela metade derrubaria a
+        # media — a cobertura pareceria melhor do que e. A media so vira
+        # quando o mes fecha.
+        hoje = datetime.date.today()
+        sig_corrente = SIGLA[C.MESES[hoje.month - 1]] if hoje.year == 2026 else None
+        fechados = [m for m in monthly if m["mes"] != sig_corrente]
+        ult3 = fechados[-3:]
+        avg, avg_nome = {}, {}
+        for m in ult3:
+            for p_ in (m.get("produtos") or []):
+                q = p_.get("qtd") or 0
+                if p_.get("cod"):
+                    avg[p_["cod"]] = avg.get(p_["cod"], 0) + q
+                avg_nome[p_["nome"]] = avg_nome.get(p_["nome"], 0) + q
+        n3 = len(ult3) or 1
+        avg = {k: round(v / n3, 1) for k, v in avg.items()}
+        avg_nome = {k: round(v / n3, 1) for k, v in avg_nome.items()}
+        est_ant = P[emp].get("estoque") or {}
+        est_ant["avg3m_map"] = avg
+        est_ant["avg3m_nome"] = avg_nome
+        est_ant["avg3m_meses"] = [m["mes"] for m in ult3]
+        P[emp]["estoque"] = est_ant
+        print("     venda media (%s): %d itens por codigo, %d por nome"
+              % ("+".join(m["mes"] for m in ult3), len(avg), len(avg_nome)))
+
         # `produtos` = acumulado do ano por SKU, montado a partir dos meses.
         # Sem isso a empresa nova (CLESS) ficava com a lista VAZIA e a tela
         # acabava mostrando os produtos da empresa anterior.

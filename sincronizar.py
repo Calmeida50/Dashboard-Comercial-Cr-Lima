@@ -56,6 +56,9 @@ CATEGORIAS = {
     # relatorio mensal do cliente pode ficar guardado na pasta do mes como
     # comprovante — o coletor le apenas a planilha mestre.
     "sellout_ld":   (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_sellout_ladydiu.py"]),
+    # Parametros da Panvel (cluster de lojas liberadas + familia/categoria).
+    # Mudam ~2x por ano; ficam em PARAMETROS PANVEL/, fora das pastas de mes.
+    "params_pv":    (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_parametros_panvel.py"]),
     # Financeiro: uma planilha so, preenchida diariamente pelo Cristiano, que
     # alimenta as telas Receita Liquida e Financeiro. Ate 12/08/2026 esses dois
     # blocos eram carregados a mao e estavam parados em junho.
@@ -71,6 +74,7 @@ FILTRO = {
     "sellout_aqua": "AQUAFAST",
     "sellout_pv":   "PANVEL",
     "sellout_ld":   "LADY",
+    "params_pv":    "CLUSTER|MIX PANVEL",
     "estoque":      "SAO JOAO",
     "estoque_pv":   "PANVEL",
 }
@@ -103,7 +107,10 @@ def impressao(pastas, filtro=None):
                     continue
                 if not p.lower().endswith((".xlsx", ".xls", ".xlsm", ".txt")):
                     continue
-                if filtro and filtro not in nome.upper():
+                # o filtro aceita alternativas separadas por "|": basta UMA
+                # casar. Usado pelos parametros da Panvel, que sao dois
+                # arquivos de nomes diferentes (CLUSTER... e MIX PANVEL...).
+                if filtro and not any(f in nome.upper() for f in filtro.split("|")):
                     continue
                 if _mes_congelado_no_caminho(p):
                     continue
