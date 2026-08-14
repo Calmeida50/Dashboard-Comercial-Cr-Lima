@@ -364,3 +364,160 @@ sem coletor e sem passar pela rotina das 18h. É a única tela assim.
 
 `publicar.sh` versiona **só o index.html**. Mudança em `.py` precisa de commit
 à mão depois — passou batido duas vezes nesta sessão.
+
+
+## Sessão de 13/08/2026 — dia inteiro
+
+Estado no fim do dia: tudo publicado e versionado. **13 categorias** no ciclo.
+
+### Lady Diu — 12º cliente de Sell Out (só quantidade)
+
+`atualizar_sellout_ladydiu.py` lê UMA planilha mestre em
+`SELL OUT PRINCIPAIS CLIENTES/SELL OUT LADYDIU 2025 E 2026 /`, com abas 2026 e
+2025, 9 produtos, meses nas colunas. Trava: a coluna TOTAL é conferida contra a
+soma dos meses, produto a produto; divergiu, aborta.
+
+**Único cliente sem valor** — só unidades. Fica FORA de todo totalizador em R$
+(card de total, consolidado por empresa, ranking de lojas).
+
+**Armadilha evitada:** comparar o ano inteiro de 2025 (12 meses) com 2026 (7)
+mostrava queda de 50% que era só diferença de período. O campo
+`tot25_periodo` restringe 2025 aos MESMOS meses que 2026 tem. `tot25` (ano
+cheio) fica guardado para quando dezembro chegar.
+
+Decisão: planilha mestre única em vez de arquivo por mês. São 9 números por
+mês; manter os nomes de produto sob controle do Cristiano elimina o risco de o
+cliente mandar "SILVERFLEX 380 AG" num mês e "Silverflex Cu 380 Ag" no outro.
+
+### BUG GRAVE corrigido: `p.val26` órfão em 3 telas
+
+`(p.val26 || 0)` dentro de laços cuja variável era `c`, `v` ou `r`. Lançava
+ReferenceError e o `try/catch` engolia num `console.warn` — a seção sumia SEM
+AVISO. Atingia **11 dos 12 vendedores** na abertura por empresa do YTD (só
+disparava quando havia cliente sem venda em 2025). Também estava no Ranking por
+Empresa, no Ranking por Vendedor e nos cartões da Renner.
+
+O catch agora MOSTRA uma tarja vermelha com a mensagem. Sumir calado é pior do
+que aparecer quebrado.
+
+### Lacuna de mix no Ranking de Clientes
+
+Seletor "Quem não compra:" + empresa. Dois blocos separados:
+**PAROU** (comprava em 2025, zerou em 2026) e **NUNCA COMPROU** (ordenado pelo
+tamanho do cliente). Respeita o filtro de vendedor. Excel com a lista completa.
+
+Por que separado: dos 407 clientes ativos, **290 compram UMA só empresa** — uma
+lista crua de "não compra X" traria 300 nomes inúteis. O bloco PAROU tem 42
+casos no total, com nome e sobrenome. Maior achado: **Nilo Tozzo comprava
+R$ 395.591 de Cless em 2025 e zerou**.
+
+### avg3m: a média de 3 meses estava CONGELADA (São João e Panvel)
+
+Mesma doença do `cobertura_mensal`: nenhum script calculava, os três que citavam
+o campo apenas preservavam. Estava parada em abr–jun.
+
+Agora `atualizar_sellout.py` (São João) e `atualizar_panvel.py` calculam a cada
+rodada, com os **3 últimos meses FECHADOS**. O mês corrente fica de fora por
+regra explícita — mês parcial derrubaria a média e a cobertura pareceria melhor
+do que é.
+
+Critério da Panvel definido pelo Cristiano: **loja + site somados**. O estoque
+fica na loja e abastece também a venda do site; dividir por só uma parte
+inflaria a cobertura.
+
+Não foi possível reproduzir o valor antigo (10.310 para o Sab Enxofre) por conta
+nenhuma — veio de um critério que não existe mais no projeto. O novo é
+auditável: (9.749+10.204+10.436)/3 = 10.129,7.
+
+### Distribuição por loja da Panvel: era VENDA com rótulo de ESTOQUE
+
+O botão dizia "quantas lojas têm 0,1,2,3,4+ unidades **em estoque**", mas o dado
+vinha do arquivo de VENDA por loja, em faixas de quantidade VENDIDA (0, 1-5,
+6-20, 21-50, +50). A data "22/07/2026" estava escrita fixa no código.
+
+Agora `atualizar_estoque_panvel.py` calcula `dist_estoque` de verdade, do
+arquivo de estoque (`Qtd Est Loja` por filial). A diferença é grande: num item,
+a tela dizia 8 lojas com 4+ unidades; são **604 de 655**.
+
+### Parâmetros da Panvel — 13ª categoria
+
+`atualizar_parametros_panvel.py` lê `SELL OUT PRINCIPAIS CLIENTES/PARAMETROS
+PANVEL/`:
+- `CLUSTER PANVEL <EMPRESA> ATUALIZADO.xlsx` → `lojas_liberadas` (filiais
+  distintas por item). Granado 149 SKUs, Prudence 22, Cless 12.
+- `MIX PANVEL COM FAMILIA E CATEGORIA.xlsx` → família e categoria na NOSSA
+  nomenclatura. **O relatório de sell out traz família/categoria próprias, com
+  outra nomenclatura — por decisão do Cristiano, valem sempre as da planilha.**
+
+Mix SEM empresa no nome vale para todas (o arquivo perdeu o "GRANADO" no nome
+em 13/08 e o coletor deixou de achá-lo).
+
+O coletor AVISA quando o mesmo código aparece com família/categoria divergente.
+Foram 11 casos, corrigidos pelo Cristiano no mesmo dia. Cada código aparece em
+2 linhas na planilha: a correção precisa ser feita nas duas.
+
+### Modal do mês da Panvel — colunas novas
+
+Ordem final: **Família · Categoria · Código · Produto · Mix · Venda 2025 ·
+Venda 2026 · Var. % · Qtd · Lojas liberadas · Lojas com estoque · Lojas que
+venderam**. A variação em R$ saiu.
+
+- **Mix ATIVO/INATIVO**: quem está no cluster é ativo. Inativo ainda aparece
+  vendendo estoque residual — são <1% da venda, quase todos KITs (que podem ser
+  falso inativo: talvez a Panvel controle kits fora do cluster).
+- **Lojas com estoque em vermelho** quando abaixo de 90% das liberadas.
+- **Lojas que venderam**: só o MÊS CORRENTE, por decisão do Cristiano. Vem do
+  arquivo por loja mais recente (`lojas_mes`).
+
+### Classificação de arquivo por CONTEÚDO, não por nome
+
+Em 13/08 a Panvel passou a exportar DOIS arquivos por empresa:
+```
+SELL OUT PANVEL GRANADO AGOSTO 26 ( 12.08 ).xlsx          -> POR LOJA
+SELL OUT PANVEL GRANADO PRODUTO AGOSTO 26 ( 12.08 ).xlsx  -> consolidado
+```
+O nome curto, que em julho era o consolidado, virou o por loja. Decidir pelo
+nome erraria um dos meses. Regra: tem `Filial Loja` → por loja; tem
+`Venda Efetiva Ano Anterior` → consolidado.
+
+Cada um tem o que o outro não tem: o consolidado traz o **comparativo com
+2025**; o por loja traz as **filiais**. Por isso os dois precisam ser salvos.
+
+**Isso destravou o ranking de lojas**, parado desde junho: a conferência
+comparava o arquivo por loja (só loja física) com o total publicado (incluindo
+site). Com o arquivo certo, julho fecha em 0,00 nas três empresas.
+
+### Mês parcial
+
+`atualizar_panvel.py` marca `parcial: True` e `ate` no mês corrente. A data sai
+do NOME do arquivo — "( 12.08 )" — e cai na data de gravação se não houver.
+Selo âmbar "◑ PARCIAL até 12/08" na tabela, no gráfico e no título do modal.
+
+O **percentual continua válido** em mês parcial: o relatório da Panvel traz o
+mesmo período nos dois anos (01-12/08 contra 01-12/08). O que não pode é ler o
+valor absoluto como mês fechado.
+
+### Ritmo de gravação combinado com o Cristiano
+
+| o quê | quando |
+|---|---|
+| Estoque Panvel e São João | semanal |
+| Sell out Panvel (os DOIS arquivos) | semanal |
+| Sell out São João | 1x por mês, no início do mês seguinte |
+
+Por isso a São João nunca cai como "parcial" — o mês dela já fechou quando é
+salvo.
+
+### Bugs de bastidor corrigidos
+
+1. **Empresas fantasma**: o novo padrão de nome com data "( 12.08 )" fez o
+   coletor de estoque criar "CLESS ( 12.08 )" como empresa. Ele só limpava
+   parênteses com números inteiros, tipo "(1)". Agora limpa qualquer conteúdo
+   entre parênteses e datas soltas. As três fantasmas foram removidas do dado.
+2. **`%` mal escapado derrubava o script no pior momento**: o print da trava de
+   divergência em `atualizar_panvel_lojas.py` usava "0,1%" sem escapar,
+   quebrando com ValueError justamente ao avisar de problema — e levando junto
+   o coletor encadeado. Mesmo defeito do log de 09/08.
+3. **Casamento por código**: o estoque procurava a média por NOME e a média era
+   chaveada por CÓDIGO. A Cless ficava com média vazia. O código do item passou
+   a ser lido do arquivo de origem em `conferir_panvel.py`.

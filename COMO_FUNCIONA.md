@@ -34,7 +34,36 @@ Tudo dentro de `Meu Drive/PROJETO COMERCIAL IA/`:
 | **Renner (semanal)** | pasta própria da Renner | `Semana <N> 2026.xlsx` |
 | Estoque São João | `ESTOQUE DOS PRINCIPAIS CLIENTES/2026/<MÊS>/` | `ESTOQUE SAO JOAO <EMPRESA> <MÊS> 26.xlsx` |
 | Estoque Panvel | idem | contém `PANVEL` |
+| **Sell out Lady Diu** | `SELL OUT PRINCIPAIS CLIENTES/SELL OUT LADYDIU 2025 E 2026/` | planilha mestre única, com `LADY` e `DIU` no nome |
+| **Parâmetros Panvel** | `SELL OUT PRINCIPAIS CLIENTES/PARAMETROS PANVEL/` | `CLUSTER PANVEL <EMPRESA> ATUALIZADO.xlsx` e `MIX PANVEL COM FAMILIA E CATEGORIA.xlsx` |
 | **Financeiro / Receita Líquida** | `FINANCEIRO/` | `CONTROLE DE CUSTO E CONTROLE DE RECEITAS 26.xlsx` |
+
+## Com que frequência salvar cada coisa
+
+| o quê | quando | observação |
+|---|---|---|
+| Estoque Panvel e São João | **semanal** | a data que aparece na tela é a do arquivo, por empresa |
+| Sell out Panvel | **semanal**, os DOIS arquivos | ver abaixo |
+| Sell out São João | **1x por mês**, no início do mês seguinte | por isso nunca aparece como parcial |
+| Financeiro | diário, conforme preenche | |
+| Lady Diu | mensal, preenchendo a coluna do mês na planilha mestre | 9 números |
+| Parâmetros Panvel | quando a Panvel mandar cluster novo (~2x/ano) | |
+
+**A Panvel precisa de DOIS arquivos por empresa, toda semana**, porque cada um
+tem o que o outro não tem:
+
+- o **por produto** traz o comparativo com 2025 (mesmo período nos dois anos)
+- o **por loja** traz as filiais, que alimentam "lojas que venderam" e o
+  ranking de lojas
+
+Pode nomear como quiser: o coletor identifica pelo conteúdo, não pelo nome.
+Se escrever a data no nome — `( 12.08 )` —, ela vira a data de corte do mês
+parcial que aparece na tela.
+
+**Mês corrente aparece com selo ◑ PARCIAL.** O percentual continua confiável
+(o relatório compara o mesmo período nos dois anos); o que não vale é ler o
+valor absoluto como mês fechado. Esse mês NÃO entra na média de 3 meses.
+
 
 **O nome importa.** É por ele que o sistema descobre a empresa e o mês.
 Se faltar a empresa no nome, o coletor tenta descobrir pela descrição dos
