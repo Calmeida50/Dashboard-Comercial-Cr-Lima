@@ -45,6 +45,27 @@ def bloco_panvel():
     return s, i, j + 1, json.loads(s[i:j + 1])
 
 
+def _data_corte(path):
+    """ate que dia o mes parcial vai.
+
+    Preferencia para a data escrita no NOME do arquivo — "( 12.08 )" — porque
+    e o periodo REAL dos dados, informado por quem exportou. A data de
+    gravacao serve de reserva: se o arquivo for salvo um dia depois da
+    extracao, ela erra por um dia, o nome nao.
+    """
+    m = re.search(r"(\d{1,2})[./-](\d{1,2})(?:[./-](\d{2,4}))?", os.path.basename(path))
+    if m:
+        dia, mes = int(m.group(1)), int(m.group(2))
+        ano = int(m.group(3) or 2026)
+        if ano < 100:
+            ano += 2000
+        try:
+            return datetime.date(ano, mes, dia).isoformat()
+        except ValueError:
+            pass
+    return datetime.date.fromtimestamp(os.path.getmtime(path)).isoformat()
+
+
 def main():
     simular = "--simular" in sys.argv
     s, ini, fim, P = bloco_panvel()
@@ -56,6 +77,7 @@ def main():
     print("=" * 70)
     ok = div = 0
     novas = []
+    hoje = datetime.date.today()   # usado para marcar o mes corrente (parcial)
 
     for emp in empresas:
         antigo = P.get(emp, {})
@@ -93,6 +115,15 @@ def main():
                     "val25_loja": round(loja_aa, 2), "val25_cdig": round(dig_aa, 2),
                     # produtos do mes: permite clicar no mes e ver o detalhe
                     "produtos": prods or []}
+            # MES PARCIAL: a Panvel e salva TODA SEMANA, entao o mes corrente
+            # entra pela metade. O comparativo com 2025 continua justo (o
+            # relatorio traz o mesmo periodo nos dois anos), mas o valor
+            # absoluto nao pode ser lido como mes fechado — por isso a marca.
+            # A data de corte sai do nome do arquivo, "( 12.08 )", que o
+            # Cristiano escreve; se nao houver, cai na data de gravacao.
+            if C.MESES.index(mes) + 1 == hoje.month and hoje.year == 2026:
+                item["parcial"] = True
+                item["ate"] = _data_corte(p)
             monthly.append(item)
 
         if not monthly:
@@ -117,7 +148,7 @@ def main():
         # semanal grava agosto parcial, e um mes pela metade derrubaria a
         # media — a cobertura pareceria melhor do que e. A media so vira
         # quando o mes fecha.
-        hoje = datetime.date.today()
+        # (`hoje` ja definido no inicio do main)
         sig_corrente = SIGLA[C.MESES[hoje.month - 1]] if hoje.year == 2026 else None
         fechados = [m for m in monthly if m["mes"] != sig_corrente]
         ult3 = fechados[-3:]
