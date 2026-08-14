@@ -50,13 +50,21 @@ def acha_col(d, *chaves):
 
 
 def ler(path):
-    """{nome_normalizado: categoria}"""
+    """{nome_normalizado: categoria}, lista de ativos e conflitos.
+
+    Dois layouts convivem (14/08/2026):
+      BELLIZ  -> Categoria | Produto           (so os ativos)
+      GRANADO -> Status | CATEGORIA | DESCRICAO (ativos E inativos)
+    Quando houver coluna Status, os ativos saem dela; senao, TODOS os itens do
+    arquivo sao considerados ativos, que e a convencao do arquivo da Belliz.
+    """
     d = pd.read_excel(path)
     cProd = acha_col(d, "PRODUTO", "DESCRICAO", "ITEM")
     cCat = acha_col(d, "CATEGORIA")
+    cSt = acha_col(d, "STATUS")
     if cProd is None or cCat is None:
-        return None, []
-    out, conflitos = {}, []
+        return None, None, []
+    out, ativos, conflitos = {}, [], []
     for _, r in d.iterrows():
         n = norm(r[cProd])
         c = norm(r[cCat])
@@ -65,7 +73,9 @@ def ler(path):
         if n in out and out[n] != c:
             conflitos.append((n, out[n], c))
         out[n] = c
-    return out, conflitos
+        if cSt is None or norm(r[cSt]).startswith("ATIV"):
+            ativos.append(str(r[cProd]).strip())
+    return out, ativos, conflitos
 
 
 def main():
@@ -86,7 +96,7 @@ def main():
         alvo = next((p for p in arqs if emp in norm(os.path.basename(p))), None)
         if not alvo:
             continue
-        cats, conf = ler(alvo)
+        cats, ativos, conf = ler(alvo)
         if cats is None:
             print("  ! %s: nao achei as colunas Produto/Categoria em %s"
                   % (emp, os.path.basename(alvo)))
@@ -96,10 +106,11 @@ def main():
                   % (emp, len(conf)))
             for n, a, b in conf[:5]:
                 print("      %s -> %s / %s" % (n[:44], a, b))
-        out[emp] = {"categoria": cats, "arquivo": os.path.basename(alvo)}
-        print("  %-11s %3d itens · %2d categorias · %s"
-              % (emp, len(cats), len(set(cats.values())),
-                 os.path.basename(alvo)[:40]))
+        out[emp] = {"categoria": cats, "ativos": sorted(set(ativos)),
+                    "arquivo": os.path.basename(alvo)}
+        print("  %-11s %3d itens (%d ativos) · %2d categorias · %s"
+              % (emp, len(cats), len(set(ativos)), len(set(cats.values())),
+                 os.path.basename(alvo)[:38]))
 
     if not out:
         print("nenhum arquivo reconhecido em %s" % PASTA)
@@ -117,6 +128,26 @@ def main():
             sem = [n for n in prods if norm(n) not in b["categoria"]]
             print("     %s: %d de %d produtos do sell out sem categoria (inativos)"
                   % (emp, len(sem), len(prods)))
+            # CONFERENCIA: o mix ativo tambem vive escrito a mao no index.html
+            # (MIX_ATIVO_SAO_JOAO). Se a planilha traz Status, os dois tem de
+            # concordar — senao o selo ATIVO e a categoria contam historias
+            # diferentes na mesma linha.
+            m = re.search(r"%s: new Set\(\[(.*?)\]\)" % re.escape(emp),
+                          s0[s0.index("const MIX_ATIVO_SAO_JOAO"):
+                             s0.index("\n};", s0.index("const MIX_ATIVO_SAO_JOAO"))],
+                          re.S)
+            if m and b.get("ativos"):
+                cod = {norm(x) for x in re.findall(r'"([^"]+)"', m.group(1))}
+                pla = {norm(x) for x in b["ativos"]}
+                if cod != pla:
+                    print("     ! %s: mix ativo do codigo (%d) x planilha (%d) NAO batem"
+                          % (emp, len(cod), len(pla)))
+                    for n in sorted(cod - pla)[:4]:
+                        print("        so no codigo  : %s" % n[:52])
+                    for n in sorted(pla - cod)[:4]:
+                        print("        so na planilha: %s" % n[:52])
+                else:
+                    print("     %s: mix ativo bate com o codigo (%d itens)" % (emp, len(cod)))
     except Exception as e:
         print("  (nao consegui conferir contra o sell out: %s)" % e)
 
