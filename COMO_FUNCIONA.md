@@ -36,6 +36,7 @@ Tudo dentro de `Meu Drive/PROJETO COMERCIAL IA/`:
 | Estoque Panvel | idem | contém `PANVEL` |
 | **Sell out Lady Diu** | `SELL OUT PRINCIPAIS CLIENTES/SELL OUT LADYDIU 2025 E 2026/` | planilha mestre única, com `LADY` e `DIU` no nome |
 | **Parâmetros Panvel** | `SELL OUT PRINCIPAIS CLIENTES/PARAMETROS PANVEL/` | `CLUSTER PANVEL <EMPRESA> ATUALIZADO.xlsx` e `MIX PANVEL COM FAMILIA E CATEGORIA.xlsx` |
+| **Parâmetros São João** | `SELL OUT PRINCIPAIS CLIENTES/PARAMETRO SAO JOAO/` | `MIX <EMPRESA> SAO JOAO COM CATEGORIA.xlsx` |
 | **Financeiro / Receita Líquida** | `FINANCEIRO/` | `CONTROLE DE CUSTO E CONTROLE DE RECEITAS 26.xlsx` |
 
 ## Com que frequência salvar cada coisa
@@ -48,6 +49,7 @@ Tudo dentro de `Meu Drive/PROJETO COMERCIAL IA/`:
 | Financeiro | diário, conforme preenche | |
 | Lady Diu | mensal, preenchendo a coluna do mês na planilha mestre | 9 números |
 | Parâmetros Panvel | quando a Panvel mandar cluster novo (~2x/ano) | |
+| Parâmetros São João | quando cadastrar item novo | uma linha na planilha, sem mexer em código |
 
 **A Panvel precisa de DOIS arquivos por empresa, toda semana**, porque cada um
 tem o que o outro não tem:

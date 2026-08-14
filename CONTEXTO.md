@@ -521,3 +521,98 @@ salvo.
 3. **Casamento por código**: o estoque procurava a média por NOME e a média era
    chaveada por CÓDIGO. A Cless ficava com média vazia. O código do item passou
    a ser lido do arquivo de origem em `conferir_panvel.py`.
+
+
+## Sessão de 14/08/2026
+
+### Categoria por item da São João — 14ª categoria do ciclo
+
+`atualizar_parametros_sao_joao.py` lê `SELL OUT PRINCIPAIS CLIENTES/PARAMETRO
+SAO JOAO/` e grava `PARAMS_SAO_JOAO`. O sell out da São João NÃO traz categoria
+e NÃO tem código de item — o casamento é pelo **nome normalizado**.
+
+**Dois layouts convivem, e o coletor aceita os dois:**
+
+| arquivo | colunas | contém |
+|---|---|---|
+| `MIX BELLIZ SAO JOAO COM CATEGORIA.xlsx` | Categoria, Produto | só ativos (61) |
+| `MIX GRANADO SAO JOAO COM CATEGORIA.xlsx` | Status, CATEGORIA, DESCRIÇAO | ativos e inativos (98) |
+
+O layout da Granado é melhor: cobre 86 de 86 produtos do sell out. Na Belliz,
+78 de 139 ficam sem categoria (são os inativos, com venda residual) — para
+resolver, basta refazer a planilha dela no formato de três colunas.
+
+**Onde aparece:** modal do Acumulado (clicando na empresa no Consolidado) e
+modal Mensal (clicando no mês), sempre ANTES da descrição. Excel dos dois
+acompanha.
+
+**Item novo = uma linha na planilha.** Não precisa mexer em código.
+
+### Mix ATIVO/INATIVO da São João agora sai da planilha
+
+Havia DUPLICIDADE: a lista de ativos vivia escrita à mão no `index.html`
+(`MIX_ATIVO_SAO_JOAO`) e também na planilha nova. `isSjAtivo()` passou a
+preferir a planilha quando ela traz a coluna Status; sem Status, cai na lista
+do código. O coletor confere as duas fontes a cada rodada e avisa se
+divergirem — em 14/08 batiam exatamente (Granado 71, Belliz 61).
+
+### Modal Mensal da São João
+
+Saiu a variação em R$, entrou **variação % em quantidade** ao lado das
+quantidades (mostra se o crescimento veio de volume ou de preço) e a coluna
+**Lojas com estoque**, ao lado de Lojas com venda.
+
+Vermelho quando há MENOS lojas com estoque do que lojas que venderam — sinal
+clássico de ruptura. Ex.: Sab Enxofre Granado vendeu em 1.229 e tem estoque em
+1.208.
+
+Ressalva: o estoque é a FOTO mais recente, não o estoque daquele mês. A data
+vai no subtítulo do modal.
+
+### Modal do mês da Panvel — colunas finais
+
+Acrescentadas **Estoque lojas (un)** e **Cobertura (dias)**.
+
+    cobertura = estoque nas lojas / (qtd vendida / dias do periodo)
+
+Os dias saem do dado: no mês parcial, da data no nome do arquivo ("( 12.08 )" →
+12 dias); no mês fechado, os dias do mês. Ajusta sozinho a cada arquivo novo.
+Vermelho abaixo de 15 dias, azul acima de 45.
+
+**Essa cobertura DIVERGE da aba Estoque, e as duas estão certas:** a da aba usa
+a média de 3 meses FECHADOS (ritmo normal); esta usa o giro do mês corrente
+(ritmo de agora).
+
+### BUG: Excel de comissões não baixava
+
+`exportarComissaoVendedorModal()` usava `nome.toUpperCase()` onde a variável do
+escopo é `vendedor`. ReferenceError → o clique no botão Excel não fazia NADA,
+sem mensagem. Mesma família do `p.val26` de 13/08, e mesma origem: o comentário
+`/* _fixCvModal */` na linha mostra que veio de um script de correção aplicado
+por cima do arquivo (`fix_cv_modal.py` está na pasta do Drive).
+
+Corrigido de quebra: o total de CV somava `c.cv` (zero quando o valor precisa
+ser calculado), então a linha TOTAL vinha menor que a soma das linhas.
+
+### Comissões passam a exibir CENTAVOS
+
+O dado SEMPRE esteve certo — `comissoes_detalhe` grava com 2 casas. Era só a
+exibição: `fmt()` usa `Math.round`. Trocado para `fmtFull()` em toda a tela de
+Comissões (modal por cliente, resumo por vendedor, detalhe por empresa, cartões
+e tabela de pagamento). 45 substituições.
+
+**Comissão não pode arredondar** — arredondar muda o que se paga.
+
+Corrigido junto: `fmtFull()` usava `Math.abs()` e engolia o sinal negativo. Um
+saldo de −R$ 120,00 aparecia como R$ 120,00, com a cor vermelha como única
+pista. Isso também afetava a tela Financeiro, que já usava a função.
+
+### Padrão que se repete — vale como alerta
+
+Três bugs em dois dias vieram do MESMO padrão: **script de correção aplicado
+por cima do `index.html` deixando variável de outro escopo**. `p.val26` em três
+telas (13/08) e `nome` no Excel de comissões (14/08). Todos silenciosos: o erro
+ia para o console e a tela simplesmente não fazia nada.
+
+Ao mexer em qualquer função, conferir se as variáveis citadas existem NAQUELE
+escopo. E desconfiar de trechos marcados com comentários tipo `/* _fix... */`.

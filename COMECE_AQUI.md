@@ -1,11 +1,16 @@
 # COMECE POR AQUI — retomada em chat novo
 
-Última sessão: 13/08/2026, noite.
+Última sessão: 14/08/2026.
 
 ## O que fazer AGORA
 
 **Nada urgente em aberto.** Tudo publicado, versionado e no ar.
 O que resta depende do Cristiano:
+
+- **Categoria dos itens inativos da Belliz (São João).** A planilha dela só tem
+  os 61 ativos, então 78 produtos aparecem sem categoria. A da Granado traz
+  Status com ativos e inativos e cobre 100%. Refazer a da Belliz nesse formato
+  (Status | Categoria | Descrição) resolve — o coletor já aceita os dois.
 
 - **Canal do cliente:** ele vai preencher a coluna CANAL em
   `_saida/Base_Clientes_Canal.xlsx` (543 clientes: alimentar / farma /
@@ -52,10 +57,16 @@ E respeite estas regras de trabalho, que vieram de erros reais:
    que são posicionais.
 8. **Nada de decidir tipo de arquivo pelo NOME** quando dá para olhar as
    colunas. Nomes mudam de significado; layout não.
+9. **Desconfiar de trechos com comentário `/* _fix... */`.** São correções
+   aplicadas por script sobre o `index.html` e já deixaram TRÊS bugs de
+   variável fora de escopo, todos silenciosos (`p.val26` em 3 telas, `nome` no
+   Excel de comissões). Ao mexer numa função, conferir se as variáveis citadas
+   existem naquele escopo.
+10. **Dinheiro de comissão nunca arredonda.** Use `fmtFull()`, não `fmt()`.
 
 ## Estado do sistema
 
-**13 categorias** no ciclo automático, rotina às 18h (que também publica
+**14 categorias** no ciclo automático, rotina às 18h (que também publica
 sozinha se o index mudar). Julho fechado em R$ 11.004.891,35, batendo entre
 faturamento, vendedores e comissões. Agosto da Panvel entrando semanalmente,
 marcado como parcial.
