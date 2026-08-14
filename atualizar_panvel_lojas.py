@@ -40,13 +40,21 @@ def norm(s):
 
 
 def arquivos():
-    """{(empresa, mes_num): caminho} — mes lido de DENTRO do arquivo"""
+    """{(empresa, mes_num): caminho} — mes lido de DENTRO do arquivo.
+
+    O arquivo e reconhecido pelo CONTEUDO (tem coluna de filial), nao pelo
+    nome. Ate 13/08/2026 exigia "POR LOJA" no nome; nesse dia a Panvel passou
+    a exportar "SELL OUT PANVEL GRANADO AGOSTO 26 ( 12.08 ).xlsx" loja a loja,
+    sem essa expressao, e agosto simplesmente nao entrava.
+    """
     idx = {}
     for p in glob.glob(os.path.join(DRIVE, "**", "*.xls*"), recursive=True):
         n = norm(os.path.basename(p))
-        if "POR LOJA" not in n:
+        if os.path.basename(p).startswith("~$"):
             continue
         if "PANVEL" not in n and "DIMED" not in n:
+            continue
+        if "PRODUTO" in n:          # a versao consolidada, sem filial
             continue
         emp = None
         for e in ("GRANADO", "PRUDENCE", "CLESS", "EVER GREEN", "BELLIZ", "PAYOT"):
@@ -55,6 +63,13 @@ def arquivos():
                 break
         if not emp:
             continue
+        if "POR LOJA" not in n:
+            try:
+                cols = [norm(c) for c in pd.read_excel(p, nrows=0).columns]
+            except Exception:
+                continue
+            if not any("FILIAL LOJA" in c for c in cols):
+                continue
         try:
             d = pd.read_excel(p, usecols=lambda c: norm(c) in ("ANO", "MES"), nrows=5)
             cm = next((c for c in d.columns if norm(c) == "MES"), None)

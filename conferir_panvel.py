@@ -54,20 +54,43 @@ def to_num(v):
         return 0.0
 
 
+def _eh_por_loja(path, nome_norm):
+    """True se o arquivo e a versao LOJA A LOJA.
+
+    Ate 13/08/2026 bastava procurar "POR LOJA" no nome. Nesse dia a Panvel
+    passou a exportar dois arquivos por empresa com nomes quase iguais:
+        SELL OUT PANVEL GRANADO AGOSTO 26 ( 12.08 ).xlsx          -> por loja
+        SELL OUT PANVEL GRANADO PRODUTO AGOSTO 26 ( 12.08 ).xlsx  -> por produto
+    Sem distinguir, o coletor pegava um dos dois por acaso — e cada um tem
+    informacao que o outro nao tem (o por produto traz o ano anterior; o por
+    loja traz as filiais). Por isso a decisao passou a olhar o CONTEUDO:
+    tem coluna de filial -> e por loja. O nome fica so como atalho.
+    """
+    if "POR LOJA" in nome_norm:
+        return True
+    if "PRODUTO" in nome_norm:
+        return False
+    try:
+        cols = [norm(c) for c in pd.read_excel(path, nrows=0).columns]
+    except Exception:
+        return False
+    return any("FILIAL" in c for c in cols)
+
+
 def arquivos(por_loja=False):
     """indexa {(empresa, mes): caminho}. por_loja=True traz a outra familia."""
     idx = {}
     for p in glob.glob(os.path.join(DRIVE, "**", "*.xls*"), recursive=True):
         n = norm(os.path.basename(p))
-        if "PANVEL" not in n:
-            continue
-        eh_loja = "POR LOJA" in n
-        if eh_loja != por_loja:
+        if "PANVEL" not in n or os.path.basename(p).startswith("~$"):
             continue
         emp = next((e for e in EMPRESAS if e in n), None)
         mes = next((m for m in MESES if m in n), None)
-        if emp and mes:
-            idx[(emp, mes)] = p
+        if not (emp and mes):
+            continue
+        if _eh_por_loja(p, n) != por_loja:
+            continue
+        idx[(emp, mes)] = p
     return idx
 
 
