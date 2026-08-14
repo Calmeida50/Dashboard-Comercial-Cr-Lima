@@ -63,6 +63,16 @@ E respeite estas regras de trabalho, que vieram de erros reais:
    Excel de comissões). Ao mexer numa função, conferir se as variáveis citadas
    existem naquele escopo.
 10. **Dinheiro de comissão nunca arredonda.** Use `fmtFull()`, não `fmt()`.
+11. **Vendedor errado num cliente? Corrija em `equivalencias.py`, nunca na
+    tela** — os arquivos de faturamento não trazem vendedor. Confira antes se
+    já existe regra para aquele cliente (`grep -n "NOME" equivalencias.py`):
+    num dicionário a ÚLTIMA vence, e uma regra antiga mais abaixo anula a
+    correção em silêncio. Depois rode, nesta ordem, `atualizar_vendedores.py`
+    e `atualizar_comissoes.py`.
+12. **Meses anteriores ao corte já estão PAGOS — não se mexe** (decisão do
+    Cristiano, 14/08/2026). O coletor de comissões se recusa a tocá-los por
+    desenho. Se algum dia for preciso, é cirurgia pontual com conferência de
+    totais, e só com autorização explícita.
 
 ## Estado do sistema
 

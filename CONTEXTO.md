@@ -616,3 +616,85 @@ ia para o console e a tela simplesmente não fazia nada.
 
 Ao mexer em qualquer função, conferir se as variáveis citadas existem NAQUELE
 escopo. E desconfiar de trechos marcados com comentários tipo `/* _fix... */`.
+
+
+## Correções de vendedor — 14/08/2026
+
+### Onde mora a atribuição (importante)
+
+Os arquivos de faturamento **não trazem vendedor** — só cliente, código e
+valor. Quem decide é `equivalencias.py`, dicionário `VENDEDOR`, com chave
+`(EMPRESA, CLIENTE_CANONICO)`.
+
+`atualizar_vendedores.py` resolve em **3 camadas, nesta ordem**:
+
+1. vendedor vindo do próprio arquivo (quando existe a coluna)
+2. `equivalencias.VENDEDOR`
+3. cadastro/carteira
+
+**Corrigir na tela não adianta** — o próximo coletor sobrescreve. A correção é
+sempre no `equivalencias.py`.
+
+Depois de editar, rodar NESTA ORDEM:
+
+    python3 atualizar_vendedores.py    # reconstrói clientes_detalhado
+    python3 atualizar_comissoes.py     # deriva as comissões do bloco acima
+
+Simular os dois antes. E atenção: rodar `atualizar_comissoes.py` sozinho não
+muda nada — ele lê o `clientes_detalhado` já gravado.
+
+### ARMADILHA: dicionário Python, a última regra vence
+
+A LUMIER tinha `("PAYOT", "LUMIER...") : "AHMANDA"` mais ABAIXO no arquivo do
+que o bloco novo que eu havia acrescentado. Num dict, a última definição vence
+— a correção teria sido anulada em silêncio. Ao corrigir, **conferir se já
+existe regra para aquele cliente** e remover a antiga:
+
+    grep -n "NOME_DO_CLIENTE" equivalencias.py
+
+E validar a resolução efetiva antes de rodar o coletor:
+
+    python3 -c "import equivalencias as E; print(E.vendedor_de('PAYOT','LUMIER COSMETICOS LTDA'))"
+
+### Correções feitas
+
+| cliente | de | para | onde |
+|---|---|---|---|
+| KUCHAK COMERCIAL DE ALIMENTOS LTDA | HEIDI | **SILVIA** | 11 empresas |
+| TAVARES COMERCIO DE ALIMENTOS LTDA | AHMANDA | **GRAZI** | 11 empresas |
+| LUMIER COSMETICOS LTDA | AHMANDA (só PAYOT) | **SUELI** | 11 empresas |
+| FRANCK F. MULLER SUPERMERCADO EIRELI | — | AHMANDA (já estava certo) | — |
+
+Regra combinada com o Cristiano: a correção vale para **TODAS as empresas**,
+mesmo as que hoje não têm venda daquele cliente — se aparecer venda nova em
+outra marca, já cai na pessoa certa.
+
+Efeito em julho: SUELI 182.556,15 → 190.644,09 · GRAZI 205.851,78 → 209.911,89
+· AHMANDA 186.426,64 → 174.278,59 · HEIDI 398.277,18 → 384.472,29 · SILVIA
+31.580,88 → 45.385,77. O total do mês não mudou: R$ 11.004.891,35.
+
+### Cirurgia em mês FECHADO
+
+`atualizar_comissoes.py` só recalcula de junho em diante (corte.py) — por
+desenho. Isso deixou fevereiro do TAVARES divergente: carteira dizia GRAZI,
+comissão dizia AHMANDA.
+
+Autorizado pelo Cristiano, foi feita uma cirurgia pontual que **MOVE** a linha
+(mesmos valores) entre vendedores no `comissoes_detalhe`, ajusta
+`comissoes_resumo` e `comissoes_vendedor` pelo mesmo delta, e **aborta se os
+totais do mês mudarem**. Os totais ficaram idênticos (fat 7.637.314,65 · com
+318.357,92 · cv 283.740,40).
+
+O script também aborta se a linha estiver como PAGA. A do TAVARES estava
+ABERTO.
+
+**Decisão do Cristiano (14/08): meses anteriores já estão pagos e NÃO se
+mexe.** O que importa é rodar certo daqui para frente — o que as regras no
+`equivalencias.py` já garantem.
+
+### Inconsistência antiga, deixada como está
+
+Nos meses congelados, `comissoes_vendedor[VEND][MES]` não bate com o `cv` do
+`comissoes_resumo` (AHMANDA/FEV: 4.227,16 contra 2.469,82). É dado legado,
+anterior ao coletor atual. Não foi tocado — mexer significaria alterar mês já
+pago.
