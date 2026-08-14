@@ -59,6 +59,9 @@ CATEGORIAS = {
     # Parametros da Panvel (cluster de lojas liberadas + familia/categoria).
     # Mudam ~2x por ano; ficam em PARAMETROS PANVEL/, fora das pastas de mes.
     "params_pv":    (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_parametros_panvel.py"]),
+    # Categoria por item da Sao Joao. O sell out dela nao traz categoria; a
+    # planilha tem so os ATIVOS, entao inativo fica sem categoria (esperado).
+    "params_sj":    (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_parametros_sao_joao.py"]),
     # Financeiro: uma planilha so, preenchida diariamente pelo Cristiano, que
     # alimenta as telas Receita Liquida e Financeiro. Ate 12/08/2026 esses dois
     # blocos eram carregados a mao e estavam parados em junho.
@@ -75,6 +78,7 @@ FILTRO = {
     "sellout_pv":   "PANVEL",
     "sellout_ld":   "LADY",
     "params_pv":    "CLUSTER|MIX PANVEL",
+    "params_sj":    "SAO JOAO COM CATEGORIA",
     "estoque":      "SAO JOAO",
     "estoque_pv":   "PANVEL",
 }
