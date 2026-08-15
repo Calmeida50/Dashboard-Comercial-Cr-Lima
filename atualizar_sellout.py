@@ -79,6 +79,12 @@ def coletar_empresa(emp):
                 # detalhe por loja. NAO e o mesmo que a positivacao da Dartora,
                 # que conta CLIENTES. Rotular sempre como "lojas".
                 "prod_lojas": df.groupby("_prod")["_loja"].nunique().to_dict(),
+                # CONJUNTO de lojas por produto (nao so a contagem): permite
+                # unir os meses sem contar a mesma loja duas vezes. E o
+                # denominador da conta de oportunidade — nem toda loja vende
+                # o item todo mes, mas em 7 meses quase toda loja que TEM o
+                # item ja vendeu ao menos uma vez.
+                "prod_lojas_set": df.groupby("_prod")["_loja"].apply(set).to_dict(),
                 "lojas_ativas": int(df["_loja"].nunique()),
             }
     return dados
@@ -178,7 +184,12 @@ def montar_produtos(antigo, m26, m25, meses26, meses25):
                 "lojas_2026": {a: int(m26[a]["prod_lojas"].get(nome, 0))
                                for a in meses26 if m26[a]["prod_lojas"].get(nome)},
                 "lojas_2025": {a: int(m25[a]["prod_lojas"].get(nome, 0))
-                               for a in meses25 if m25[a]["prod_lojas"].get(nome)}}
+                               for a in meses25 if m25[a]["prod_lojas"].get(nome)},
+                # lojas DISTINTAS que venderam o item no ano inteiro (uniao dos
+                # meses). Sempre >= o melhor mes e <= o total da rede.
+                "lojas_ano_2026": len(set().union(*[
+                    m26[a]["prod_lojas_set"].get(nome, set()) for a in meses26
+                ])) if meses26 else 0}
         if nome in cob:
             item["cobertura_mensal"] = cob[nome]     # preservado
         saida.append(item)

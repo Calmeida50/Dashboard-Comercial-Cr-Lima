@@ -78,6 +78,44 @@ def ler(path):
     return out, ativos, conflitos
 
 
+def ler_rede(path):
+    """total de lojas da rede, da relacao oficial que a Sao Joao envia.
+
+    A Sao Joao NAO tem cluster como a Panvel — todo item esta liberado para
+    100% das lojas. Entao esse total e o denominador da conta de oportunidade:
+    lojas sem estoque = total da rede - lojas com estoque.
+
+    O arquivo e um workbook com ~19 abas; a que vale e 'Lojas ativas'. Tem
+    linhas de rodape sem codigo e uma linha 'Total' que precisam sair.
+    Conferido em 15/08/2026: 1.237 lojas (RS 913, SC 168, PR 156), sem CD.
+    """
+    try:
+        import warnings
+        warnings.filterwarnings("ignore")
+        xl = pd.ExcelFile(path)
+        aba = next((a for a in xl.sheet_names if "LOJAS ATIVAS" in norm(a)), None)
+        if not aba:
+            return None
+        d = pd.read_excel(path, sheet_name=aba)
+        cCod = acha_col(d, "COD")
+        if cCod is None:
+            return None
+        d = d[d[cCod].notna()]
+        cCls = acha_col(d, "CLASS")
+        if cCls is not None:
+            d = d[d[cCls].astype(str).str.upper().str.strip() != "TOTAL"]
+        cUF = acha_col(d, "ESTADO", "UF")
+        por_uf = {}
+        if cUF is not None:
+            por_uf = {str(k): int(v) for k, v in d[cUF].value_counts().items()}
+        return {"total_lojas": int(d[cCod].nunique()),
+                "por_uf": por_uf,
+                "arquivo": os.path.basename(path)}
+    except Exception as e:
+        print("  ! nao consegui ler a relacao de lojas: %s" % e)
+        return None
+
+
 def main():
     simular = "--simular" in sys.argv
     if not os.path.isdir(PASTA):
@@ -91,6 +129,12 @@ def main():
 
     arqs = [p for p in glob.glob(os.path.join(PASTA, "*.xls*"))
             if not os.path.basename(p).startswith("~$")]
+    # a relacao de lojas nao e arquivo de categoria: separa antes, senao o
+    # casamento por nome de empresa poderia peg -la por engano
+    arq_rede = next((p for p in arqs
+                     if "CLASSIFICACAO LOJAS" in norm(os.path.basename(p))
+                     or "LOJAS ATIVAS" in norm(os.path.basename(p))), None)
+    arqs = [p for p in arqs if p != arq_rede]
     out = {}
     for emp in EMPRESAS:
         alvo = next((p for p in arqs if emp in norm(os.path.basename(p))), None)
@@ -116,6 +160,20 @@ def main():
         print("nenhum arquivo reconhecido em %s" % PASTA)
         return 1
 
+    # relacao oficial de lojas da rede (denominador da oportunidade)
+    if arq_rede:
+        rede = ler_rede(arq_rede)
+        if rede:
+            out["rede"] = rede
+            print("  %-11s %d lojas · %s · %s"
+                  % ("REDE", rede["total_lojas"],
+                     " ".join("%s %d" % (k, v) for k, v in
+                              sorted(rede["por_uf"].items(), key=lambda x: -x[1])),
+                     rede["arquivo"][:34]))
+    else:
+        print("  (relacao de lojas nao encontrada — a conta de oportunidade "
+              "fica sem o total da rede)")
+
     # confere contra o sell out: quantos itens ficam sem categoria
     # (o esperado sao os INATIVOS, que vendem estoque residual)
     try:
@@ -124,6 +182,8 @@ def main():
         D, _ = json.JSONDecoder().raw_decode(s0[j:])
         sj = D.get("sellout_sao_joao", {})
         for emp, b in out.items():
+            if emp == "rede" or not isinstance(b, dict) or "categoria" not in b:
+                continue
             prods = [p["nome"] for p in (sj.get(emp, {}).get("produtos") or [])]
             sem = [n for n in prods if norm(n) not in b["categoria"]]
             print("     %s: %d de %d produtos do sell out sem categoria (inativos)"

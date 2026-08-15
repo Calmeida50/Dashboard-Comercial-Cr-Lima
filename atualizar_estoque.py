@@ -165,6 +165,13 @@ def ler(path, ativos):
             "lojas_rup": int((g["_q"] == 0).sum()),
             "qtde": int(g["_q"].sum()),
             "ativo": (nome in ativos) if ativos else True,
+            # DISTRIBUICAO por loja: quantas filiais tem 1, 2, 3 ou 4+ unidades.
+            # `lojas_1un` e RISCO DE RUPTURA — a loja tem o item, mas uma venda
+            # e ela zera. E a base da analise de oportunidade da apresentacao.
+            "lojas_1un": int((g["_q"] == 1).sum()),
+            "lojas_2un": int((g["_q"] == 2).sum()),
+            "lojas_3un": int((g["_q"] == 3).sum()),
+            "lojas_4mais": int((g["_q"] >= 4).sum()),
         }
         if cG:                      # giro nativo do arquivo, quando houver
             item["giro"] = round(float(g["_g"].sum()), 2)
