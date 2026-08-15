@@ -62,6 +62,10 @@ CATEGORIAS = {
     # Categoria por item da Sao Joao. O sell out dela nao traz categoria; a
     # planilha tem so os ATIVOS, entao inativo fica sem categoria (esperado).
     "params_sj":    (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_parametros_sao_joao.py"]),
+    # Mix minimo Granado: dinamica exportada pelo Cristiano + os dois mixes
+    # minimos + o de-para de clientes. Sempre na MESMA planilha, entao basta a
+    # data de modificacao mudar para reprocessar.
+    "mix_minimo":   (["RELATORIO GRANADO"], ["atualizar_mix_minimo.py"]),
     # Financeiro: uma planilha so, preenchida diariamente pelo Cristiano, que
     # alimenta as telas Receita Liquida e Financeiro. Ate 12/08/2026 esses dois
     # blocos eram carregados a mao e estavam parados em junho.
