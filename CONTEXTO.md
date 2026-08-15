@@ -837,3 +837,118 @@ inteiro a cada mudança do DOM.
 
 Padrão que se repete: **todo indicador agregado precisa dizer sobre o que está
 agregando.** Três correções em dois dias vieram disso.
+
+
+## Mix Mínimo Granado — 15/08/2026 (noite)
+
+### O que responde
+
+"Quais clientes ativos de cada canal ainda não cadastraram os itens do mix
+mínimo da Granado, e exatamente quais itens são?"
+
+Primeiro cliente a ter isso: **Granado**, canais **farma** e **alimentar**.
+
+### As quatro fontes (`RELATORIO GRANADO/` no Drive)
+
+| arquivo | o que traz |
+|---|---|
+| `CR LIMA COM E REPRESENTACOES.xlsx` | dinâmica, aba POR PRODUTO: Cliente, Marca, Família, Categoria, Grupo_Itens, **EAN**, mês a mês, 2025 e 2026 |
+| `MIX MINIMO CANAL FARMA GRANADO.xlsx` | 46 itens (aba FARMA) |
+| `MIX MINIMO CANAL ALIMENTAR.xlsx` | 35 itens (aba Tabela RS 2025) |
+| `CLIENTES SEM CANAL - GRANADO.xlsx` | de-para dos nomes que divergem |
+
+Mais a `CARTEIRA DE CLIENTES CR LIMA.xlsx` (raiz do Drive), que dá o CANAL.
+
+### A dinâmica: o que é preciso saber
+
+É o RESULTADO da tabela dinâmica, não a base. **O que estiver filtrado no
+Excel na hora de salvar é o que o coletor enxerga** — manter tudo em "(Tudo)".
+
+Cabeçalho na linha 9; a dinâmica escreve o rótulo só na primeira linha de cada
+bloco (precisa `ffill`); linhas `Vol (un)` e subtotais são descartadas (eram
+11.010 de 28.555 na primeira versão).
+
+**Evolução do arquivo em 15/08**: começou só com produto × mês (sem cliente),
+depois o Cristiano incluiu Cliente e por fim EAN. Sem esses dois campos a
+análise é impossível — não dá para saber quem compra o quê.
+
+### Casamentos
+
+**Produto: por EAN** (só dígitos, sem zeros à esquerda). Bate 46/46 no farma e
+35/35 no alimentar — sem precisar de tabela de correspondência.
+
+**Cliente: por nome normalizado.** Só 147 dos 218 casavam direto, deixando
+R$ 13,59 milhões fora. Resolvido com o de-para que o Cristiano preencheu:
+- 10 canais preenchidos à mão
+- 11 nomes informados
+- 46 aceitando a sugestão automática por semelhança
+- 14 "NÃO ENCONTRADO", dos quais **13 não compram desde 2025** (inativos)
+- WMB Supermercados → Atacadão S/A (alimentar), mesmo grupo do WMS
+
+Resultado: farma foi de 18 para **30 clientes**, alimentar de 65 para **81**.
+
+### REGRAS combinadas com o Cristiano
+
+1. **SÓ CLIENTES ATIVOS** — quem não comprou em 2026 fica fora, mesmo estando
+   na carteira. O objetivo é o que falta cadastrar em quem está comprando.
+2. **Item fora do mix mínimo não é problema** — a lista mostra só o que falta
+   do mix; o resto o cliente segue comprando normalmente.
+3. Só farma e alimentar neste primeiro momento.
+
+### A tela
+
+Menu, logo abaixo de Ranking Clientes. Filtros: canal, **vendedor**, busca e
+"só quem tem item faltando".
+
+**O filtro de vendedor vale para tudo** — KPIs, lista, tabela por item e
+Excel. É para reunião individual: filtra o vendedor e o material é só da
+carteira dele. Cliente com dois vendedores ("CRISTIANO / GRAZI") conta para os
+dois. O nome do vendedor entra no nome do arquivo exportado.
+
+**Por cliente:** clicando, abre os itens que faltam **um por linha, agrupados
+pela linha do mix** (Bebê, Terrapeutics, Glicerina...), com apresentação, EAN e
+caixa.
+
+**Por item:** clicando, abre **quem falta vender e o vendedor responsável**.
+Itens agrupados por linha, na ordem do mix.
+
+**Excel:** aba "Por cliente" (uma linha por cliente×item) e aba "Por item"
+EXPANDIDA (uma linha por item×cliente, com vendedor, compra e cobertura do
+mix). O vendedor filtra pelo próprio nome e tem a lista de visita.
+
+### O que os números mostraram
+
+Farma: 30 clientes, **nenhum com mix completo**, faltam em média 26 de 46.
+Alimentar: 81 clientes, só o Brasão completo; **Zaffari 29/35** com R$ 4 mi de
+compra e **Atacadão 19/35** com R$ 1,57 mi.
+
+E o achado que não é sobre cliente nenhum: **os refis faltam em quase todo
+mundo** — Refil Cond. BBTrad falta em 28 dos 30 do farma e 78 dos 81 do
+alimentar; Refil Terrapeutics Castanha em 27 e 75. É pauta de linha com a
+Granado, não de visita.
+
+### Ciclo
+
+15ª categoria (`mix_minimo`), vigiando `RELATORIO GRANADO`. Como o Cristiano
+salva sempre na mesma planilha, basta a data de modificação mudar.
+
+**Ressalva:** a carteira de clientes fica FORA dessa pasta, então uma correção
+só nela não dispara o reprocessamento — só na próxima vez que a dinâmica
+mudar. Se virar problema, mover a carteira para dentro da pasta.
+
+---
+
+## Outros ajustes de 15/08 (noite)
+
+**Tendência no Mês Corrente.** A tabela de Vendedores ganhou as duas colunas
+que já existiam na de Empresas (valor projetado e % do objetivo), em quatro
+níveis: vendedor, linha VAREJO, empresa dentro do varejo e vendedor dentro da
+empresa. Criada `_tdTendencia()` para as células serem idênticas nos quatro —
+mudar o critério (por exemplo, contar sábado) agora é num lugar só. Usa
+`_tendenciaMes()`, que projeta por DIAS ÚTEIS decorridos.
+
+**BUG corrigido — "undefined at." na coluna SKUs dos slides.** `_slideAgrupa`
+não acumulava `ativos`, mas a tabela usava `g.ativos`. JavaScript não reclama
+de campo inexistente: devolve `undefined`, e a soma vira `NaN`. Mesma família
+dos erros silenciosos de 13 e 14/08. Ao criar coluna nova, conferir que TODO
+campo usado no render é criado no agrupador.

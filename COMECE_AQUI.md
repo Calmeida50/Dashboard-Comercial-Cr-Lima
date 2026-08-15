@@ -57,11 +57,15 @@ E respeite estas regras, que vieram de erros reais:
     é presença. Três correções em dois dias vieram disso.
 14. **Na Apresentação, respeitar as regras de negócio do CONTEXTO.md**: não
     expor o percentual do corte e não mostrar o concorrente na tela.
+15. **Ao criar coluna nova numa tabela, conferir que todo campo usado no
+    render existe no agrupador.** JS devolve `undefined` calado, e a soma vira
+    `NaN` — foi o "undefined at." dos slides em 15/08.
 
 ## Estado do sistema
 
-**14 categorias** no ciclo automático, rotina às 18h (que também publica
+**15 categorias** no ciclo automático, rotina às 18h (que também publica
 sozinha se o index mudar). Julho fechado em R$ 11.004.891,35, batendo entre
 faturamento, vendedores e comissões. Agosto da Panvel entrando semanalmente,
 marcado como parcial. Seis empresas da São João e três da Panvel com
 classificação completa (linha/categoria/grupo) e mix ativo vindo da planilha.
+Mix mínimo da Granado rodando para farma e alimentar.

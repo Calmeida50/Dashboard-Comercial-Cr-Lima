@@ -37,6 +37,7 @@ Tudo dentro de `Meu Drive/PROJETO COMERCIAL IA/`:
 | **Sell out Lady Diu** | `SELL OUT PRINCIPAIS CLIENTES/SELL OUT LADYDIU 2025 E 2026/` | planilha mestre única, com `LADY` e `DIU` no nome |
 | **Parâmetros Panvel** | `SELL OUT PRINCIPAIS CLIENTES/PARAMETROS PANVEL/` | `CLUSTER PANVEL <EMPRESA> ATUALIZADO.xlsx` e `MIX PANVEL COM FAMILIA E CATEGORIA.xlsx` |
 | **Parâmetros São João** | `SELL OUT PRINCIPAIS CLIENTES/PARAMETRO SAO JOAO/` | `MIX <EMPRESA> SAO JOAO COM CATEGORIA.xlsx` e a relação de lojas (`CNPJ - CLASSIFICAÇÃO LOJAS...`) |
+| **Mix mínimo Granado** | `RELATORIO GRANADO/` | a dinâmica `CR LIMA COM E REPRESENTACOES.xlsx` + os dois `MIX MINIMO CANAL ...` + `CLIENTES SEM CANAL - GRANADO.xlsx` |
 | **Financeiro / Receita Líquida** | `FINANCEIRO/` | `CONTROLE DE CUSTO E CONTROLE DE RECEITAS 26.xlsx` |
 
 ## Com que frequência salvar cada coisa
@@ -50,6 +51,7 @@ Tudo dentro de `Meu Drive/PROJETO COMERCIAL IA/`:
 | Lady Diu | mensal, preenchendo a coluna do mês na planilha mestre | 9 números |
 | Parâmetros Panvel | quando a Panvel mandar cluster novo (~2x/ano) | |
 | Parâmetros São João | quando cadastrar item novo | uma linha na planilha, sem mexer em código |
+| Dinâmica da Granado | quando quiser atualizar o mix mínimo | salve SEMPRE na mesma planilha, com tudo em "(Tudo)" |
 
 **A Panvel precisa de DOIS arquivos por empresa, toda semana**, porque cada um
 tem o que o outro não tem:
@@ -65,6 +67,26 @@ parcial que aparece na tela.
 **Mês corrente aparece com selo ◑ PARCIAL.** O percentual continua confiável
 (o relatório compara o mesmo período nos dois anos); o que não vale é ler o
 valor absoluto como mês fechado. Esse mês NÃO entra na média de 3 meses.
+
+## A tela Mix Mínimo
+
+Mostra o que falta cadastrar do mix mínimo da Granado nos clientes ativos dos
+canais **farma** e **alimentar**.
+
+Filtros: canal, **vendedor**, busca e "só quem tem item faltando". O filtro de
+vendedor vale para a tela inteira e para o Excel — é o material da reunião
+individual, e o nome dele entra no nome do arquivo.
+
+Clicando num **cliente**, abre o que falta, agrupado por linha do mix.
+Clicando num **item**, abre quem falta vender e o vendedor responsável.
+
+Duas regras: só entram clientes **com compra em 2026**, e item que o cliente
+compra fora do mix mínimo **não** aparece como problema.
+
+**A dinâmica precisa ter Cliente e EAN como campos**, e ser salva com os
+filtros em "(Tudo)" — o coletor lê o resultado, então enxerga só o que estiver
+expandido na hora de salvar.
+
 
 ## A tela Apresentação
 
