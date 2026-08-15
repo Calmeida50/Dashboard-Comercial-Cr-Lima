@@ -36,7 +36,7 @@ Tudo dentro de `Meu Drive/PROJETO COMERCIAL IA/`:
 | Estoque Panvel | idem | contém `PANVEL` |
 | **Sell out Lady Diu** | `SELL OUT PRINCIPAIS CLIENTES/SELL OUT LADYDIU 2025 E 2026/` | planilha mestre única, com `LADY` e `DIU` no nome |
 | **Parâmetros Panvel** | `SELL OUT PRINCIPAIS CLIENTES/PARAMETROS PANVEL/` | `CLUSTER PANVEL <EMPRESA> ATUALIZADO.xlsx` e `MIX PANVEL COM FAMILIA E CATEGORIA.xlsx` |
-| **Parâmetros São João** | `SELL OUT PRINCIPAIS CLIENTES/PARAMETRO SAO JOAO/` | `MIX <EMPRESA> SAO JOAO COM CATEGORIA.xlsx` |
+| **Parâmetros São João** | `SELL OUT PRINCIPAIS CLIENTES/PARAMETRO SAO JOAO/` | `MIX <EMPRESA> SAO JOAO COM CATEGORIA.xlsx` e a relação de lojas (`CNPJ - CLASSIFICAÇÃO LOJAS...`) |
 | **Financeiro / Receita Líquida** | `FINANCEIRO/` | `CONTROLE DE CUSTO E CONTROLE DE RECEITAS 26.xlsx` |
 
 ## Com que frequência salvar cada coisa
@@ -65,6 +65,34 @@ parcial que aparece na tela.
 **Mês corrente aparece com selo ◑ PARCIAL.** O percentual continua confiável
 (o relatório compara o mesmo período nos dois anos); o que não vale é ler o
 valor absoluto como mês fechado. Esse mês NÃO entra na média de 3 meses.
+
+## A tela Apresentação
+
+Duas faces da mesma análise:
+
+- **Dashboard** — para você analisar. Tem cliente, empresa, período, navegação
+  por linha › categoria › grupo, oportunidade e risco de ruptura.
+- **Modo slide** (botão verde ▶ Apresentar) — tela cheia para a reunião.
+  Navega com seta, espaço ou os botões; ESC sai.
+
+**Duas regras importantes, combinadas em 15/08/2026:**
+
+Dentro do modo slide **não existe troca de cliente** — se você está
+apresentando para a São João, não pode haver um botão "Panvel" na tela. Para
+trocar, saia da apresentação.
+
+A tela nunca escreve "os itens que fazem 90% do faturamento", e sim **"Top SKUs
+em faturamento"**. Dizer o percentual daria ao cliente o argumento de delistar
+os demais.
+
+O botão **⬇ Excel** exporta oportunidade e risco de ruptura em duas abas,
+respeitando o recorte aberto — é o material para enviar ao cliente depois da
+reunião.
+
+**Atualiza sozinha.** A apresentação não guarda dado: tudo é calculado dos
+mesmos blocos que os coletores gravam. Estoque novo no Drive, mês novo de sell
+out ou mix novo já aparecem na próxima rodada das 18h.
+
 
 
 **O nome importa.** É por ele que o sistema descobre a empresa e o mês.

@@ -698,3 +698,142 @@ Nos meses congelados, `comissoes_vendedor[VEND][MES]` não bate com o `cv` do
 `comissoes_resumo` (AHMANDA/FEV: 4.227,16 contra 2.469,82). É dado legado,
 anterior ao coletor atual. Não foi tocado — mexer significaria alterar mês já
 pago.
+
+
+## Sessão de 15/08/2026 — Apresentação e Revisão de Negócios
+
+### O que foi construído
+
+Uma tela nova, **Apresentação**, com duas faces:
+
+1. **Dashboard interno** (`page-apresentacao`) — análise para o Cristiano usar
+2. **Modo slide** (`slide-wrap`) — tela cheia para a reunião com o cliente
+
+Tudo é calculado no render a partir de `DATA` / `DADOS_PANVEL` / `PARAMS_*`.
+**Não guarda dado próprio**, então entra sozinho no ciclo das 18h: estoque
+novo, mês novo de sell out ou mix novo já aparecem sem tocar em código.
+
+### REGRAS DE NEGÓCIO — não mexer sem falar com o Cristiano
+
+**1. Nunca expor o percentual do corte.** A tela diz "Top SKUs em faturamento",
+   nunca "os itens que fazem 90%". Motivo dele: dizer o percentual entrega ao
+   varejista o argumento de delistar os 10% restantes.
+
+**2. Nunca mostrar o concorrente na tela de apresentação.** Numa sala com os
+   diretores da São João não pode existir um botão "Panvel". Por isso o modo
+   slide NÃO tem troca de cliente — herda o que estava aberto no dashboard.
+   Trocar de cliente exige sair.
+
+**3. Oportunidade roda sobre TODOS OS ITENS ATIVOS.** Sem corte de faturamento
+   (decisão de 15/08): melhor mostrar oportunidade demais do que deixar
+   dinheiro de fora. Inativo fica fora — não se pede reposição de item que sai
+   de linha. O corte de 90% (`APR_CORTE`) segue valendo só para o bloco de
+   risco de ruptura.
+
+**4. Agregado de loja SEMPRE por SKU.** Somar "lojas com 1 unidade" entre SKUs
+   dá combinação item-loja, não lojas. Em 15/08 isso gerou um "11.519 lojas"
+   numa rede de 1.237 — o Cristiano pegou. A tela mostra média e mediana por
+   SKU e explica isso no texto.
+
+### A conta de oportunidade
+
+    venda média por loja = média mensal dos 3 meses FECHADOS (avg3m)
+                           ÷ lojas DISTINTAS que venderam o item no ano
+    oportunidade R$/mês  = venda média por loja
+                           × lojas SEM estoque hoje (alvo − lojas com estoque)
+                           × preço médio do item
+
+O denominador é `lojas_ano_2026` (união dos meses), não o melhor mês: em 7
+meses quase toda loja que tem o item já vendeu ao menos uma vez. Isso torna a
+conta CONSERVADORA, que é o que se quer numa reunião.
+
+**Alvo:** São João não tem cluster — todo item está liberado para 100% da rede,
+e o total vem da relação oficial (`PARAMS_SAO_JOAO.rede.total_lojas` = 1.237,
+sem CD). Panvel tem cluster por item, então o alvo dela é o próprio cluster.
+
+Histórico do critério, para não refazer o caminho:
+- todos os itens, alvo 100% → R$ 1,3 mi/mês na Belliz, MAIS que a venda mensal
+- só ativos → ~45% da venda mensal
+- Pareto 80% → nenhum inativo entra e as velas (73 de 1.237 lojas) saem sozinhas
+- **hoje: todos os ativos**, por decisão do Cristiano
+
+### Hierarquia flexível — LINHA > CATEGORIA > GRUPO
+
+Cada empresa tem a profundidade que sua planilha define, e os coletores leem o
+que existir:
+
+| empresa | níveis |
+|---|---|
+| Granado (SJ e Panvel) | LINHA › CATEGORIA › GRUPO |
+| Cless (SJ e Panvel), Payot | LINHA › CATEGORIA |
+| Belliz, Prudence, Ever Green | CATEGORIA |
+
+Gravado em `PARAMS_*[emp].hier` (por nome na São João, por código na Panvel) e
+`PARAMS_*[emp].niveis`. A navegação (`_aprDrill`) desce nível a nível com trilha
+de volta. Nível com um único grupo é pulado automaticamente.
+
+As 6 empresas da São João e as 3 da Panvel estão 100% classificadas.
+
+### Coletores — o que mudou
+
+`atualizar_estoque.py` (São João) passou a gravar `lojas_1un`, `lojas_2un`,
+`lojas_3un`, `lojas_4mais` por produto. `lojas_1un` é o RISCO DE RUPTURA: a
+loja tem o item, mas uma venda e ela zera.
+
+`atualizar_sellout.py` passou a gravar `lojas_ano_2026` — lojas DISTINTAS que
+venderam o item no ano (união dos meses, via `prod_lojas_set`).
+
+`atualizar_parametros_sao_joao.py` lê a hierarquia e também a **relação oficial
+de lojas** (aba "Lojas ativas" do arquivo de classificação): 1.237 lojas,
+RS 913 · SC 168 · PR 156.
+
+`atualizar_parametros_panvel.py` lê a mesma hierarquia por código.
+
+### Modo slide
+
+Sequência: **Capa → O tamanho do negócio → um slide por nível → Oportunidade →
+Risco de ruptura**. Navega com seta, espaço, PageUp/Down, pontinhos ou botões;
+ESC sai.
+
+- Capa: "Revisão de Negócios", marca, cliente e período. Sem números (repetiam
+  o slide seguinte).
+- Pizza só no PRIMEIRO nível e ABAIXO da tabela, que ocupa a largura toda.
+- Layout compacto para caber SEM ROLAGEM; a altura da pizza encolhe conforme a
+  tabela cresce (Belliz tem 11 categorias).
+- Oportunidade e ruptura trazem o RANKING de faturamento de cada SKU.
+
+**Chart.js e altura:** o canvas precisa de um container com altura FIXA
+(`position:relative; height:NNNpx`) + `maintainAspectRatio:false`. Sem isso ele
+cresce indefinidamente dentro do flex — foi o que estourou o layout na primeira
+tentativa e obrigou a remover os gráficos.
+
+### Excel da análise
+
+Botão no dashboard e dentro do modo slide. Duas abas — Oportunidade e Risco de
+ruptura — com linha, categoria, grupo, ranking e todos os números. **Respeita o
+recorte aberto**: dentro de Granado › Bebê, exporta só esse grupo. É o material
+que o Cristiano envia ao cliente depois da reunião.
+
+### BUG NÃO RESOLVIDO — botões de empresa
+
+Grupos de `<button>` gerados por `.map().join('')` renderizavam **apenas um**
+botão (sempre PAYOT), tanto no dashboard quanto no modo slide, enquanto o
+título e os dados mostravam a empresa correta. Investigado: função única, sem
+duplicata, HTML gerado correto na simulação, ids únicos, nenhum outro trecho
+escrevendo no elemento. **Causa não encontrada.**
+
+Contornado com `<select>` nos dois lugares — funciona. Se voltar a acontecer em
+outro grupo de botões, o contorno é o mesmo. Suspeita não confirmada: algum dos
+5 MutationObserver legados (`_fixCvModalV2/V3/V4`) que varrem `document.body`
+inteiro a cada mudança do DOM.
+
+### Ajustes de indicador que vieram de perguntas do Cristiano
+
+- **"Presença média"** contava os inativos e dava 42% da rede na Belliz quando
+  os Top SKUs estão em 88%. Passou a medir só os Top SKUs, com mediana ao lado.
+- **"Venderam no mês"** não dizia qual mês. Agora o cabeçalho traz "Venderam em
+  Jul/2026" e o subtítulo informa o último mês fechado. Na Panvel há aviso de
+  que o mês parcial ficou fora da análise.
+
+Padrão que se repete: **todo indicador agregado precisa dizer sobre o que está
+agregando.** Três correções em dois dias vieram disso.
