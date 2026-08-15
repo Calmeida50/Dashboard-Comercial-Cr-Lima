@@ -161,9 +161,15 @@ def main():
         meses = sorted(m for (e, m) in idx if e == emp)
         if not meses:
             continue
-        # confere o mes ANTERIOR contra o publicado, antes de gravar o novo
+        # confere o mes ANTERIOR contra o publicado, antes de gravar o novo.
+        # SO compara se o publicado for DAQUELE MESMO MES (`lojas_mes`).
+        # O campo `lojas_junho` tem nome fixo mas guarda sempre o ULTIMO mes
+        # gravado: quando agosto entrou (14/08/2026), a trava passou a comparar
+        # julho do arquivo com agosto do publicado e bloqueou as tres empresas
+        # sem que houvesse erro nenhum no dado.
         antigo = (P.get(emp) or {}).get("lojas_junho") or []
-        if len(meses) > 1:
+        mes_publicado = (P.get(emp) or {}).get("lojas_mes")
+        if len(meses) > 1 and mes_publicado == meses[-2]:
             lojas_ant, _ = ler(idx[(emp, meses[-2])])
             if lojas_ant and antigo:
                 tot_a = round(sum(x["val26"] for x in lojas_ant), 2)
@@ -180,6 +186,9 @@ def main():
                     print("     ! divergencia acima de 0,1%% — NAO vou sobrescrever %s"
                           % emp)
                     continue
+        elif len(meses) > 1 and antigo:
+            print("  %-9s (sem conferencia: o publicado e do mes %s e o anterior "
+                  "no Drive e o %02d)" % (emp, mes_publicado, meses[-2]))
 
         lojas, dist = (None, None)
         caminho = idx[(emp, meses[-1])]
