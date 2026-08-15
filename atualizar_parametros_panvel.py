@@ -80,35 +80,53 @@ def ler_cluster(path):
 
 
 def ler_mix(path):
-    """{cod: (familia, categoria)} — na NOSSA nomenclatura"""
+    """{cod: {linha, categoria, grupo}} — na NOSSA nomenclatura.
+
+    HIERARQUIA FLEXIVEL (15/08/2026), igual a Sao Joao:
+        GRANADO   LINHA > CATEGORIA > GRUPO
+        CLESS     LINHA > CATEGORIA
+        PRUDENCE  CATEGORIA
+    O arquivo tambem pode trazer `Status`, que manda no ativo/inativo — mas na
+    Panvel quem decide isso e o CLUSTER, entao aqui o Status e so referencia.
+    """
     d = pd.read_excel(path)
-    cItem = acha_col(d, "COD", "ITEM", excl=("BARRA", "FORNECEDOR"))
-    cFam = acha_col(d, "FAMILIA") or acha_col(d, "FAMÍLIA")
-    cCat = acha_col(d, "CATEGORIA")
+    cItem = acha_col(d, "COD", "ITEM", excl=("BARRA", "FORNECEDOR", "GRUPO"))
     if cItem is None:
-        return {}, {}
+        cItem = acha_col(d, "CODIGO", excl=("BARRA", "FORNECEDOR"))
+    cFam = acha_col(d, "FAMILIA") or acha_col(d, "LINHA")
+    cCat = acha_col(d, "CATEGORIA")
+    cGru = acha_col(d, "GRUPO")
+    if cItem is None:
+        return {}, {}, {}
     d["_c"] = d[cItem].map(cod)
-    fam, cat = {}, {}
+    fam, cat, hier = {}, {}, {}
     conflitos = []
     for c, g in d.groupby("_c"):
         if not c:
             continue
-        # a planilha repete o item (uma linha por combinacao); normaliza e
-        # avisa se o MESMO codigo aparecer com familia/categoria diferentes
-        fs = sorted({str(x).strip().upper() for x in g[cFam].dropna()}) if cFam is not None else []
-        cs = sorted({str(x).strip().upper() for x in g[cCat].dropna()}) if cCat is not None else []
-        if len(fs) > 1 or len(cs) > 1:
-            conflitos.append((c, fs, cs))
+        def uni(col):
+            if col is None:
+                return []
+            return sorted({str(x).strip().upper() for x in g[col].dropna()
+                           if str(x).strip() and str(x).strip().upper() != "NAN"})
+        fs, cs, gs = uni(cFam), uni(cCat), uni(cGru)
+        if len(fs) > 1 or len(cs) > 1 or len(gs) > 1:
+            conflitos.append((c, fs, cs, gs))
+        item = {}
         if fs:
-            fam[c] = fs[0]
+            fam[c] = fs[0]; item["linha"] = fs[0]
         if cs:
-            cat[c] = cs[0]
+            cat[c] = cs[0]; item["categoria"] = cs[0]
+        if gs:
+            item["grupo"] = gs[0]
+        if item:
+            hier[c] = item
     if conflitos:
-        print("  ! %d codigos com familia/categoria divergente na mesma planilha:"
+        print("  ! %d codigos com classificacao divergente na planilha:"
               % len(conflitos))
-        for c, fs, cs in conflitos[:5]:
-            print("      %s -> familia %s | categoria %s" % (c, fs, cs))
-    return fam, cat
+        for c, fs, cs, gs in conflitos[:5]:
+            print("      %s -> linha %s | categoria %s | grupo %s" % (c, fs, cs, gs))
+    return fam, cat, hier
 
 
 def main():
@@ -151,14 +169,18 @@ def main():
                 bloco["n_filiais"] = nfil
                 bloco["arquivos"]["cluster"] = os.path.basename(cl)
         if mx:
-            fam, cat = ler_mix(mx)
+            fam, cat, hier = ler_mix(mx)
             bloco["familia"] = fam
             bloco["categoria"] = cat
+            bloco["hier"] = hier
+            bloco["niveis"] = [n for n in ("linha", "categoria", "grupo")
+                               if any(n in v for v in hier.values())]
             bloco["arquivos"]["mix"] = os.path.basename(mx)
         out[emp] = bloco
         lib = bloco["lojas_liberadas"]
-        print("  %-9s cluster %3d SKUs (%d filiais) | familia/categoria %3d SKUs"
-              % (emp, len(lib), bloco["n_filiais"], len(bloco["familia"])))
+        print("  %-9s cluster %3d SKUs (%d filiais) | classificacao %3d SKUs | niveis: %s"
+              % (emp, len(lib), bloco["n_filiais"], len(bloco.get("hier") or {}),
+                 " > ".join(n.upper() for n in (bloco.get("niveis") or [])) or "—"))
         if lib:
             top = sorted(lib.items(), key=lambda x: -x[1])[:3]
             print("            mais liberados: %s"

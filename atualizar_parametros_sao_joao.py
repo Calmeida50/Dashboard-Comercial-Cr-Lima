@@ -50,17 +50,23 @@ def acha_col(d, *chaves):
 
 
 def ler(path):
-    """{nome_normalizado: categoria}, lista de ativos e conflitos.
+    """{nome: {linha, categoria, grupo}}, lista de ativos e conflitos.
 
-    Dois layouts convivem (14/08/2026):
-      BELLIZ  -> Categoria | Produto           (so os ativos)
-      GRANADO -> Status | CATEGORIA | DESCRICAO (ativos E inativos)
-    Quando houver coluna Status, os ativos saem dela; senao, TODOS os itens do
-    arquivo sao considerados ativos, que e a convencao do arquivo da Belliz.
+    HIERARQUIA FLEXIVEL (15/08/2026): cada empresa tem a profundidade que faz
+    sentido para ela, e o coletor le o que existir:
+        GRANADO         LINHA > CATEGORIA > GRUPO   (ex.: Granado > Bebe > Barra)
+        CLESS, PAYOT    LINHA > CATEGORIA
+        BELLIZ, PRUDENCE, EVER GREEN   CATEGORIA
+    A tela monta o detalhamento conforme os niveis presentes.
+
+    Layout tambem varia: com ou sem coluna Status. Sem Status, TODOS os itens
+    do arquivo sao considerados ativos.
     """
     d = pd.read_excel(path)
     cProd = acha_col(d, "PRODUTO", "DESCRICAO", "ITEM")
     cCat = acha_col(d, "CATEGORIA")
+    cLin = acha_col(d, "LINHA")
+    cGru = acha_col(d, "GRUPO")
     cSt = acha_col(d, "STATUS")
     if cProd is None or cCat is None:
         return None, None, []
@@ -70,9 +76,14 @@ def ler(path):
         c = norm(r[cCat])
         if not n or not c or n == "NAN":
             continue
-        if n in out and out[n] != c:
-            conflitos.append((n, out[n], c))
-        out[n] = c
+        item = {"categoria": c}
+        if cLin is not None and norm(r[cLin]) not in ("", "NAN"):
+            item["linha"] = norm(r[cLin])
+        if cGru is not None and norm(r[cGru]) not in ("", "NAN"):
+            item["grupo"] = norm(r[cGru])
+        if n in out and out[n] != item:
+            conflitos.append((n, out[n], item))
+        out[n] = item
         if cSt is None or norm(r[cSt]).startswith("ATIV"):
             ativos.append(str(r[cProd]).strip())
     return out, ativos, conflitos
@@ -140,21 +151,27 @@ def main():
         alvo = next((p for p in arqs if emp in norm(os.path.basename(p))), None)
         if not alvo:
             continue
-        cats, ativos, conf = ler(alvo)
-        if cats is None:
+        hier, ativos, conf = ler(alvo)
+        if hier is None:
             print("  ! %s: nao achei as colunas Produto/Categoria em %s"
                   % (emp, os.path.basename(alvo)))
             continue
         if conf:
-            print("  ! %s: %d itens com categoria divergente na planilha"
+            print("  ! %s: %d itens com classificacao divergente na planilha"
                   % (emp, len(conf)))
             for n, a, b in conf[:5]:
-                print("      %s -> %s / %s" % (n[:44], a, b))
-        out[emp] = {"categoria": cats, "ativos": sorted(set(ativos)),
+                print("      %s -> %s / %s" % (n[:40], a, b))
+        # `categoria` fica como mapa simples (compatibilidade com a tela) e
+        # `hier` traz os niveis completos
+        cats = {k: v["categoria"] for k, v in hier.items()}
+        niveis = [n for n in ("linha", "categoria", "grupo")
+                  if any(n in v for v in hier.values())]
+        out[emp] = {"categoria": cats, "hier": hier, "niveis": niveis,
+                    "ativos": sorted(set(ativos)),
                     "arquivo": os.path.basename(alvo)}
-        print("  %-11s %3d itens (%d ativos) · %2d categorias · %s"
+        print("  %-11s %3d itens (%d ativos) · %2d categorias · niveis: %s"
               % (emp, len(cats), len(set(ativos)), len(set(cats.values())),
-                 os.path.basename(alvo)[:38]))
+                 " > ".join(n.upper() for n in niveis)))
 
     if not out:
         print("nenhum arquivo reconhecido em %s" % PASTA)
