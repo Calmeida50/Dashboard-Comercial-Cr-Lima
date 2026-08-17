@@ -110,9 +110,16 @@ def ler_dinamica(path):
 
     body = d.iloc[lin + 1:].copy()
     body.columns = range(body.shape[1])
-    # a dinamica escreve o rotulo so na 1a linha do bloco
-    for c in range(iDad):
-        body[c] = body[c].ffill()
+    # A dinamica escreve o rotulo so na 1a linha de cada bloco — o resto vem
+    # vazio e precisa ser preenchido para baixo.
+    # A ORDEM DAS COLUNAS MUDA conforme o Cristiano monta a dinamica:
+    #   15/08: Cliente | Marca | ... | Grupo_Itens | EAN | Dados | meses
+    #   17/08: EAN | Marca | ... | Grupo_Itens | Dados | Cliente | meses
+    # Por isso o ffill vai por NOME de coluna, nunca por posicao fixa.
+    for i, c in enumerate(cab):
+        if c in ("Cliente", "EAN", "Marca", "Família", "Categoria",
+                 "Grupo_Itens", "Dados"):
+            body[i] = body[i].ffill()
     fat = body[body[iDad] == "Fat Bruto ($)"].copy()   # descarta Vol e subtotais
     fat["v26"] = fat[c26].apply(pd.to_numeric, errors="coerce").fillna(0).sum(axis=1)
     fat["v25"] = fat[c25].apply(pd.to_numeric, errors="coerce").fillna(0).sum(axis=1)
