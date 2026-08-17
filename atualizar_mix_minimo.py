@@ -78,18 +78,33 @@ def ler_dinamica(path):
     """{cliente: {ean: {'v26':x,'v25':y}}} + total por cliente"""
     d = pd.read_excel(path, sheet_name="POR PRODUTO", header=None)
     lin = None
+    # O cabecalho REAL e a linha que tem 'Dados' e as colunas de mes. Nao dá
+    # para procurar por 'Cliente': quando ele esta como FILTRO da dinamica (e
+    # nao como campo de linha), a palavra aparece la em cima, na area de
+    # filtros, e a leitura pegaria a linha errada.
     for i in range(25):
-        if "Cliente" in [str(x) for x in d.iloc[i].tolist()]:
+        vals = [str(x) for x in d.iloc[i].tolist()]
+        if "Dados" in vals and any(v.startswith("2026/") or v.startswith("2025/") for v in vals):
             lin = i
             break
     if lin is None:
+        print("  ! nao achei o cabecalho da aba POR PRODUTO")
         return None, None, None
     cab = [str(c) for c in d.iloc[lin].tolist()]
-    iCli = cab.index("Cliente")
-    iEan = cab.index("EAN") if "EAN" in cab else None
-    iDad = cab.index("Dados")
-    if iEan is None:
+    # A planilha que a Granado envia toda semana vem SEM Cliente e SEM EAN
+    # (Cliente entra como filtro, nao como campo de linha). Sem os dois a
+    # analise e impossivel: nao da para saber quem compra o que. Aconteceu em
+    # 17/08/2026, quando a atualizacao semanal sobrescreveu o layout montado.
+    faltando = [c for c in ("Cliente", "EAN") if c not in cab]
+    if faltando:
+        print("  ! A aba POR PRODUTO esta sem: %s" % ", ".join(faltando))
+        print("    Campos encontrados: %s" % ", ".join(c for c in cab[:8] if c != "nan"))
+        print("    Reinclua na tabela dinamica (lista de campos) e salve de novo:")
+        print("      Cliente e EAN como campos de LINHA, junto com Grupo_Itens.")
         return None, None, None
+    iCli = cab.index("Cliente")
+    iEan = cab.index("EAN")
+    iDad = cab.index("Dados")
     c26 = [i for i, c in enumerate(cab) if c.startswith("2026/")]
     c25 = [i for i, c in enumerate(cab) if c.startswith("2025/")]
 
