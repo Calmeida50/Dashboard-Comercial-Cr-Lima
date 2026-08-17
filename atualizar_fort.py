@@ -116,6 +116,9 @@ def main():
     ano_ant = ano_atual - 1
     # o arquivo do ano corrente ja traz o AA; o de 2025 serve de reserva
     prods, lojas_mes, nomes = {}, {}, {}
+    # detalhe POR LOJA: o relatorio do Fort tem loja, e sao so 8 — cabe no
+    # index sem inflar. {loja: {cidade, val{mes}, val_aa{mes}, qtd, est, prods}}
+    porloja = {}
     for ano, mi, loja, cid, cod, desc, v, vaa, q, qaa, est in linhas:
         if ano != ano_atual:
             continue
@@ -132,6 +135,21 @@ def main():
             p["lojas"].setdefault(a, set()).add(loja)
         p["est"] += est
         lojas_mes.setdefault(a, set()).add(loja)
+        L = porloja.setdefault(loja, {"loja": loja, "cidade": cid,
+                                      "val": {}, "val_aa": {}, "qtd": {},
+                                      "est": 0, "prods": {}})
+        if cid and not L["cidade"]:
+            L["cidade"] = cid
+        L["val"][a] = round(L["val"].get(a, 0) + v, 2)
+        L["val_aa"][a] = round(L["val_aa"].get(a, 0) + vaa, 2)
+        L["qtd"][a] = int(L["qtd"].get(a, 0) + q)
+        L["est"] += est
+        pr = L["prods"].setdefault(cod, {"nome": desc, "val": 0, "val_aa": 0,
+                                         "qtd": 0, "est": 0})
+        pr["val"] = round(pr["val"] + v, 2)
+        pr["val_aa"] = round(pr["val_aa"] + vaa, 2)
+        pr["qtd"] += int(q)
+        pr["est"] += int(est)
 
     # o ano anterior COMPLETO, do outro arquivo (para a visao de 2025 cheio)
     ant = {}
@@ -157,7 +175,22 @@ def main():
     saida.sort(key=lambda x: -x["tot"])
 
     meses = sorted({m for p in saida for m in p["val"]}, key=ABREV.index)
-    bloco = {"ano": ano_atual, "meses": meses,
+    lojas = []
+    for L in porloja.values():
+        lojas.append({"loja": L["loja"], "cidade": L["cidade"],
+                      "val": L["val"], "val_aa": L["val_aa"], "qtd": L["qtd"],
+                      "estoque": int(L["est"]),
+                      "tot": round(sum(L["val"].values()), 2),
+                      "tot_aa": round(sum(L["val_aa"].values()), 2),
+                      "tot_qtd": sum(L["qtd"].values()),
+                      "produtos": sorted(
+                          [{"nome": v2["nome"], "val": v2["val"],
+                            "val_aa": v2["val_aa"], "qtd": v2["qtd"],
+                            "estoque": v2["est"]} for v2 in L["prods"].values()],
+                          key=lambda z: -z["val"])})
+    lojas.sort(key=lambda z: -z["tot"])
+
+    bloco = {"ano": ano_atual, "meses": meses, "lojas": lojas,
              "lojas_mes": {m: len(s) for m, s in lojas_mes.items()},
              "n_lojas": len(set().union(*lojas_mes.values())) if lojas_mes else 0,
              "produtos": saida,
@@ -168,6 +201,14 @@ def main():
     print()
     print("  %d produtos · %d lojas · %s" % (len(saida), bloco["n_lojas"],
                                              "-".join(meses)))
+    print("  por loja:")
+    for L in lojas:
+        var = ((L["tot"] / L["tot_aa"] - 1) * 100) if L["tot_aa"] else None
+        print("     %-26s R$ %10s  %s  %d itens"
+              % ((L["cidade"] or L["loja"])[:26],
+                 format(round(L["tot"]), ",d").replace(",", "."),
+                 ("%+.1f%%" % var) if var is not None else "novo",
+                 len(L["produtos"])))
     print("  venda %d: R$ %s | mesmo periodo %d: R$ %s | %+.1f%%"
           % (ano_atual, format(round(tot), ",d").replace(",", "."),
              ano_ant, format(round(tot_aa), ",d").replace(",", "."),
