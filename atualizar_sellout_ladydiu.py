@@ -38,6 +38,7 @@ Uso:
 """
 import os, sys, json, glob, shutil, datetime
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 DRIVE = os.path.expanduser(
@@ -70,7 +71,7 @@ def achar_planilha():
 
 def ler_ano(path, aba):
     """devolve {nome_produto: {mes_k: qtd}} e a lista de erros de conferencia"""
-    d = pd.read_excel(path, sheet_name=aba, header=1)
+    d = _ler_excel(path, sheet_name=aba, header=1)
     if "PRODUTO" not in d.columns:
         return None, ["aba %s: nao achei a coluna PRODUTO" % aba]
     d = d[d["PRODUTO"].notna()]
@@ -121,7 +122,7 @@ def main():
     dt = datetime.date.fromtimestamp(os.path.getmtime(path))
     print("gravado: %s\n" % dt.isoformat())
 
-    abas = pd.ExcelFile(path).sheet_names
+    abas = _abrir_excel(path).sheet_names
     dados, erros = {}, []
     for ano in ("2025", "2026"):
         if ano not in abas:

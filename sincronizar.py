@@ -20,6 +20,7 @@ Categorias e seus coletores:
 
 Estado guardado em _backups/estado_arquivos.json
 """
+import time
 import os, re, sys, json, glob, subprocess, datetime, hashlib
 import corte   # regra de corte: nada anterior a junho/2026 e reprocessado
 
@@ -200,9 +201,26 @@ def main():
                 "Resource deadlock avoided", "Errno 11",
                 "cannot be determined", "No such file or directory"))
             if falha_leitura:
-                relatorio.append("%s FALHOU ao ler o Drive — sera tentado de novo" % cat)
-                print("    !! Drive recusou a leitura; estado NAO atualizado")
-                break
+                # SEGUNDA CHANCE na mesma rodada. Cada coletor ja tenta de
+                # novo internamente (drive_io), mas quando o Drive esta
+                # sincronizando uma pasta inteira — a da Panvel tem 11
+                # arquivos — a janela e maior que a espera do coletor.
+                # Sem isso o dado ficava velho ate o dia seguinte, em
+                # silencio: aconteceu em 10, 15 e 17/08/2026.
+                print("    !! Drive recusou a leitura; aguardando 90s para tentar de novo")
+                time.sleep(90)
+                cod, saida = rodar(s)
+                for l in [l for l in saida.strip().splitlines() if l.strip()][-6:]:
+                    print("    " + l[:120])
+                falha_leitura = any(t in saida for t in (
+                    "Resource deadlock avoided", "Errno 11",
+                    "cannot be determined", "No such file or directory"))
+                if falha_leitura:
+                    relatorio.append("%s FALHOU ao ler o Drive nas 2 tentativas "
+                                     "— sera tentado amanha" % cat)
+                    print("    !! falhou de novo; estado NAO atualizado")
+                    break
+                print("    -> deu certo na segunda tentativa")
             if cod == 2:
                 relatorio.append("%s ABORTOU (divergencia no historico)" % cat)
                 print("    !! abortado pela trava — estado NAO atualizado")

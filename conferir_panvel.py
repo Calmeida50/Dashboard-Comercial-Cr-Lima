@@ -17,6 +17,7 @@ Particularidades da Panvel:
 """
 import os, re, json, glob, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 DRIVE = os.path.expanduser(
     "~/Library/CloudStorage/GoogleDrive-almeida.cristiano33@gmail.com/"
@@ -71,7 +72,7 @@ def _eh_por_loja(path, nome_norm):
     if "PRODUTO" in nome_norm:
         return False
     try:
-        cols = [norm(c) for c in pd.read_excel(path, nrows=0).columns]
+        cols = [norm(c) for c in _ler_excel(path, nrows=0).columns]
     except Exception:
         return False
     return any("FILIAL" in c for c in cols)
@@ -100,7 +101,7 @@ def ler(path, detalhe=False):
     (loja, dig, erro, loja_aa, dig_aa, produtos).
     O arquivo SEMPRE traz 'Venda Efetiva Ano Anterior' — o gravador antigo so
     preservava o que ja existia no bloco e por isso a PRUDENCE ficava sem 2025."""
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     col = next((c for c in d.columns
                 if "VENDA EFETIVA" in norm(c) and "ANTERIOR" not in norm(c)), None)
     col_aa = next((c for c in d.columns

@@ -26,6 +26,7 @@ Uso:
 """
 import os, re, sys, json, glob, shutil, datetime, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 DRIVE = os.path.expanduser(
     "~/Library/CloudStorage/GoogleDrive-almeida.cristiano33@gmail.com/"
@@ -62,7 +63,7 @@ def _empresa_pelo_conteudo(path):
     # marcas que pertencem a uma empresa maior
     DONO = {"RICCA": "BELLIZ", "KISS": "BELLIZ", "PHEBO": "GRANADO"}
     try:
-        d = pd.read_excel(path, nrows=400)
+        d = _ler_excel(path, nrows=400)
     except Exception:
         return None
     col = next((c for c in d.columns if "PRODUTO" in norm(c)
@@ -133,7 +134,7 @@ def escolher(lista):
 
 def ler(path, ativos):
     """devolve (produtos, total_lojas)"""
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     cE = next((c for c in d.columns if "EAN" in norm(c)), None)
     cP = next((c for c in d.columns if "PRODUTO" in norm(c) and "COD" not in norm(c)), None)
     cF = next((c for c in d.columns if "FILIAL" in norm(c) and "COD" not in norm(c)), None)

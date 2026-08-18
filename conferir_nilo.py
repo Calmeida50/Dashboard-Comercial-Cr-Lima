@@ -14,6 +14,7 @@ Layout (xlsx, 7 colunas):
 """
 import os, re, json, glob, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 DRIVE = os.path.expanduser(
     "~/Library/CloudStorage/GoogleDrive-almeida.cristiano33@gmail.com/"
@@ -55,7 +56,7 @@ def arquivos():
 
 def ler(path):
     """devolve (faturamento, positivacao_total, linhas) descartando o Total"""
-    cru = pd.read_excel(path, header=None, nrows=6)
+    cru = _ler_excel(path, header=None, nrows=6)
     hdr = None
     for r in range(len(cru)):
         linha = [norm(x) for x in cru.iloc[r].tolist()]
@@ -64,7 +65,7 @@ def ler(path):
             break
     if hdr is None:
         return None, None, "cabecalho nao encontrado"
-    d = pd.read_excel(path, header=hdr)
+    d = _ler_excel(path, header=hdr)
     cCod = next((c for c in d.columns if norm(c) == "COD"), None)
     # a coluna de valor muda de nome entre os meses: as vezes 'Fat', na maioria
     # 'Total'. NAO confundir com 'Vl Tabela' (preco de tabela), 'Dif Total'

@@ -37,6 +37,7 @@ Uso:
 """
 import os, re, sys, json, glob, shutil, datetime, unicodedata, difflib
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -76,7 +77,7 @@ def acha(padrao):
 
 def ler_dinamica(path):
     """{cliente: {ean: {'v26':x,'v25':y}}} + total por cliente"""
-    d = pd.read_excel(path, sheet_name="POR PRODUTO", header=None)
+    d = _ler_excel(path, sheet_name="POR PRODUTO", header=None)
     lin = None
     # O cabecalho REAL e a linha que tem 'Dados' e as colunas de mes. Nao dá
     # para procurar por 'Cliente': quando ele esta como FILTRO da dinamica (e
@@ -143,7 +144,7 @@ def ler_dinamica(path):
 
 def ler_mix(path, aba):
     """[{ean, produto, apres, unid, linha}] — respeitando os titulos de linha"""
-    d = pd.read_excel(path, sheet_name=aba)
+    d = _ler_excel(path, sheet_name=aba)
     itens, linha_atual = [], ""
     for _, r in d.iterrows():
         prod = r.get("Produto")
@@ -165,7 +166,7 @@ def ler_mix(path, aba):
 
 def ler_canais():
     """{chave_do_nome: (canal, vendedor)} da carteira"""
-    d = pd.read_excel(CARTEIRA, sheet_name="Base de Clientes", header=3)
+    d = _ler_excel(CARTEIRA, sheet_name="Base de Clientes", header=3)
     d = d[d["CLIENTE"].notna()]
     out = {}
     for _, r in d.iterrows():
@@ -185,7 +186,7 @@ def ler_depara(carteira):
     p = acha("SEM CANAL")
     if not p:
         return {}, []
-    d = pd.read_excel(p)
+    d = _ler_excel(p)
     out, ignorados = {}, []
     for _, r in d.iterrows():
         cli = str(r.get("CLIENTE NA DINAMICA GRANADO") or "").strip()

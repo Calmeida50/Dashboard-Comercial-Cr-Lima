@@ -39,6 +39,7 @@ Uso:
 """
 import os, re, sys, json, glob, shutil, datetime, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -106,7 +107,7 @@ def arquivos(base, empresa, marcador):
 
 def ler_sellout(path):
     """[(ean, produto, filial, qtd, valor)]"""
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     # A chave do item e SEMPRE o EAN. A Payot nao traz codigo de barras em
     # janeiro e fevereiro; nesses meses o arquivo e PULADO, com aviso. Usar o
     # codigo interno como reserva pareceu boa ideia, mas cria uma segunda
@@ -136,7 +137,7 @@ def ler_sellout(path):
 
 def ler_estoque(path):
     """{(ean, filial): qtde}"""
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     cE, cF = col(d, "COD EAN", "COD BARRAS", "EAN"), col(d, "DESC_FILIAL", "FILIAL")
     cQ = col(d, "ESTOQUE QTDE", "ESTOQUE", "QTDE")
     if not all([cE, cF, cQ]):

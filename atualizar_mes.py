@@ -16,6 +16,7 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime
 from difflib import SequenceMatcher
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 # ============================================================
 #  CONFIGURAÇÃO
@@ -168,7 +169,7 @@ def ler_faturamento(filepath):
     Valores negativos = devoluções (reduzem o total automaticamente).
     """
     try:
-        df = pd.read_excel(filepath)
+        df = _ler_excel(filepath)
     except Exception as e:
         print(f"  ❌ Erro ao ler o ficheiro: {e}")
         return None, None, None
@@ -177,7 +178,7 @@ def ler_faturamento(filepath):
     n_unnamed = sum(1 for c in df.columns if str(c).startswith('Unnamed:'))
     if n_unnamed > len(df.columns) // 2:
         try:
-            df = pd.read_excel(filepath, header=1)
+            df = _ler_excel(filepath, header=1)
             print(f"  ℹ️  Cabeçalho deslocado detectado — relido com header=1")
         except Exception as e:
             print(f"  ❌ Erro ao reprocessar cabeçalho: {e}")

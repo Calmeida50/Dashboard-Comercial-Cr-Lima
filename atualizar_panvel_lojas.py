@@ -22,6 +22,7 @@ Uso:
 """
 import os, re, sys, json, glob, shutil, datetime, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -65,13 +66,13 @@ def arquivos():
             continue
         if "POR LOJA" not in n:
             try:
-                cols = [norm(c) for c in pd.read_excel(p, nrows=0).columns]
+                cols = [norm(c) for c in _ler_excel(p, nrows=0).columns]
             except Exception:
                 continue
             if not any("FILIAL LOJA" in c for c in cols):
                 continue
         try:
-            d = pd.read_excel(p, usecols=lambda c: norm(c) in ("ANO", "MES"), nrows=5)
+            d = _ler_excel(p, usecols=lambda c: norm(c) in ("ANO", "MES"), nrows=5)
             cm = next((c for c in d.columns if norm(c) == "MES"), None)
             mes = int(pd.to_numeric(d[cm], errors="coerce").dropna().iloc[0]) if cm else None
         except Exception:
@@ -86,7 +87,7 @@ def arquivos():
 
 def ler(path):
     """devolve (lojas, dist_lojas) — so LOJA FISICA, sem site"""
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     col = {norm(c): c for c in d.columns}
     cLoja = col.get("FILIAL LOJA")
     cCid  = col.get("FILIAL CIDADE")

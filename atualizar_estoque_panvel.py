@@ -25,6 +25,7 @@ Uso:
 """
 import os, re, sys, json, glob, shutil, datetime, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 DRIVE = os.path.expanduser(
@@ -79,7 +80,7 @@ def arquivos(mes=None):
 
 def ler(path, avg, avg_nome=None):
     """devolve (produtos, total_rede, sem_venda_60)"""
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     col = {norm(c): c for c in d.columns}
     def ache(*chaves, excl=()):
         for k, orig in col.items():

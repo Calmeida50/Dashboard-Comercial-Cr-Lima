@@ -30,6 +30,7 @@ Uso:
 """
 import os, re, sys, json, glob, shutil, datetime, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -56,8 +57,8 @@ def num(v):
 
 def ler(path):
     """[(ano, mes_idx, loja, cidade, cod_prod, produto, val, val_aa, qtd, qtd_aa, est)]"""
-    x = pd.ExcelFile(path)
-    d = pd.read_excel(path, sheet_name=x.sheet_names[0])
+    x = _abrir_excel(path)
+    d = _ler_excel(path, sheet_name=x.sheet_names[0])
     cols = list(d.columns)
     # a descricao do produto e o nome da loja vem em colunas sem nome, logo
     # DEPOIS das colunas 'Produto' e 'Loja'

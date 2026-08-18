@@ -20,6 +20,7 @@ consolidado da tela nao deve usar o crescimento dela.
 """
 import os, re, sys, json, glob, shutil, datetime, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 DRIVE = os.path.expanduser(
     "~/Library/CloudStorage/GoogleDrive-almeida.cristiano33@gmail.com/"
@@ -38,7 +39,7 @@ def norm(s):
 
 def ler(path):
     """devolve (valor, qtd, [(produto, qtd, valor)])"""
-    d = pd.read_excel(path, header=1)
+    d = _ler_excel(path, header=1)
     cQ = next((c for c in d.columns if "QTD" in norm(c)), None)
     cV = next((c for c in d.columns if "VLR" in norm(c)), None)
     cP = d.columns[2]                      # coluna do codigo/descricao

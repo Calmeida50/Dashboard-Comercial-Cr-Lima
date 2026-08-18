@@ -32,6 +32,7 @@ import pandas as pd
 import coletar_faturamento as C
 import equivalencias as E
 import corte   # trava: nada anterior a junho/2026
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -129,7 +130,7 @@ def ler_notas(path, empresa):
     hdr = C.achar_cabecalho(path)
     if hdr is None:
         return []
-    d = pd.read_excel(path, header=hdr)
+    d = _ler_excel(path, header=hdr)
     d = d.loc[:, [c for c in d.columns if not str(c).startswith("Unnamed")]]
     d = d.dropna(how="all")
     if d.empty:

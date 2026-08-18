@@ -37,6 +37,7 @@ Uso:
 """
 import os, sys, json, glob, shutil, datetime
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 DRIVE = os.path.expanduser(
@@ -85,7 +86,7 @@ def achar_planilha():
 
 def ler_receitas(path):
     """devolve (por_empresa, total_por_mes, resumo_por_mes), indexados 0..11"""
-    d = pd.read_excel(path, sheet_name="RECEITAS 2026", header=None)
+    d = _ler_excel(path, sheet_name="RECEITAS 2026", header=None)
     # cabecalho: a linha que traz os nomes das empresas
     lin_cab = None
     for r in range(len(d)):
@@ -138,7 +139,7 @@ def ler_custos(path):
     """TOTAL de custo por mes. Os meses ficam em blocos de 3 colunas, em duas
     faixas; procuramos a celula com o nome do mes e, abaixo dela, a linha TOTAL
     na mesma coluna — o valor esta na coluna seguinte."""
-    d = pd.read_excel(path, sheet_name="CONTROLE DE CUSTOS 2026", header=None)
+    d = _ler_excel(path, sheet_name="CONTROLE DE CUSTOS 2026", header=None)
     out = {}
     for r in range(len(d)):
         for c in range(d.shape[1]):

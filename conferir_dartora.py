@@ -12,6 +12,7 @@ Diferencas em relacao a Sao Joao:
 """
 import os, re, json, glob, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 DRIVE = os.path.expanduser(
     "~/Library/CloudStorage/GoogleDrive-almeida.cristiano33@gmail.com/"
@@ -103,7 +104,7 @@ def mes_do_arquivo(path):
         return sorted(meses)[0] if meses else None
     try:
         # 3. cabecalho do sistema antigo: varrer as primeiras linhas cruas
-        cru = pd.read_excel(path, header=None, nrows=10)
+        cru = _ler_excel(path, header=None, nrows=10)
         texto = " ".join(str(x) for x in cru.values.flatten() if str(x) != "nan")
         m = re.search(r"fatur[:\s]*(\d{2})/(\d{2})/(\d{4})", texto, re.I)
         if m:
@@ -112,7 +113,7 @@ def mes_do_arquivo(path):
         hdr = _achar_hdr(path)
         if hdr is None:
             return None
-        d = pd.read_excel(path, header=hdr)
+        d = _ler_excel(path, header=hdr)
         col = next((c for c in d.columns if norm(c).startswith("MES")), None)
         if col is None:
             return None
@@ -125,7 +126,7 @@ def mes_do_arquivo(path):
 
 
 def _achar_hdr(path):
-    cru = pd.read_excel(path, header=None, nrows=15)
+    cru = _ler_excel(path, header=None, nrows=15)
     for r in range(len(cru)):
         linha = [norm(x) for x in cru.iloc[r].tolist() if str(x) != "nan"]
         if any("VALOR" in x or "VLR" in x for x in linha) and len(linha) >= 3:
@@ -141,7 +142,7 @@ def ler_produto(path):
     hdr = _achar_hdr(path)
     if hdr is None:
         return None, "cabecalho nao encontrado"
-    d = pd.read_excel(path, header=hdr)
+    d = _ler_excel(path, header=hdr)
     # linha de total: OS DOIS criterios, nao um ou outro —
     #  (a) alguma celula com "TOTAL" (as vezes na coluna Marca)
     #  (b) coluna de descricao vazia (o total nao tem nome de produto)

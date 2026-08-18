@@ -25,6 +25,7 @@ Uso:
 """
 import os, re, sys, json, glob, shutil, datetime, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -62,7 +63,7 @@ def ler(path):
     Layout tambem varia: com ou sem coluna Status. Sem Status, TODOS os itens
     do arquivo sao considerados ativos.
     """
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     cProd = acha_col(d, "PRODUTO", "DESCRICAO", "ITEM")
     cCat = acha_col(d, "CATEGORIA")
     cLin = acha_col(d, "LINHA")
@@ -103,11 +104,11 @@ def ler_rede(path):
     try:
         import warnings
         warnings.filterwarnings("ignore")
-        xl = pd.ExcelFile(path)
+        xl = _abrir_excel(path)
         aba = next((a for a in xl.sheet_names if "LOJAS ATIVAS" in norm(a)), None)
         if not aba:
             return None
-        d = pd.read_excel(path, sheet_name=aba)
+        d = _ler_excel(path, sheet_name=aba)
         cCod = acha_col(d, "COD")
         if cCod is None:
             return None

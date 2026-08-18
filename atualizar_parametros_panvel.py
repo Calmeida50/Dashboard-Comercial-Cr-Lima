@@ -32,6 +32,7 @@ Uso:
 """
 import os, re, sys, json, glob, shutil, datetime
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -63,7 +64,7 @@ def acha_col(d, *chaves, excl=()):
 
 def ler_cluster(path):
     """{cod: n_filiais}, nome do item e total de filiais do arquivo"""
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     cItem = acha_col(d, "COD", "ITEM", excl=("BARRA", "FORNECEDOR"))
     cFil = acha_col(d, "COD", "FILIAL")
     cNome = acha_col(d, "DESCRICAO") or acha_col(d, "DESCRIÇÃO")
@@ -89,7 +90,7 @@ def ler_mix(path):
     O arquivo tambem pode trazer `Status`, que manda no ativo/inativo — mas na
     Panvel quem decide isso e o CLUSTER, entao aqui o Status e so referencia.
     """
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     cItem = acha_col(d, "COD", "ITEM", excl=("BARRA", "FORNECEDOR", "GRUPO"))
     if cItem is None:
         cItem = acha_col(d, "CODIGO", excl=("BARRA", "FORNECEDOR"))

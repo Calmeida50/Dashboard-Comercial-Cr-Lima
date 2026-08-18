@@ -21,6 +21,7 @@ Uso:
 import os, re, sys, json, shutil, datetime
 import pandas as pd
 import conferir_dartora as D
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 PROJ = os.path.dirname(os.path.abspath(__file__))
 INDEX = os.path.join(PROJ, "index.html")
@@ -35,7 +36,7 @@ def detalhe(path):
     hdr = D._achar_hdr(path)
     if hdr is None:
         return []
-    d = pd.read_excel(path, header=hdr)
+    d = _ler_excel(path, header=hdr)
     eh_total = d.apply(lambda r: any(D.norm(x) in ("TOTAL", "TOTAL GERAL")
                                      for x in r.tolist()), axis=1)
     desc = next((c for c in d.columns if D.norm(c).startswith("DESC")), None)
@@ -89,7 +90,7 @@ def coletar():
         p = lista[0]
         if tipo == "vendedor":
             try:
-                d = pd.read_excel(p)
+                d = _ler_excel(p)
                 cn = next((c for c in d.columns if "VENDEDOR" in D.norm(c)), None)
                 cv = next((c for c in d.columns if "VALOR" in D.norm(c)), None)
                 if cn and cv:

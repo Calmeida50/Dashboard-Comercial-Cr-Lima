@@ -13,6 +13,7 @@ O dashboard tem 4 empresas; a BELLIZ existe nos arquivos e NAO esta publicada.
 """
 import os, re, json, glob, unicodedata
 import pandas as pd
+from drive_io import ler_excel as _ler_excel, abrir_excel as _abrir_excel
 
 DRIVE = os.path.expanduser(
     "~/Library/CloudStorage/GoogleDrive-almeida.cristiano33@gmail.com/"
@@ -56,7 +57,7 @@ def arquivos():
 
 def ler(path):
     """devolve (valor, quantidade) sem as linhas de total"""
-    d = pd.read_excel(path)
+    d = _ler_excel(path)
     desc = d.columns[0]
     col = next((c for c in d.columns if "VLR" in norm(c) or "VALOR" in norm(c)), None)
     qtd = next((c for c in d.columns if "QTD" in norm(c) or "QUANT" in norm(c)), None)
@@ -100,7 +101,7 @@ def montar():
         b["total_val"] += v
         b["total_qtd"] += q
         # produtos acumulados
-        d = pd.read_excel(p)
+        d = _ler_excel(p)
         desc = d.columns[0]
         col = next(c for c in d.columns if "VLR" in norm(c) or "VALOR" in norm(c))
         qtc = next((c for c in d.columns if "QTD" in norm(c)), None)
