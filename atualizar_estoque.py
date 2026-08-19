@@ -97,7 +97,15 @@ def arquivos(mes=None):
         # remove sufixos de copia "(1)", ano e extensao ANTES de usar como chave,
         # senao "ESTOQUE ... EVER GREEN JULHO 26 (1).xlsx" vira uma empresa
         # fantasma chamada "EVER GREEN (1)".
-        emp = re.sub(r"\(\s*\d+\s*\)", " ", emp)
+        # Limpa QUALQUER coisa entre parenteses, nao so numeros: o Cristiano
+        # passou a escrever a data no nome — "ESTOQUE SAO JOAO CLESS ( 18.08 )"
+        # — e a regra antiga (\(\s*\d+\s*\)) nao pegava o ponto. Resultado em
+        # 18/08/2026: nasceram empresas fantasma "CLESS ( 18.08 )" e as de
+        # verdade ficaram marcadas como "sem arquivo", congeladas no dado
+        # velho. Mesmo defeito ja corrigido na Panvel em 13/08.
+        emp = re.sub(r"\([^)]*\)", " ", emp)
+        # datas soltas, sem parenteses (18.08 / 18-08 / 18/08)
+        emp = re.sub(r"\b\d{1,2}[./-]\d{1,2}(?:[./-]\d{2,4})?\b", " ", emp)
         emp = re.sub(r"\.(XLSX|XLS|XLSM)\b", " ", emp)
         emp = re.sub(r"\b(26|2026)\b", " ", emp)
         emp = re.sub(r"\s+", " ", emp).strip(" .-_")
