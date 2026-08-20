@@ -185,6 +185,8 @@ def main():
         print("\n--verificar: nao executei nada.")
         return 0
 
+    pendentes = []      # categorias adiadas por Drive ocupado
+
     for cat, scripts, h, n in mudaram:
         for s in scripts:
             print("\n>>> %s (%s)" % (s, cat))
@@ -216,9 +218,17 @@ def main():
                     "Resource deadlock avoided", "Errno 11",
                     "cannot be determined", "No such file or directory"))
                 if falha_leitura:
-                    relatorio.append("%s FALHOU ao ler o Drive nas 2 tentativas "
-                                     "— sera tentado amanha" % cat)
-                    print("    !! falhou de novo; estado NAO atualizado")
+                    # TERCEIRA CHANCE, no FIM da rodada. O padrao observado em
+                    # 17, 18 e 19/08/2026: falha as 18h e funciona de manha —
+                    # ou seja, o Drive esta ocupado justamente na hora em que a
+                    # rotina roda, e a janela passa de 2 minutos. Em vez de
+                    # esperar parado, a categoria vai para o fim da fila: as
+                    # outras rodam (leva alguns minutos) e ela e tentada de
+                    # novo depois, com o Drive ja mais calmo.
+                    pendentes.append((cat, s, h, n))
+                    relatorio.append("%s adiado — Drive ocupado, sera tentado "
+                                     "no fim da rodada" % cat)
+                    print("    !! adiado para o fim da rodada")
                     break
                 print("    -> deu certo na segunda tentativa")
             if cod == 2:
@@ -234,6 +244,31 @@ def main():
             novo_estado[cat] = {"hash": h, "arquivos": n,
                                 "em": datetime.datetime.now().isoformat(timespec="seconds")}
             relatorio.append("%s atualizado (%d arquivos)" % (cat, n))
+
+    # ── categorias adiadas: nova tentativa agora que o resto ja rodou ──────
+    if pendentes:
+        print("\n" + "=" * 70)
+        print("  RETOMANDO %d categoria(s) adiada(s) por Drive ocupado" % len(pendentes))
+        print("=" * 70)
+        time.sleep(60)
+        for cat, s_, h, n in pendentes:
+            print("\n>>> %s (%s) — tentativa final" % (s_, cat))
+            cod, saida = rodar(s_)
+            for l in [l for l in saida.strip().splitlines() if l.strip()][-6:]:
+                print("    " + l[:120])
+            falhou = any(t in saida for t in (
+                "Resource deadlock avoided", "Errno 11",
+                "cannot be determined", "No such file or directory"))
+            # a mensagem no relatorio troca a de "adiado"
+            relatorio[:] = [r for r in relatorio if not r.startswith(cat + " adiado")]
+            if falhou or cod not in (0, 1):
+                relatorio.append("%s FALHOU ao ler o Drive — sera tentado amanha" % cat)
+                print("    !! falhou tambem na tentativa final")
+            else:
+                novo_estado[cat] = {"hash": h, "arquivos": n,
+                                    "em": datetime.datetime.now().isoformat(timespec="seconds")}
+                relatorio.append("%s atualizado na tentativa final (%d arquivos)" % (cat, n))
+                print("    -> deu certo na tentativa final")
 
     salvar_estado(novo_estado)
     print("\n" + "\n".join("  - " + r for r in relatorio))
