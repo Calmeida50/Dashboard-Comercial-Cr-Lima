@@ -203,9 +203,14 @@ def main():
         return 0
 
     s = open(INDEX, encoding="utf-8").read()
-    novo = "const MIX_BELLIZ = " + json.dumps(out, ensure_ascii=False,
-                                              separators=(",", ":")) + ";"
-    marca = "const MIX_BELLIZ = "
+    # `var` + window: `const` no topo de um script fica no escopo lexical
+    # global, que e compartilhado, mas essa sutileza ja custou uma sessao de
+    # depuracao (20/08/2026 — a tela nao via MIX_BELLIZ). Com window nao ha
+    # duvida: qualquer script enxerga.
+    novo = ("var MIX_BELLIZ = " + json.dumps(out, ensure_ascii=False,
+                                             separators=(",", ":")) +
+            "; window.MIX_BELLIZ = MIX_BELLIZ;")
+    marca = "var MIX_BELLIZ = "
     if marca in s:
         i = s.index(marca); j = s.index("\n", i)
         s = s[:i] + novo + s[j:]
