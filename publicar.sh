@@ -20,6 +20,18 @@ if [ -f validar_js.py ]; then
   fi
 fi
 
+# Sintaxe correta NAO garante codigo completo: em 20/08/2026 um bloco se
+# perdeu numa edicao, o validar passou e a tela do Mix Minimo abriu em branco
+# porque o render chamava funcoes que nao existiam mais.
+if [ -f conferir_funcoes.py ]; then
+  if ! python3 conferir_funcoes.py; then
+    echo ""
+    echo "  PUBLICACAO CANCELADA — ha funcao chamada que nao existe."
+    echo "  A sintaxe esta OK, mas a tela que usa essa funcao vai abrir vazia."
+    exit 3
+  fi
+fi
+
 echo ""
 echo "=============================================="
 echo "   Publicar Dashboard Comercial"
