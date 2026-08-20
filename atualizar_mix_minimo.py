@@ -244,8 +244,12 @@ def main():
             "farma": ("MIX MINIMO CANAL FARMA", "FARMA"),
             "alimentar": ("MIX MINIMO CANAL ALIMENTAR", "Tabela RS 2025"),
         },
+        # A MESMA lista de obrigatorios vale para os DOIS canais (confirmado
+        # pelo Cristiano em 20/08/2026). A planilha tem uma aba so, chamada
+        # FARMA, mas isso e o nome da aba — nao o escopo da lista.
         "obrigatorio": {
             "farma": ("MIX OBRIGATORIO", "FARMA"),
+            "alimentar": ("MIX OBRIGATORIO", "FARMA"),
         },
     }
     mixes = {}
