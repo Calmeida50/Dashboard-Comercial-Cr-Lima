@@ -235,10 +235,21 @@ def main():
     print("  carteira: %d clientes · de-para: %d · ignorados (inativos): %d"
           % (len(carteira), len(depara), len(ignorados)))
 
-    mixes = {}
-    for canal, (padrao, aba) in {
+    # DOIS TIPOS de lista (20/08/2026):
+    #   minimo      — o que cada canal deveria ter (46 farma, 35 alimentar)
+    #   obrigatorio — o subconjunto que a Granado trata como inegociavel
+    # Mesmo layout de arquivo, mesma analise; a tela alterna entre os dois.
+    LISTAS = {
+        "minimo": {
             "farma": ("MIX MINIMO CANAL FARMA", "FARMA"),
-            "alimentar": ("MIX MINIMO CANAL ALIMENTAR", "Tabela RS 2025")}.items():
+            "alimentar": ("MIX MINIMO CANAL ALIMENTAR", "Tabela RS 2025"),
+        },
+        "obrigatorio": {
+            "farma": ("MIX OBRIGATORIO", "FARMA"),
+        },
+    }
+    mixes = {}
+    for canal, (padrao, aba) in LISTAS["minimo"].items():
         p = acha(padrao)
         if not p:
             print("  ! nao achei o mix minimo do canal %s" % canal)
@@ -247,8 +258,8 @@ def main():
 
     out = {"atualizado_em": datetime.date.today().isoformat(),
            "meses_2026": len(meses26), "canais": {}}
-    for canal, mx in mixes.items():
-        itens = mx["itens"]
+    def analisa_canal(canal, itens):
+        """clientes do canal com o que TEM e o que FALTA daquela lista"""
         eans = {i["ean"] for i in itens}
         clientes = []
         for cli, m in compras.items():
@@ -269,11 +280,42 @@ def main():
                              "v26": totais[cli]["v26"], "v25": totais[cli]["v25"],
                              "tem": tem, "falta": falta})
         clientes.sort(key=lambda c: -c["v26"])
+        return clientes
+
+    for canal, mx in mixes.items():
+        itens = mx["itens"]
+        clientes = analisa_canal(canal, itens)
         out["canais"][canal] = {"itens": itens, "clientes": clientes,
                                 "arquivo": mx["arquivo"]}
         comp = sum(1 for c in clientes if not c["falta"])
         print()
         print("  CANAL %-10s %d itens no mix · %d clientes ativos · %d com mix completo"
+              % (canal.upper(), len(itens), len(clientes), comp))
+        if clientes:
+            print("     falta em media %.1f itens"
+                  % (sum(len(c["falta"]) for c in clientes) / len(clientes)))
+            for c in clientes[:5]:
+                print("     %-44s R$ %10s  tem %2d  falta %2d"
+                      % (c["nome"][:44], format(round(c["v26"]), ",d").replace(",", "."),
+                         len(c["tem"]), len(c["falta"])))
+
+    # -- mix OBRIGATORIO: mesma analise, lista mais curta ------------------
+    out["obrigatorio"] = {}
+    for canal, (padrao, aba) in LISTAS["obrigatorio"].items():
+        pa = acha(padrao)
+        if not pa:
+            print("  ! nao achei o mix obrigatorio do canal %s" % canal)
+            continue
+        itens = ler_mix(pa, aba)
+        if not itens:
+            print("  ! mix obrigatorio %s: nenhum item lido" % canal)
+            continue
+        clientes = analisa_canal(canal, itens)
+        out["obrigatorio"][canal] = {"itens": itens, "clientes": clientes,
+                                     "arquivo": os.path.basename(pa)}
+        comp = sum(1 for c in clientes if not c["falta"])
+        print()
+        print("  OBRIGATORIO %-6s %d itens - %d clientes ativos - %d com o mix completo"
               % (canal.upper(), len(itens), len(clientes), comp))
         if clientes:
             print("     falta em media %.1f itens"
