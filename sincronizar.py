@@ -69,6 +69,9 @@ CATEGORIAS = {
     "mix_minimo":   (["RELATORIO GRANADO"], ["atualizar_mix_minimo.py"]),
     # Belliz: ranking por canal (regional) + faturamento por produto e cliente
     "mix_belliz":   (["RELATORIOS BELLIZ"], ["atualizar_mix_belliz.py"]),
+    # Sell in: usa as MESMAS pastas da Granado e da Belliz
+    "sellin":       (["RELATORIO GRANADO", "RELATORIOS BELLIZ"],
+                     ["atualizar_sellin.py"]),
     # Fort Atacadista (Ever Green): dois arquivos, um por ano, na pasta propria
     "sellout_fort": (["SELL OUT PRINCIPAIS CLIENTES"], ["atualizar_fort.py"]),
     # Financeiro: uma planilha so, preenchida diariamente pelo Cristiano, que
@@ -90,6 +93,7 @@ FILTRO = {
     "params_sj":    "SAO JOAO COM CATEGORIA",
     "sellout_fort": "FORT ATACADISTA",
     "mix_belliz":   "BELLIZ",
+    "sellin":       "SELL IN",
     "estoque":      "SAO JOAO",
     "estoque_pv":   "PANVEL",
 }
