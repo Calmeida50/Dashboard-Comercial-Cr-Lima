@@ -41,6 +41,15 @@ ABREV = ["jan", "fev", "mar", "abr", "mai", "jun",
          "jul", "ago", "set", "out", "nov", "dez"]
 ANO = 2026
 
+# SO MES FECHADO. O relatorio da Granado ja traz o mes corrente parcial, e
+# isso distorce tudo: puxa o total para baixo e faz cliente aparecer como
+# "sem compra no ultimo mes" so porque o mes ainda nao acabou. A analise de
+# sell in compara periodos, entao mes pela metade nao entra.
+# (Regra do Cristiano, 21/08/2026.)
+def ultimo_fechado():
+    """indice (0-based) do ultimo mes FECHADO: o anterior ao corrente"""
+    return datetime.date.today().month - 2
+
 
 def norm(s):
     s = unicodedata.normalize("NFD", str(s or "")).upper()
@@ -58,9 +67,12 @@ def _monta(regs):
     -> blocos de clientes e produtos, com o ano anterior junto"""
     cli, prod = {}, {}
     meses = set()
+    corte = ultimo_fechado()
     for c, canal, cod, pnome, fam, ano, mi, v in regs:
         if v == 0:
             continue
+        if ano == ANO and mi > corte:
+            continue                 # mes corrente (parcial) fica de fora
         if ano == ANO:
             meses.add(mi)
         a = cli.setdefault(c, {"nome": c, "canal": canal,
